@@ -1,25 +1,26 @@
-import {
-  BadRequestException,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
-import { Schema, Types } from 'mongoose';
+import { Cache } from 'cache-manager';
+// import { Schema, Types } from 'mongoose';
 import { MESSAGES } from 'src/common/constants/messages.constants';
 import { IUser } from 'src/common/interfaces/user.interface';
 import { User, UserDocument } from 'src/entity/user.entity';
-import { UserInterface } from 'src/types/user.interface';
-import { CreateUserDto, RegisterDto } from 'src/user/dtos/create-user.dto';
+import { MailService } from 'src/mail/mail.service';
+// import { UserInterface } from 'src/types/user.interface';
+import { RegisterDto } from 'src/user/dtos/create-user.dto';
 import { UserService } from 'src/user/user.service';
-
+import * as uuid from 'uuid';
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
     private userService: UserService,
     private jwtService: JwtService,
     private configService: ConfigService,
+    private mailService: MailService,
   ) {}
 
   async validateUser(email: string, pass: string): Promise<User | null> {
@@ -101,9 +102,46 @@ export class AuthService {
     const userCreated = await this.userService.createUser(user);
     if (!userCreated) return null;
     const { user_id } = userCreated;
-
+    const verificationToken = uuid.v4();
+    await this.mailService.sendVerificationEmail(user.email, verificationToken);
     return {
       user_id: user_id,
+    };
+  }
+
+  async verifyEmail(email: string, token: string) {
+    const key = `verification:${email}`;
+    //get token by key
+    const storedToken = await this.cacheManager.get(key);
+
+    //check in redis have token
+    if (!storedToken) {
+      throw new BadRequestException(MESSAGES.AUTH.EXPIRED_VERIFY_TOKEN);
+    }
+    // Check if token matches
+    if (storedToken !== token) {
+      throw new BadRequestException(MESSAGES.AUTH.INVALID_VERIFICATION_TOKEN);
+    }
+
+    // Find the user
+    const userVerify = await this.userService.findOneByEmail(email);
+    if (!userVerify) {
+      throw new BadRequestException(MESSAGES.AUTH.UNAUTHORIZED);
+    }
+
+    // Check if already verified
+    if (userVerify.isVerified) {
+      throw new BadRequestException(MESSAGES.AUTH.ALREADY_VERIFIED);
+    }
+
+    await this.userService.markAsVerified(userVerify.user_id);
+
+    // Clean up the token
+    await this.cacheManager.del(key);
+
+    return {
+      success: true,
+      message: MESSAGES.AUTH.EMAIL_VERIFIED,
     };
   }
 }

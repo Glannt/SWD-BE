@@ -8,8 +8,12 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { ConfigService } from '@nestjs/config';
+import { NestRedisModule } from 'src/redis/redis.module';
+import { MailModule } from 'src/mail/mail.module';
 @Module({
   imports: [
+    MailModule,
+    NestRedisModule,
     UserModule, // Import UserModule để sử dụng UserService
     PassportModule,
     JwtModule.registerAsync({

@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  swd-be:
+    build:
+      context: . # Thư mục chứa Dockerfile
+      dockerfile: Dockerfile
+      args:
+        NODE_ENV: ${NODE_ENV}
+    ports:
+      - '3000:3000' # Mở cổng từ máy host đến container
+    environment:
+      - DB_URI=${MONGODB_URI} # Biến môi trường MongoDB Atlas
+      - JWT_ACCESS_TOKEN_SECRET=${JWT_ACCESS_TOKEN_SECRET}
+      - JWT_ACCESS_EXPIRE=${JWT_ACCESS_EXPIRE}
+      - JWT_REFRESH_TOKEN_SECRET=${JWT_REFRESH_TOKEN_SECRET}
+      - JWT_REFRESH_EXPIRE=${JWT_REFRESH_EXPIRE}
+    env_file:
+      - .env.cloud # File chứa ATLAS_USER, ATLAS_PASSWORD, DB_NAME
+    restart: always

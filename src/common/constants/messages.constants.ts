@@ -6,6 +6,10 @@ export const MESSAGES = {
     LOGIN_FAILED: 'Incorrect username or password!',
     UNAUTHORIZED: 'Access denied!',
     EMAIL_EXIST: 'This email already exists!',
+    INVALID_VERIFICATION_TOKEN: 'Token verification is invalid!',
+    ALREADY_VERIFIED: 'Email already verified',
+    EMAIL_VERIFIED: 'Email successfully verified',
+    EXPIRED_VERIFY_TOKEN: 'Token has expired!',
   },
   USERS: {
     CREATE_SUCCESS: 'User created successfully!',

@@ -97,4 +97,10 @@ export class UserService {
   isRegisterDTO(obj: any): obj is RegisterDto {
     return !('role' in obj);
   }
+
+  async markAsVerified(userId: string): Promise<void> {
+    console.log('Toi dai');
+
+    await this.userModel.findByIdAndUpdate(userId, { isVerified: true }).exec();
+  }
 }
