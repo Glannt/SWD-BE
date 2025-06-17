@@ -1,49 +1,46 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Pinecone } from '@pinecone-database/pinecone';
-import * as dotenv from 'dotenv';
-
-// Đảm bảo biến môi trường được đọc
-dotenv.config();
+import { ConfigService } from '../../config/config.service';
 
 @Injectable()
 export class PineconeService implements OnModuleInit {
   private pinecone: Pinecone;
   private indexName: string;
 
-  constructor() {
-    // Lấy thông tin từ biến môi trường
-    const apiKey = process.env.PINECONE_API_KEY;
-    this.indexName = process.env.PINECONE_INDEX_NAME || 'fpt-university-768d';
+  constructor(private configService: ConfigService) {
+    // Lấy thông tin từ ConfigService
+    const apiKey = this.configService.getPineconeApiKey();
+    this.indexName = this.configService.getPineconeIndexName();
     
-    console.log('Pinecone API Key:', apiKey ? 'Đã cấu hình (độ dài: ' + apiKey.length + ')' : 'Chưa cấu hình');
-    console.log('Pinecone Index Name:', this.indexName);
+    if (!apiKey) {
+      throw new Error('PINECONE_API_KEY is required but not configured');
+    }
+    
+    console.log('✅ Pinecone initialized with ConfigService');
+    console.log('📊 Index Name:', this.indexName);
     
     // Khởi tạo client Pinecone
     this.pinecone = new Pinecone({
-      apiKey: apiKey || 'pcsk_7ACs6N_L5KeAoJhycf6J67t7VkKiukQNQPg8kaF48FS1dVFjswwwUMfg25ETYSKJdroLLw',
+      apiKey: apiKey,
     });
   }
 
   async onModuleInit() {
     try {
       // Kiểm tra xem index đã tồn tại hay chưa
+      console.log('🔍 Checking Pinecone index...');
       const indexes = await this.pinecone.listIndexes();
       const indexNames = indexes.indexes?.map(index => index.name) || [];
       const indexExists = indexNames.includes(this.indexName);
 
-      // Nếu index chưa tồn tại, tạo mới
-      if (!indexExists) {
-        console.log(`Đang tạo index mới: ${this.indexName}`);
-        
-        // Tạo index với cấu hình phù hợp cho RAG
-        // Lưu ý: Không tạo index trong code vì yêu cầu quyền admin
-        // Index nên được tạo trước qua giao diện web Pinecone
-        console.log(`Không thể tạo index tự động. Vui lòng tạo index ${this.indexName} qua giao diện Pinecone với dimension 768.`);
+      if (indexExists) {
+        console.log(`✅ Index "${this.indexName}" exists and ready`);
       } else {
-        console.log(`Index ${this.indexName} đã tồn tại`);
+        console.warn(`⚠️ Index "${this.indexName}" not found. Available indexes:`, indexNames);
+        console.log('💡 Please create the index via Pinecone console with dimension 768');
       }
     } catch (error) {
-      console.error('Lỗi khi khởi tạo Pinecone:', error);
+      console.error('❌ Error initializing Pinecone:', error);
       throw error;
     }
   }
@@ -60,8 +57,14 @@ export class PineconeService implements OnModuleInit {
    * @param vectors Danh sách các vector cần thêm
    */
   async upsertVectors(vectors: any[]) {
-    const index = await this.getIndex();
-    await index.upsert(vectors);
+    try {
+      const index = await this.getIndex();
+      await index.upsert(vectors);
+      console.log(`✅ Successfully upserted ${vectors.length} vectors`);
+    } catch (error) {
+      console.error('❌ Error upserting vectors:', error);
+      throw error;
+    }
   }
 
   /**
@@ -71,14 +74,20 @@ export class PineconeService implements OnModuleInit {
    * @returns Danh sách vector gần nhất
    */
   async queryVectors(vector: number[], topK: number = 3) {
-    const index = await this.getIndex();
-    
-    const queryResult = await index.query({
-      vector,
-      topK,
-      includeMetadata: true,
-    });
-    
-    return queryResult.matches;
+    try {
+      const index = await this.getIndex();
+      
+      const queryResult = await index.query({
+        vector,
+        topK,
+        includeMetadata: true,
+      });
+      
+      console.log(`🔍 Found ${queryResult.matches?.length || 0} relevant matches`);
+      return queryResult.matches;
+    } catch (error) {
+      console.error('❌ Error querying vectors:', error);
+      throw error;
+    }
   }
 } 
