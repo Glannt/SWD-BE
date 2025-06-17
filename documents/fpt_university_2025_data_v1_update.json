@@ -1,0 +1,413 @@
+{
+  "campuses": [
+    {
+      "ID": "HN",
+      "Name": "FPT University Hà Nội",
+      "Address": "Khu Công nghệ cao Hòa Lạc, Km29 Đại lộ Thăng Long, Thạch Thất, Hà Nội",
+      "ContactInfo": "Điện thoại: (024) 7300 1866 | Email: daihocfpt@fpt.edu.vn",
+      "DescriptionHighlights": "Cơ sở chính với cơ sở vật chất hiện đại, thư viện lớn, phòng lab công nghệ cao, ký túc xá cho sinh viên."
+    },
+    {
+      "ID": "HCM",
+      "Name": "FPT University TP. Hồ Chí Minh",
+      "Address": "Lô E2a-7, Đường D1, Khu Công nghệ cao, P. Long Thạnh Mỹ, TP. Thủ Đức, TP. HCM",
+      "ContactInfo": "Điện thoại: (028) 7300 1866 | Email: daihocfpt@fpt.edu.vn",
+      "DescriptionHighlights": "Cơ sở lớn thứ hai với nhiều ngành học đa dạng, kết nối mạnh với doanh nghiệp tại TP.HCM."
+    },
+    {
+      "ID": "DN",
+      "Name": "FPT University Đà Nẵng",
+      "Address": "Khu đô thị FPT City, Ngũ Hành Sơn, Đà Nẵng",
+      "ContactInfo": "Điện thoại: (0236) 7300 1866 | Email: daihocfpt@fpt.edu.vn",
+      "DescriptionHighlights": "Cơ sở đẹp bên bờ biển Đà Nẵng, môi trường học tập lý tưởng với khí hậu ôn hòa."
+    },
+    {
+      "ID": "CT",
+      "Name": "FPT University Cần Thơ",
+      "Address": "Khu Đô Thị Ven Sông Hậu, Cần Thơ",
+      "ContactInfo": "Điện thoại: (0292) 7300 1866 | Email: daihocfpt@fpt.edu.vn",
+      "DescriptionHighlights": "Cơ sở mới với cơ sở vật chất hiện đại, phục vụ sinh viên khu vực Tây Nam Bộ."
+    },
+    {
+      "ID": "QN",
+      "Name": "FPT University Quy Nhon",
+      "Address": "An Viên, Tuy Phước, Bình Định",
+      "ContactInfo": "Điện thoại: (0256) 7300 1866 | Email: daihocfpt@fpt.edu.vn",  
+      "DescriptionHighlights": "Cơ sở mới nhất với khuôn viên xanh, gần biển, môi trường học tập trong lành."
+    }
+  ],
+  "majors": [
+    {
+      "Code": "SE",
+      "Name": "Kỹ thuật phần mềm",
+      "Description": "Đào tạo kỹ sư phần mềm chuyên nghiệp với kỹ năng lập trình, thiết kế hệ thống, quản lý dự án CNTT.",
+      "CareerOpportunities": "Lập trình viên, Kỹ sư phần mềm, Team Leader, Project Manager, Solution Architect, CTO",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, điểm trung bình từ 6.5 trở lên, có khả năng tư duy logic tốt",
+      "TotalCredits": 144,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian, có chương trình OJT"
+    },
+    {
+      "Code": "AI",
+      "Name": "Trí tuệ nhân tạo",
+      "Description": "Chương trình tiên tiến về AI, Machine Learning, Deep Learning, Computer Vision, NLP.",
+      "CareerOpportunities": "AI Engineer, Data Scientist, ML Engineer, Computer Vision Engineer, NLP Specialist, AI Researcher",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, yêu thích toán học và lập trình, tư duy phân tích tốt",
+      "TotalCredits": 144,
+      "ProgramDuration": "4 năm", 
+      "DeliveryMode": "Toàn thời gian với nhiều dự án thực tế"
+    },
+    {
+      "Code": "IS",
+      "Name": "Hệ thống thông tin",
+      "Description": "Kết hợp CNTT và quản trị kinh doanh, phân tích và thiết kế hệ thống thông tin doanh nghiệp.",
+      "CareerOpportunities": "Business Analyst, System Analyst, ERP Consultant, IT Manager, Project Manager",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có khả năng phân tích và giao tiếp tốt",
+      "TotalCredits": 144,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian, tích hợp thực tập doanh nghiệp"
+    },
+    {
+      "Code": "IA",
+      "Name": "An toàn thông tin",
+      "Description": "Chuyên ngành về bảo mật mạng, an toàn hệ thống, điều tra số, quản lý rủi ro CNTT.",
+      "CareerOpportunities": "Security Engineer, Penetration Tester, Security Analyst, CISO, Forensic Specialist",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có tư duy logic và khả năng phân tích tốt",
+      "TotalCredits": 144,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với lab thực hành chuyên dụng"
+    },
+    {
+      "Code": "DS",
+      "Name": "Khoa học dữ liệu",
+      "Description": "Phân tích dữ liệu lớn, thống kê, machine learning, business intelligence, data visualization.",
+      "CareerOpportunities": "Data Scientist, Data Analyst, Business Intelligence Developer, Data Engineer, Research Scientist",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, giỏi toán học và thống kê",
+      "TotalCredits": 144,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với nhiều project thực tế"
+    },
+    {
+      "Code": "IOT",
+      "Name": "Internet vạn vật",
+      "Description": "Thiết kế và phát triển các hệ thống IoT, embedded systems, smart devices.",
+      "CareerOpportunities": "IoT Developer, Embedded Engineer, Hardware Engineer, Smart City Specialist",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, yêu thích công nghệ và lập trình",
+      "TotalCredits": 144,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với phòng lab IoT hiện đại"
+    },
+    {
+      "Code": "GD",
+      "Name": "Thiết kế đồ họa",
+      "Description": "Thiết kế thương hiệu, quảng cáo, UI/UX, motion graphics, digital arts.",
+      "CareerOpportunities": "Graphic Designer, Brand Designer, UI/UX Designer, Art Director, Creative Director",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có năng khiếu nghệ thuật và thẩm mỹ",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với studio thiết kế chuyên nghiệp"
+    },
+    {
+      "Code": "MC",
+      "Name": "Đa phương tiện",
+      "Description": "Sản xuất video, animation, game design, virtual reality, augmented reality.",
+      "CareerOpportunities": "Video Producer, Animator, Game Designer, VR/AR Developer, Content Creator",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có sáng tạo và đam mê công nghệ multimedia",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với studio sản xuất multimedia"
+    },
+    {
+      "Code": "MKT",
+      "Name": "Marketing",
+      "Description": "Marketing truyền thống và số, social media, content marketing, data-driven marketing.",
+      "CareerOpportunities": "Marketing Specialist, Digital Marketing Manager, Brand Manager, Content Marketing, Marketing Director",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có khả năng giao tiếp và sáng tạo tốt",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với nhiều case study thực tế"
+    },
+    {
+      "Code": "BF",
+      "Name": "Tài chính ngân hàng",
+      "Description": "Tài chính doanh nghiệp, ngân hàng, đầu tư, fintech, phân tích tài chính.",
+      "CareerOpportunities": "Financial Analyst, Investment Advisor, Bank Officer, Fintech Specialist, CFO",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, giỏi toán và có tư duy phân tích",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với thực tập tại ngân hàng và tập đoàn tài chính"
+    },
+    {
+      "Code": "BA",
+      "Name": "Quản trị kinh doanh",
+      "Description": "Quản lý doanh nghiệp, chiến lược kinh doanh, khởi nghiệp, quản lý dự án.",
+      "CareerOpportunities": "Business Manager, Project Manager, Entrepreneur, Business Consultant, CEO",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có khả năng lãnh đạo và giao tiếp tốt",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với nhiều project thực tế và thực tập doanh nghiệp"
+    },
+    {
+      "Code": "HRM",
+      "Name": "Quản trị nhân lực",
+      "Description": "Tuyển dụng, đào tạo, phát triển nhân sự, văn hóa doanh nghiệp, lương thưởng.",
+      "CareerOpportunities": "HR Specialist, Recruiter, Training Manager, Compensation & Benefits Manager, CHRO",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có kỹ năng giao tiếp và quan sát tốt",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với thực hành tại các công ty lớn"
+    },
+    {
+      "Code": "ACT",
+      "Name": "Kế toán",
+      "Description": "Kế toán doanh nghiệp, kiểm toán, thuế, kế toán quản trị, phân tích tài chính.",
+      "CareerOpportunities": "Accountant, Auditor, Tax Specialist, Financial Controller, Chief Accountant",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, tỉ mỉ, cẩn thận và giỏi toán",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với thực tập tại các công ty kế toán uy tín"
+    },
+    {
+      "Code": "EM",
+      "Name": "Quản lý sự kiện",
+      "Description": "Tổ chức sự kiện, quản lý dự án event, marketing sự kiện, event technology.",
+      "CareerOpportunities": "Event Manager, Event Coordinator, Wedding Planner, Exhibition Manager",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có tính sáng tạo và kỹ năng tổ chức tốt",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với nhiều dự án sự kiện thực tế"
+    },
+    {
+      "Code": "HM",
+      "Name": "Quản trị khách sạn",
+      "Description": "Quản lý khách sạn, resort, dịch vụ du lịch, customer service, hospitality technology.",
+      "CareerOpportunities": "Hotel Manager, Resort Manager, Guest Relations Manager, Tourism Specialist",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có kỹ năng giao tiếp và dịch vụ khách hàng tốt",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với thực tập tại khách sạn 5 sao"
+    },
+    {
+      "Code": "EL",
+      "Name": "Ngôn ngữ Anh",
+      "Description": "Giảng dạy tiếng Anh, biên phiên dịch, English for business, TESOL.",
+      "CareerOpportunities": "English Teacher, Translator, Interpreter, International Relations Specialist",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có trình độ tiếng Anh tốt (IELTS 6.0+)",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với nhiều hoạt động thực hành ngôn ngữ"
+    },
+    {
+      "Code": "KL",
+      "Name": "Ngôn ngữ Hàn",
+      "Description": "Ngôn ngữ và văn hóa Hàn Quốc, biên phiên dịch, kinh doanh với Hàn Quốc.",
+      "CareerOpportunities": "Korean Translator, Korean Language Teacher, Korea Business Specialist",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có hứng thú với văn hóa Hàn Quốc",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với cơ hội du học tại Hàn Quốc"
+    },
+    {
+      "Code": "JL",
+      "Name": "Ngôn ngữ Nhật",
+      "Description": "Ngôn ngữ và văn hóa Nhật Bản, biên phiên dịch, kinh doanh với Nhật Bản.",
+      "CareerOpportunities": "Japanese Translator, Japanese Language Teacher, Japan Business Specialist",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có hứng thú với văn hóa Nhật Bản",
+      "TotalCredits": 132,
+      "ProgramDuration": "4 năm",
+      "DeliveryMode": "Toàn thời gian với cơ hội du học tại Nhật Bản"
+    },
+    {
+      "Code": "LAW",
+      "Name": "Luật kinh tế",
+      "Description": "Luật doanh nghiệp, luật hợp đồng, luật đầu tư, pháp lý doanh nghiệp.",
+      "CareerOpportunities": "Corporate Lawyer, Legal Consultant, In-house Counsel, Legal Manager",
+      "GeneralAdmissionRequirements": "Tốt nghiệp THPT, có khả năng phân tích và lập luận tốt",
+      "TotalCredits": 150,
+      "ProgramDuration": "4.5 năm",
+      "DeliveryMode": "Toàn thời gian với thực tập tại văn phòng luật và doanh nghiệp"
+    }
+  ],
+  "tuitionFees": [
+    {
+      "MajorID": "SE",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 22500000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Chưa bao gồm phí dịch vụ và học phí OJT."
+    },
+    {
+      "MajorID": "AI",
+      "SemesterRange": "Học kỳ 1-8", 
+      "BaseAmount": 25000000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Ngành hot với mức phí cao hơn do trang thiết bị hiện đại."
+    },
+    {
+      "MajorID": "IS",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 22500000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm các phần mềm ERP thực tế."
+    },
+    {
+      "MajorID": "IA",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 24000000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm lab bảo mật chuyên dụng."
+    },
+    {
+      "MajorID": "DS",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 24500000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm cloud computing và big data tools."
+    },
+    {
+      "MajorID": "IOT",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 23500000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm kit IoT và thiết bị embedded."
+    },
+    {
+      "MajorID": "GD",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 21000000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm phần mềm thiết kế Adobe Creative Suite."
+    },
+    {
+      "MajorID": "MC",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 21500000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm studio và thiết bị sản xuất multimedia."
+    },
+    {
+      "MajorID": "MKT",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 19500000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm các tool marketing và case study thực tế."
+    },
+    {
+      "MajorID": "BF",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 20000000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm phần mềm phân tích tài chính chuyên nghiệp."
+    },
+    {
+      "MajorID": "BA",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 19500000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm simulation game và business case."
+    },
+    {
+      "MajorID": "HRM",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 19000000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm phần mềm HRM và assessment tools."
+    },
+    {
+      "MajorID": "ACT",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 18500000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm phần mềm kế toán chuyên nghiệp."
+    },
+    {
+      "MajorID": "EM",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 19500000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm tổ chức sự kiện thực tế."
+    },
+    {
+      "MajorID": "HM",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 20000000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm thực tập tại khách sạn 5 sao."
+    },
+    {
+      "MajorID": "EL",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 17500000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Bao gồm chứng chỉ TESOL quốc tế."
+    },
+    {
+      "MajorID": "KL",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 18000000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Có cơ hội du học 1 học kỳ tại Hàn Quốc."
+    },
+    {
+      "MajorID": "JL",
+      "SemesterRange": "Học kỳ 1-8",
+      "BaseAmount": 18000000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Có cơ hội du học 1 học kỳ tại Nhật Bản."
+    },
+    {
+      "MajorID": "LAW",
+      "SemesterRange": "Học kỳ 1-9",
+      "BaseAmount": 21000000,
+      "Currency": "VND",
+      "Notes": "Học phí/học kỳ. Chương trình 4.5 năm (9 học kỳ)."
+    }
+  ],
+  "scholarships": [
+    {
+      "Name": "Học bổng Tài năng FPT",
+      "Description": "Học bổng dành cho học sinh xuất sắc với thành tích học tập và hoạt động ngoại khóa nổi bật.",
+      "Value": 100,
+      "Currency": "% học phí",
+      "Requirements": "Điểm trung bình THPT >= 8.5, có chứng chỉ ngoại ngữ quốc tế, tham gia hoạt động xã hội",
+      "ApplicationProcess": "Nộp hồ sơ online, thi tuyển viết + phỏng vấn",
+      "DeadlineInfo": "Trước 30/6 hàng năm"
+    },
+    {
+      "Name": "Học bổng Khuyến khích học tập",
+      "Description": "Học bổng cho sinh viên có thành tích học tập tốt trong từng học kỳ.",
+      "Value": 50,
+      "Currency": "% học phí",
+      "Requirements": "GPA >= 3.6, không có môn nào dưới C, tham gia đầy đủ các hoạt động học tập",
+      "ApplicationProcess": "Tự động xét dựa trên kết quả học tập",
+      "DeadlineInfo": "Xét sau mỗi học kỳ"
+    },
+    {
+      "Name": "Học bổng Doanh nghiệp",
+      "Description": "Học bổng từ các doanh nghiệp đối tác của FPT University với cam kết làm việc sau tốt nghiệp.",
+      "Value": 75,
+      "Currency": "% học phí",
+      "Requirements": "Học ngành CNTT, điểm trung bình >= 7.5, cam kết làm việc 2 năm tại doanh nghiệp tài trợ",
+      "ApplicationProcess": "Đăng ký qua phòng Quan hệ Doanh nghiệp, phỏng vấn với doanh nghiệp",
+      "DeadlineInfo": "Theo từng đợt tuyển của doanh nghiệp"
+    },
+    {
+      "Name": "Học bổng Tài chính",
+      "Description": "Hỗ trợ tài chính cho sinh viên có hoàn cảnh khó khăn nhưng có thành tích học tập tốt.",
+      "Value": 30,
+      "Currency": "% học phí",
+      "Requirements": "Hoàn cảnh gia đình khó khăn được xác nhận, GPA >= 3.0, có tinh thần vượt khó",
+      "ApplicationProcess": "Nộp hồ sơ chứng minh hoàn cảnh + đơn xin học bổng",
+      "DeadlineInfo": "Đầu mỗi học kỳ"
+    },
+    {
+      "Name": "Học bổng Olympic",
+      "Description": "Học bổng đặc biệt cho học sinh đoạt giải trong các cuộc thi Olympic, cuộc thi khoa học kỹ thuật.",
+      "Value": 100,
+      "Currency": "% học phí",
+      "Requirements": "Giải Nhất, Nhì, Ba Olympic Toán, Tin, Lý, Hóa cấp Quốc gia hoặc quốc tế",
+      "ApplicationProcess": "Nộp bằng chứng giải thưởng + hồ sơ đăng ký",
+      "DeadlineInfo": "Cùng với hồ sơ nhập học"
+    }
+  ]
+} 
