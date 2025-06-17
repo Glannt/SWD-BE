@@ -10,84 +10,120 @@ export class AskService {
   ) {}
 
   /**
-   * Xử lý câu hỏi từ người dùng sử dụng RAG
+   * Xử lý câu hỏi của người dùng bằng RAG (Retrieval-Augmented Generation)
    * @param question Câu hỏi của người dùng
-   * @returns Câu trả lời
+   * @returns Câu trả lời được tạo bởi Gemini dựa trên dữ liệu từ Pinecone
    */
   async processQuestion(question: string): Promise<string> {
     try {
-      console.log('🔍 Processing question:', question);
-
-      // 1. Tạo embedding cho câu hỏi
+      console.log(`🤖 Nhận được câu hỏi: ${question}`);
+      
+      // Bước 1: Tạo embedding cho câu hỏi
+      console.log('📝 Đang tạo embedding cho câu hỏi...');
       const questionEmbedding = await this.geminiService.createEmbedding(question);
-
-      // 2. Tìm kiếm trong Pinecone
-      const searchResults = await this.pineconeService.queryVectors(questionEmbedding, 3);
-
-      // 3. Trích xuất context từ kết quả
+      
+      // Bước 2: Tìm kiếm thông tin liên quan từ Pinecone
+      console.log('🔍 Đang tìm kiếm thông tin liên quan trong cơ sở dữ liệu...');
+      const searchResults = await this.pineconeService.queryVectors(questionEmbedding, 5);
+      
+      // Bước 3: Tạo ngữ cảnh từ kết quả tìm kiếm
       let context = '';
       if (searchResults && searchResults.length > 0) {
+        console.log(`✅ Tìm thấy ${searchResults.length} thông tin liên quan`);
         context = searchResults
-          .map(match => {
-            if (match.metadata && match.metadata.text) {
-              const type = String(match.metadata.type || 'info');
-              const score = match.score ? `(${(match.score * 100).toFixed(1)}%)` : '';
-              return `[${type.toUpperCase()}] ${score} ${match.metadata.text}`;
-            }
-            return '';
+          .map((result, index) => {
+            const metadata = result.metadata || {};
+            const text = metadata.text || 'Không có nội dung';
+            return `${index + 1}. ${text}`;
           })
-          .filter(text => text.length > 0)
           .join('\n\n');
+      } else {
+        console.log('⚠️ Không tìm thấy thông tin liên quan trong cơ sở dữ liệu');
+        context = 'Không tìm thấy thông tin cụ thể trong cơ sở dữ liệu.';
       }
-
-      console.log('📊 Found', searchResults?.length || 0, 'relevant matches');
-
-      // 4. Tạo câu trả lời từ context
-      if (context.length > 0) {
-        return await this.geminiService.generateAnswer(question, context);
-      }
-
-      // 5. Fallback response nếu không tìm thấy thông tin phù hợp
-      return this.generateFallbackResponse(question);
+      
+      console.log(`📄 Ngữ cảnh đã tạo: ${context.substring(0, 200)}...`);
+      
+      // Bước 4: Sử dụng Gemini để tạo câu trả lời dựa trên ngữ cảnh
+      console.log('🧠 Đang tạo câu trả lời bằng Gemini AI...');
+      const answer = await this.geminiService.generateAnswer(context, question);
+      
+      console.log('✅ Hoàn thành xử lý câu hỏi');
+      return answer;
       
     } catch (error) {
-      console.error('❌ Error processing question:', error);
-      return 'Xin lỗi, đã xảy ra lỗi khi xử lý câu hỏi của bạn. Vui lòng thử lại sau.';
+      console.error('❌ Lỗi khi xử lý câu hỏi:', error);
+      
+      // Fallback: Trả lời dựa trên từ khóa nếu RAG không hoạt động
+      console.log('🔄 Sử dụng fallback logic...');
+      return this.getFallbackAnswer(question);
     }
   }
 
   /**
-   * Tạo câu trả lời mặc định khi không tìm thấy thông tin
-   * @param question Câu hỏi gốc
+   * Trả lời fallback dựa trên từ khóa khi RAG không hoạt động
+   * @param question Câu hỏi của người dùng
    * @returns Câu trả lời fallback
    */
-  private generateFallbackResponse(question: string): string {
+  private getFallbackAnswer(question: string): string {
     const lowerQuestion = question.toLowerCase();
+    
+    if (lowerQuestion.includes('học phí') || lowerQuestion.includes('chi phí')) {
+      return `📚 **Thông tin học phí FPT University:**
 
-    if (lowerQuestion.includes('xin chào') || lowerQuestion.includes('hello') || lowerQuestion.includes('hi')) {
-      return `Chào bạn! 👋 Mình là chatbot tư vấn nghề nghiệp của Đại học FPT. Rất vui được hỗ trợ bạn! 😊
+**Kỹ thuật phần mềm (SE):** 20.500.000 VND/học kỳ
+**Trí tuệ nhân tạo (AI):** 21.500.000 VND/học kỳ  
+**An toàn thông tin (IS):** 20.500.000 VND/học kỳ
+**Quản trị kinh doanh (BA):** 19.500.000 VND/học kỳ
 
-Bạn có thể hỏi mình về:
-• 🎓 Các chương trình đào tạo và ngành học
-• 💰 Học phí và chính sách hỗ trợ
-• 🏫 Thông tin các cơ sở
-• 🏆 Học bổng và cơ hội việc làm
+*Học phí được tính theo tín chỉ và có thể thay đổi theo từng năm học.*
 
-Nếu bạn có bất kỳ thắc mắc nào khác, đừng ngần ngại liên hệ với chúng mình qua:
-📞 Hotline: (024) 7300 1866
-📧 Email: daihocfpt@fpt.edu.vn`;
+📞 Liên hệ: (024) 7300 1866 để biết thêm chi tiết.`;
     }
+    
+    if (lowerQuestion.includes('campus') || lowerQuestion.includes('cơ sở') || lowerQuestion.includes('địa chỉ')) {
+      return `🏫 **Các campus của FPT University:**
 
-    return `Xin lỗi, tôi không tìm thấy thông tin phù hợp để trả lời câu hỏi của bạn. 
+**🌟 Hà Nội (Campus chính)**
+📍 Khu Công nghệ cao Hòa Lạc, Km29 Đại lộ Thăng Long, Thạch Thất, Hà Nội
+📞 (024) 7300 1866
 
-Tôi có thể giúp bạn tư vấn về:
-• 🎓 Các ngành học và chương trình đào tạo
-• 💰 Học phí và chính sách học bổng  
-• 🏫 Thông tin các cơ sở FPT University
-• 💼 Cơ hội việc làm sau tốt nghiệp
+**🌟 Hồ Chí Minh**  
+📍 Lô E2a-7, Đường D1, Khu Công nghệ cao, TP. Thủ Đức
+📞 (028) 7300 1866
 
-Vui lòng thử hỏi cụ thể hơn hoặc liên hệ trực tiếp:
+**🌟 Đà Nẵng**
+📍 Khu đô thị công nghệ FPT Đà Nẵng, P. Hòa Hải, Q. Ngũ Hành Sơn
+📞 (0236) 7300 999
+
+**🌟 Cần Thơ**
+📍 Số 600 Nguyễn Văn Cừ nối dài, P. An Bình, Q. Ninh Kiều
+📞 (0292) 7300 999`;
+    }
+    
+    if (lowerQuestion.includes('xin chào') || lowerQuestion.includes('hello') || lowerQuestion.includes('hi')) {
+      return `Xin chào! 👋 Tôi là AI chatbot tư vấn nghề nghiệp của FPT University. 
+
+Tôi sử dụng công nghệ RAG (Retrieval-Augmented Generation) với Gemini AI để trả lời câu hỏi của bạn dựa trên cơ sở dữ liệu FPT University.
+
+Bạn có thể hỏi tôi về:
+🎓 Các ngành đào tạo
+💰 Học phí 
+🏆 Học bổng
+🏫 Thông tin campus
+📞 Thông tin liên hệ
+
+Hãy đặt câu hỏi để tôi có thể hỗ trợ bạn! 😊`;
+    }
+    
+    // Câu trả lời mặc định
+    return `Xin lỗi, tôi đang gặp sự cố kỹ thuật khi truy cập cơ sở dữ liệu. 
+
+Bạn có thể liên hệ trực tiếp:
 📞 Hotline: (024) 7300 1866
-📧 Email: daihocfpt@fpt.edu.vn`;
+📧 Email: daihocfpt@fpt.edu.vn
+🌐 Website: fpt.edu.vn
+
+Hoặc thử đặt câu hỏi lại sau vài phút.`;
   }
 } 

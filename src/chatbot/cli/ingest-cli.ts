@@ -7,6 +7,9 @@ import * as path from 'path';
 // Load environment variables
 dotenv.config();
 
+/**
+ * CLI tool để ingest dữ liệu từ file JSON vào Pinecone
+ */
 async function bootstrap() {
   console.log('🚀 Starting data ingestion process...');
   console.log('📋 Configuration:');
@@ -43,4 +46,5 @@ async function bootstrap() {
   }
 }
 
+// Chạy ứng dụng
 bootstrap(); 

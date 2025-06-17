@@ -1,83 +1,53 @@
-import { NestFactory, Reflector } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { ConfigService } from '@nestjs/config';
+import { NestFactory } from '@nestjs/core';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
-// import { ValidationPipe } from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
-import { TransformInterceptor } from './common/interceptors/transform.interceptor';
+import { AppModule } from './app.module';
+import * as path from 'path';
+
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  const configService = app.get(ConfigService);
-  const reflector = app.get(Reflector);
-  app.useGlobalInterceptors(new TransformInterceptor(reflector));
-  app.useGlobalPipes(new ValidationPipe());
-  app.use(cookieParser());
-  // Enable CORS
-  app.enableCors({
-    origin: true,
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    preflightContinue: false,
-    credentials: true,
-  });
 
-  //config versioning
-  app.setGlobalPrefix('api');
+  // Global configuration
+  app.setGlobalPrefix(process.env.GLOBAL_PREFIX || 'api');
   app.enableVersioning({
     type: VersioningType.URI,
-    defaultVersion: ['1'],
   });
 
-  // Enable validation pipe
-  // app.useGlobalPipes(
-  //   new ValidationPipe({
-  //     whitelist: true,
-  //     transform: true,
-  //     forbidNonWhitelisted: true,
-  //   }),
-  // );
-
-  // Swagger configuration
-  const config = new DocumentBuilder()
-    .setTitle('AI Chatbot API')
-    .setDescription('API documentation for the AI Chatbot application')
-    .setVersion('1.0')
-    .addBearerAuth(
-      {
-        type: 'http',
-        scheme: 'bearer',
-        bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter JWT token',
-        in: 'header',
-      },
-      'JWT-auth', // This name here is important for matching up with @ApiBearerAuth() in your controllers
-    )
-    .addTag('auth', 'Authentication endpoints')
-    .addTag('chat', 'Chat related endpoints')
-    .addTag('users', 'User management endpoints')
-    .build();
-
-  const document = SwaggerModule.createDocument(app, config);
-  SwaggerModule.setup('api/docs', app, document, {
-    swaggerOptions: {
-      persistAuthorization: true,
-      tagsSorter: 'alpha',
-      operationsSorter: 'alpha',
-    },
-    customSiteTitle: 'AI Chatbot API Documentation',
-  });
-
-  // Health check endpoint
-  // app.get('/health', (req, res) => {
-  //   res.status(200).json({ status: 'ok' });
-  // });
-  const port = configService.get<string>('PORT');
-  await app.listen(port);
-  console.log(`Application is running on: http://localhost:${port}`);
-  console.log(
-    `Swagger documentation is available at: http://localhost:${port}/api/docs`,
+  // Validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
   );
+
+  // CORS configuration
+  app.enableCors({
+    origin: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+  });
+
+  // Swagger documentation
+  const config = new DocumentBuilder()
+    .setTitle('FPT University Chatbot API')
+    .setDescription('RAG-based career counseling chatbot for FPT University')
+    .setVersion('1.0')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api/docs', app, document);
+
+  // Serve static files
+  app.useStaticAssets(path.join(__dirname, '..', 'public'));
+
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+  
+  console.log('🚀 FPT University Chatbot API started at:', `http://localhost:${port}`);
+  console.log('📚 API Documentation:', `http://localhost:${port}/api/docs`);
+  console.log('💬 Chat Interface:', `http://localhost:${port}`);
 }
+
 bootstrap();

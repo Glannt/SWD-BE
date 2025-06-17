@@ -1,4 +1,4 @@
-import * as express from 'express';
+import express from 'express';
 import * as path from 'path';
 import { Pinecone } from '@pinecone-database/pinecone';
 import { GoogleGenerativeAI } from '@google/generative-ai';
@@ -26,11 +26,8 @@ app.use((req, res, next) => {
 app.use(express.json());
 app.use(express.static(path.join(__dirname, '../public')));
 
-// Gemini API configuration
+// Configuration
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-
-// Pinecone configuration
 const PINECONE_API_KEY = process.env.PINECONE_API_KEY;
 const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME || 'fpt-university-768d';
 
@@ -40,9 +37,31 @@ console.log('- Gemini API Key:', GEMINI_API_KEY ? '✅ Configured' : '❌ Missin
 console.log('- Pinecone API Key:', PINECONE_API_KEY ? '✅ Configured' : '❌ Missing');
 console.log('- Pinecone Index:', PINECONE_INDEX_NAME);
 
-// Khởi tạo Pinecone
-const pc = new Pinecone({ apiKey: PINECONE_API_KEY });
-const index = pc.index(PINECONE_INDEX_NAME);
+// Initialize services
+let genAI: GoogleGenerativeAI;
+let pc: Pinecone;
+let index: any;
+
+// Initialize AI services
+try {
+  if (GEMINI_API_KEY) {
+    genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
+    console.log('✅ Gemini AI initialized');
+  } else {
+    throw new Error('GEMINI_API_KEY not configured');
+  }
+
+  if (PINECONE_API_KEY) {
+    pc = new Pinecone({ apiKey: PINECONE_API_KEY });
+    index = pc.index(PINECONE_INDEX_NAME);
+    console.log('✅ Pinecone initialized');
+  } else {
+    throw new Error('PINECONE_API_KEY not configured');
+  }
+} catch (error) {
+  console.error('❌ Configuration error:', error.message);
+  process.exit(1);
+}
 
 // Generate embedding function
 async function generateEmbedding(text: string): Promise<number[]> {
@@ -198,15 +217,14 @@ ${context}
 
 ${context}
 
-📞 **Hotline:** (024) 7300 1866`;
+📞 **Liên hệ:** (024) 7300 1866`;
   }
   
   return `📚 **THÔNG TIN FPT UNIVERSITY**
 
 ${context}
 
-📞 **Liên hệ:** (024) 7300 1866
-📧 **Email:** daihocfpt@fpt.edu.vn`;
+📞 **Liên hệ:** (024) 7300 1866 để biết thêm chi tiết.`;
 }
 
 // Routes
@@ -215,12 +233,16 @@ app.get('/', (req, res) => {
 });
 
 app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'healthy', 
+  res.json({
+    status: 'OK',
     timestamp: new Date().toISOString(),
-    index: PINECONE_INDEX_NAME,
-    geminiConfigured: !!GEMINI_API_KEY,
-    pineconeConfigured: !!PINECONE_API_KEY
+    service: 'FPT University Chatbot',
+    version: '1.0.0',
+    configuration: {
+      gemini: !!GEMINI_API_KEY,
+      pinecone: !!PINECONE_API_KEY,
+      index: PINECONE_INDEX_NAME
+    }
   });
 });
 
@@ -228,35 +250,46 @@ app.post('/ask', async (req, res) => {
   try {
     const { question } = req.body;
     
-    if (!question || question.trim().length === 0) {
-      return res.status(400).json({ 
-        error: 'Vui lòng nhập câu hỏi' 
+    if (!question || typeof question !== 'string') {
+      return res.status(400).json({
+        error: 'Vui lòng cung cấp câu hỏi hợp lệ',
+        message: 'Question is required and must be a string'
       });
     }
     
-    console.log('❓ New question:', question);
+    console.log('💬 Received question:', question);
     
     const answer = await queryPineconeRAG(question);
     
-    res.json({ 
-      question,
+    res.json({
       answer,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      question: question
     });
     
   } catch (error) {
     console.error('❌ Error processing question:', error);
-    res.status(500).json({ 
-      error: 'Đã xảy ra lỗi khi xử lý câu hỏi. Vui lòng thử lại.' 
+    res.status(500).json({
+      error: 'Đã xảy ra lỗi khi xử lý câu hỏi',
+      message: error.message
     });
   }
 });
 
 // Start server
 app.listen(PORT, () => {
-  console.log('🚀 Server started successfully!');
-  console.log(`📊 Server running on: http://localhost:${PORT}`);
-  console.log(`🔗 Chat interface: http://localhost:${PORT}`);
+  console.log('');
+  console.log('🚀 ==================== SERVER STARTED ====================');
+  console.log(`🌐 Server running at: http://localhost:${PORT}`);
+  console.log(`💬 Chat interface: http://localhost:${PORT}`);
   console.log(`🔍 Health check: http://localhost:${PORT}/health`);
-  console.log(`💬 Ask API: http://localhost:${PORT}/ask`);
+  console.log(`📚 API endpoint: http://localhost:${PORT}/ask`);
+  console.log('=========================================================');
+  console.log('');
+});
+
+// Handle graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\n👋 Shutting down server...');
+  process.exit(0);
 }); 

@@ -1,0 +1,8 @@
+{
+  "eslint.enable": true,
+  "editor.formatOnSave": false,
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.suggest.autoImports": true,
+  "eslint.workingDirectories": ["./"],
+  "typescript.updateImportsOnFileMove.enabled": "always"
+} 
