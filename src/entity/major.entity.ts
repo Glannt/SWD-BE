@@ -7,7 +7,7 @@ export enum DeliveryMode {
   HYBRID = 'Hybrid',
 }
 
-@Schema({ collection: 'major' })
+@Schema({ collection: 'majors' })
 export class Major extends Document {
   @Prop({ required: true })
   name: string;

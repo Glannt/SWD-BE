@@ -5,7 +5,7 @@ import { Major } from './major.entity';
 import { IntakeBatch } from './intake-batches.entity';
 import { Types } from 'mongoose';
 
-@Schema({ collection: 'campus-majors' })
+@Schema({ collection: 'campusMajors' })
 export class CampusMajor extends Document {
   @Prop({ type: Types.ObjectId, ref: 'Campus' })
   campus: Campus;

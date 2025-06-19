@@ -2,8 +2,6 @@ import { Injectable, Logger } from '@nestjs/common';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as mammoth from 'mammoth';
-import { v4 as uuidv4 } from 'uuid';
-import { QdrantService, QdrantDocument } from './qdrant.service';
 import { GeminiService } from './gemini.service';
 import { IngestResult } from './rag.service';
 
@@ -14,13 +12,12 @@ export class DocumentProcessorService {
   private readonly chunkOverlap = 200; // Kích thước overlap giữa các đoạn
 
   constructor(
-    // eslint-disable-next-line prettier/prettier
-    private qdrantService: QdrantService,
     private geminiService: GeminiService,
   ) {}
 
   /**
-   * Xử lý tài liệu Word và lưu vào Qdrant
+   * Xử lý tài liệu Word - hiện tại chỉ extract text và log
+   * TODO: Implement alternative storage solution
    */
   async processDocument(filePath: string): Promise<IngestResult> {
     try {
@@ -33,46 +30,15 @@ export class DocumentProcessorService {
       const chunks = this.splitIntoChunks(textContent);
       this.logger.log(`Split document into ${chunks.length} chunks`);
 
-      // Tạo embedding cho từng đoạn
-      const embeddedChunks = await Promise.all(
-        chunks.map(async (chunk, index) => {
-          const vector = await this.geminiService.createEmbedding(chunk);
-          return {
-            id: uuidv4(),
-            text: chunk,
-            vector,
-            metadata: {
-              source: path.basename(filePath),
-              chunk_index: index,
-            },
-          };
-        }),
-      );
+      // Log thông tin để debug (có thể implement storage sau)
+      this.logger.log(`Document processed successfully: ${path.basename(filePath)}`);
+      this.logger.log(`Text length: ${textContent.length} characters`);
+      this.logger.log(`Number of chunks: ${chunks.length}`);
 
-      // Định dạng dữ liệu cho Qdrant
-      const documents: QdrantDocument[] = embeddedChunks.map((chunk) => ({
-        id: chunk.id,
-        vector: chunk.vector,
-        payload: {
-          text: chunk.text,
-          metadata: chunk.metadata,
-        },
-      }));
-
-      // Lưu vào Qdrant
-      const result = await this.qdrantService.addDocuments(documents);
-
-      if (result.success) {
-        return {
-          success: true,
-          message: `Successfully processed document and stored ${documents.length} chunks`,
-        };
-      } else {
-        return {
-          success: false,
-          message: `Failed to store document chunks: ${result.error}`,
-        };
-      }
+      return {
+        success: true,
+        message: `Successfully processed document and extracted ${chunks.length} chunks (storage not implemented)`,
+      };
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : String(error);

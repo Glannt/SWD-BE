@@ -2,9 +2,9 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import * as bcrypt from 'bcrypt';
-import { User, UserRole, UserStatus } from 'src/entity/user.entity';
+import { User, UserRole, UserStatus } from '../entity/user.entity';
 import { CreateUserDto, RegisterDto } from './dtos/create-user.dto';
-import { MESSAGES } from 'src/common/constants/messages.constants';
+import { MESSAGES } from '../common/constants/messages.constants';
 
 @Injectable()
 export class UserService {
@@ -80,6 +80,10 @@ export class UserService {
 
   async findOneByEmail(email: string) {
     return this.userModel.findOne({ email: email }).lean().exec();
+  }
+
+  async markAsVerified(userId: string): Promise<void> {
+    await this.userModel.findByIdAndUpdate(userId, { isVerified: true }).exec();
   }
 
   isCreateUserDto(obj: unknown): obj is CreateUserDto {

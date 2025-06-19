@@ -26,26 +26,11 @@ Object.keys(envVars).forEach(key => {
 
 console.log('');
 
-if (mode === 'simple') {
-  console.log('🚀 Starting Simple Server Mode');
-  console.log('📍 Endpoints: /ask, /health');
-  console.log('🌐 Frontend Compatible: ✅');
-  console.log('');
-  
-  const child = spawn('pnpm', ['run', 'simple'], {
-    stdio: 'inherit',
-    shell: true,
-    env: { ...process.env, ...envVars }
-  });
-
-  child.on('error', (err) => {
-    console.error('❌ Error starting simple server:', err);
-  });
-
-} else if (mode === 'nestjs' || mode === 'nest') {
+if (mode === 'nestjs' || mode === 'nest' || mode === 'production' || mode === 'prod') {
   console.log('🚀 Starting NestJS Mode');
   console.log('📍 Endpoints: /api/chatbot/ask, /ask (compatibility)');
   console.log('🔧 Production Ready: ✅');
+  console.log('📁 Source: src/main.ts');
   console.log('');
   
   const child = spawn('pnpm', ['run', 'start:dev'], {
@@ -60,8 +45,9 @@ if (mode === 'simple') {
 
 } else {
   console.log('❌ Invalid mode. Available modes:');
-  console.log('   node start-chatbot.js simple   # Simple server (recommended for development)');
-  console.log('   node start-chatbot.js nestjs   # NestJS server (recommended for production)');
+  console.log('   node start-chatbot.js nestjs   # NestJS server (optimized for production)');
+  console.log('   node start-chatbot.js production # NestJS server (alias)');
+  console.log('   node start-chatbot.js nest     # NestJS server (alias)');
   process.exit(1);
 }
 

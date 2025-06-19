@@ -36,7 +36,11 @@ export class ConfigService {
   }
 
   getPineconeIndexName(): string {
-    return this.get('PINECONE_INDEX_NAME') || 'fpt-university-768d';
+    return this.get('PINECONE_INDEX_NAME');
+  }
+
+  getPineconeEnvironment(): string {
+    return this.get('PINECONE_ENVIRONMENT');
   }
 
   // Server Configuration
@@ -48,14 +52,7 @@ export class ConfigService {
     return this.get('GLOBAL_PREFIX') || 'api';
   }
 
-  // Legacy Qdrant Support
-  getQdrantApiKey(): string {
-    return this.get('QDRANT_API_KEY');
-  }
 
-  getQdrantUrl(): string {
-    return this.get('QDRANT_URL');
-  }
 
   // Database Configuration
   getMongoUri(): string {

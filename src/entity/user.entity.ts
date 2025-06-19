@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, HydratedDocument } from 'mongoose';
 import { IntakeBatch } from './intake-batches.entity';
 import { Types } from 'mongoose';
-import { applySmartIdField } from 'src/common/middleware/assign_custome_id.middleware';
+import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 
 export enum UserRole {
   STUDENT = 'student',
@@ -45,6 +45,9 @@ export class User {
 
   @Prop({ enum: UserStatus, default: UserStatus.ACTIVE })
   status: UserStatus;
+
+  @Prop({ default: false })
+  isVerified: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

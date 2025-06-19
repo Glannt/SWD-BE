@@ -5,7 +5,7 @@ import { AdmissionYear } from './admission-year.entity';
 import { Campus } from './campus.entity';
 import { Types } from 'mongoose';
 
-@Schema({ timestamps: true, collection: 'major-admission-qoutas' })
+@Schema({ timestamps: true, collection: 'majorAdmissionQuotas' })
 export class MajorAdmissionQuota extends Document {
   @Prop({ type: Types.ObjectId, ref: 'Major' })
   major: Major;

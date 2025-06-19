@@ -349,7 +349,7 @@
             const loadingId = addLoadingMessage();
             
             try {
-                const response = await fetch('/ask', {
+                const response = await fetch('/v1/ask', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -363,9 +363,11 @@
                 removeMessage(loadingId);
                 
                 if (response.ok) {
-                    addMessage(formatResponse(data.answer), 'bot');
+                    // Handle wrapped response format from TransformInterceptor
+                    const answer = data.data ? data.data.answer : data.answer;
+                    addMessage(formatResponse(answer), 'bot');
                 } else {
-                    addMessage('❌ ' + (data.error || 'Đã xảy ra lỗi khi xử lý câu hỏi'), 'bot');
+                    addMessage('❌ ' + (data.message || data.error || 'Đã xảy ra lỗi khi xử lý câu hỏi'), 'bot');
                 }
                 
             } catch (error) {
@@ -465,18 +467,9 @@
                 .replace(/🏆/g, '🏆');
         }
         
-        // Health check on load
+        // Initialize chat interface
         window.addEventListener('load', async () => {
-            try {
-                const response = await fetch('/health');
-                if (response.ok) {
-                    console.log('✅ Server is healthy');
-                } else {
-                    console.warn('⚠️ Server health check failed');
-                }
-            } catch (error) {
-                console.error('❌ Cannot connect to server:', error);
-            }
+            console.log('🎓 FPT University Chatbot ready');
         });
     </script>
 </body>

@@ -129,11 +129,5 @@ export class ChatController {
     }
   }
 
-  @Get('health')
-  healthCheck() {
-    return {
-      status: 'ok',
-      timestamp: new Date().toISOString(),
-    };
-  }
+
 }

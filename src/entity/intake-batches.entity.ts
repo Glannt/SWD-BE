@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 import { AdmissionYear } from './admission-year.entity';
 import { Types } from 'mongoose';
 
-@Schema({ collection: 'intake-batches' })
+@Schema({ collection: 'intakeBatches' })
 export class IntakeBatch extends Document {
   @Prop({ type: Types.ObjectId, ref: 'AdmissionYear' })
   admissionYear: AdmissionYear;

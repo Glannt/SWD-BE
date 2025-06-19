@@ -12,10 +12,9 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "simple": "ts-node src/simple-server.ts",
+
     "ingest": "ts-node src/chatbot/cli/ingest-cli.ts",
     "setup": "node setup-768d-index.js",
-    "test-config": "ts-node src/test-config.ts",
     "chatbot": "node start-chatbot.js simple",
     "chatbot:dev": "node start-chatbot.js simple",
     "chatbot:prod": "node start-chatbot.js nestjs",
@@ -27,7 +26,11 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "seed:mongodb": "ts-node src/chatbot/cli/seed-mongodb-cli.ts",
+    "ingest:mongodb": "ts-node src/chatbot/cli/ingest-mongodb-cli.ts",
+    "ingest:standalone": "node standalone-ingest.js",
+    "test:integration": "node test-mongodb-integration.js"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -44,7 +47,6 @@
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.0",
     "@pinecone-database/pinecone": "^4.0.0",
-    "@qdrant/js-client-rest": "^1.14.1",
     "@types/multer": "^1.4.13",
     "bcrypt": "^6.0.0",
     "cache-manager": "^7.0.0",
@@ -56,6 +58,7 @@
     "express": "^4.18.2",
     "handlebars": "^4.7.8",
     "mammoth": "^1.9.1",
+    "mongodb": "^6.17.0",
     "mongoose": "^8.15.1",
     "multer": "^2.0.1",
     "nodemailer": "^7.0.3",

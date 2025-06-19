@@ -232,19 +232,7 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, '../public/index.html'));
 });
 
-app.get('/health', (req, res) => {
-  res.json({
-    status: 'OK',
-    timestamp: new Date().toISOString(),
-    service: 'FPT University Chatbot',
-    version: '1.0.0',
-    configuration: {
-      gemini: !!GEMINI_API_KEY,
-      pinecone: !!PINECONE_API_KEY,
-      index: PINECONE_INDEX_NAME
-    }
-  });
-});
+
 
 app.post('/ask', async (req, res) => {
   try {
@@ -282,7 +270,6 @@ app.listen(PORT, () => {
   console.log('🚀 ==================== SERVER STARTED ====================');
   console.log(`🌐 Server running at: http://localhost:${PORT}`);
   console.log(`💬 Chat interface: http://localhost:${PORT}`);
-  console.log(`🔍 Health check: http://localhost:${PORT}/health`);
   console.log(`📚 API endpoint: http://localhost:${PORT}/ask`);
   console.log('=========================================================');
   console.log('');

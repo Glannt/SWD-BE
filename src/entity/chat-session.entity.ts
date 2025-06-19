@@ -10,7 +10,7 @@ export enum ChatSessionStatus {
 
 @Schema({
   timestamps: { createdAt: 'startedAt', updatedAt: 'lastActivity' },
-  collection: 'chat-session',
+  collection: 'chatSessions',
 })
 export class ChatSession extends Document {
   @Prop({ required: true, unique: true })

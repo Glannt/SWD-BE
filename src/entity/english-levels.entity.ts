@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 import { IntakeBatch } from './intake-batches.entity';
 import { Types } from 'mongoose';
 
-@Schema({ collection: 'english-levels' })
+@Schema({ collection: 'englishLevels' })
 export class EnglishLevel extends Document {
   @Prop({ type: Types.ObjectId, ref: 'IntakeBatch' })
   batch: IntakeBatch;

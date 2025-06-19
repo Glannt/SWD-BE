@@ -1,5 +1,4 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { QdrantService } from './qdrant.service';
 import { GeminiService } from './gemini.service';
 import { DocumentProcessorService } from './document-processor.service';
 
@@ -30,13 +29,12 @@ export class RAGService {
   private readonly logger = new Logger(RAGService.name);
 
   constructor(
-    private qdrantService: QdrantService,
     private geminiService: GeminiService,
     private documentProcessorService: DocumentProcessorService,
   ) {}
 
   /**
-   * Ingestion: Xử lý tài liệu và lưu vào vector database
+   * Ingestion: Xử lý tài liệu - tạm thời chỉ extract text
    */
   async ingestDocument(filePath: string): Promise<IngestResult> {
     try {
@@ -49,97 +47,68 @@ export class RAGService {
   }
 
   /**
-   * Query: Tìm kiếm thông tin liên quan và sinh câu trả lời
+   * Query: Tạm thời sử dụng fallback logic không có vector search
    */
   async query(question: string): Promise<QueryResult> {
     try {
-      // Tạo embedding cho câu hỏi
-      const questionEmbedding =
-        await this.geminiService.createEmbedding(question);
-
-      // Tìm các đoạn văn bản liên quan nhất
-      const searchResults = await this.qdrantService.search(
-        questionEmbedding,
-        3,
-      );
-
-      if (!searchResults.length) {
-        return {
-          answer:
-            'Tôi không tìm thấy thông tin liên quan đến câu hỏi của bạn trong tài liệu.',
-          sources: [],
-        };
-      }
-
-      // Trích xuất text từ kết quả tìm kiếm
-      const relevantTexts = searchResults
-        .map((result) => {
-          if (result.payload && typeof result.payload.text === 'string') {
-            return result.payload.text;
-          }
-          return '';
-        })
-        .filter((text) => text !== '');
-
-      if (relevantTexts.length === 0) {
-        return {
-          answer:
-            'Tôi không tìm thấy thông tin liên quan đến câu hỏi của bạn trong tài liệu.',
-          sources: [],
-        };
-      }
-
-      // Kết hợp các đoạn văn bản thành một ngữ cảnh
-      const context = relevantTexts.join('\n\n');
-
-      // Sinh câu trả lời
-      const answer = await this.geminiService.generateResponse(
-        question,
-        context,
-      );
-
-      // Chuẩn bị thông tin nguồn tài liệu
-      const sources = searchResults
-        .filter(
-          (result) => result.payload && typeof result.payload.text === 'string',
-        )
-        .map((result) => {
-          // Xử lý an toàn cho payload
-          let extractedText = '';
-          let sourceName = 'unknown';
-          let chunkIndex = 0;
-          
-          // Kiểm tra và trích xuất text một cách an toàn
-          if (typeof result.payload.text === 'string') {
-            extractedText = result.payload.text;
-          }
-          
-          // Kiểm tra và trích xuất metadata một cách an toàn
-          if (result.payload.metadata && typeof result.payload.metadata === 'object') {
-            if (typeof result.payload.metadata.source === 'string') {
-              sourceName = result.payload.metadata.source;
-            }
-            
-            if (typeof result.payload.metadata.chunk_index === 'number') {
-              chunkIndex = result.payload.metadata.chunk_index;
-            }
-          }
-          
-          return {
-            text: extractedText.substring(0, 150) + '...',
-            metadata: {
-              source: sourceName,
-              chunk_index: chunkIndex,
-            },
-            score: result.score,
-          };
-        });
-
-      return { answer, sources };
+      this.logger.log(`Processing query: ${question}`);
+      
+      // Tạm thời sử dụng fallback logic vì không có vector database
+      const answer = await this.getFallbackAnswer(question);
+      
+      return {
+        answer,
+        sources: [] // Không có sources vì không có vector search
+      };
     } catch (error) {
       const errorMessage = this.getErrorMessage(error);
       this.logger.error(`Error querying RAG: ${errorMessage}`);
-      throw error;
+      
+      return {
+        answer: 'Xin lỗi, tôi đang gặp sự cố kỹ thuật. Vui lòng thử lại sau.',
+        sources: []
+      };
+    }
+  }
+
+  /**
+   * Fallback logic khi không có vector search
+   */
+  private async getFallbackAnswer(question: string): Promise<string> {
+    const lowerQuestion = question.toLowerCase();
+    
+    // Sử dụng Gemini để trả lời trực tiếp (không cần context từ vector DB)
+    const basePrompt = `Bạn là AI Assistant tư vấn giáo dục của FPT University. 
+Hãy trả lời câu hỏi sau một cách hữu ích và chính xác dựa trên kiến thức về FPT University.
+Nếu không chắc chắn về thông tin cụ thể, hãy đề xuất liên hệ trực tiếp với nhà trường.
+
+Câu hỏi: ${question}`;
+
+    try {
+      return await this.geminiService.generateResponse(question, basePrompt);
+    } catch (error) {
+      this.logger.error('Failed to get Gemini response, using static fallback');
+      
+      // Static fallback nếu Gemini cũng fail
+      if (lowerQuestion.includes('học phí') || lowerQuestion.includes('chi phí')) {
+        return `📚 **Thông tin học phí FPT University:**
+
+**Kỹ thuật phần mềm (SE):** 20.500.000 VND/học kỳ
+**Trí tuệ nhân tạo (AI):** 21.500.000 VND/học kỳ  
+**An toàn thông tin (IS):** 20.500.000 VND/học kỳ
+**Quản trị kinh doanh (BA):** 19.500.000 VND/học kỳ
+
+*Học phí có thể thay đổi theo từng năm học.*
+
+📞 Liên hệ: (024) 7300 1866 để biết thêm chi tiết.`;
+      }
+      
+      return `Xin chào! Tôi là AI chatbot của FPT University. 
+      
+Để được hỗ trợ tốt nhất, vui lòng liên hệ:
+📞 Hotline: (024) 7300 1866
+📧 Email: daihocfpt@fpt.edu.vn
+🌐 Website: fpt.edu.vn`;
     }
   }
 

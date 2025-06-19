@@ -9,7 +9,7 @@ export enum AdmissionMethod {
   PORTFOLIO = 'Portfolio',
 }
 
-@Schema({ collection: 'admission-plans' })
+@Schema({ collection: 'admissionPlans' })
 export class AdmissionPlan extends Document {
   @Prop({ type: Types.ObjectId, ref: 'AdmissionYear' })
   admissionYear: AdmissionYear;

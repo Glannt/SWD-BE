@@ -8,7 +8,7 @@ export enum MessageSender {
   STAFF = 'staff',
 }
 
-@Schema({ timestamps: true, collection: 'chat-messages' })
+@Schema({ timestamps: true, collection: 'chatMessages' })
 export class ChatMessage extends Document {
   @Prop({ type: String, ref: 'ChatSession' })
   session: ChatSession;
