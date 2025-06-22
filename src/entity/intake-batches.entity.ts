@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { AdmissionYear } from './admission-year.entity';
 import { Types } from 'mongoose';
+import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
 
 @Schema({ collection: 'intakeBatches' })
 export class IntakeBatch extends Document {
@@ -34,3 +35,4 @@ export class IntakeBatch extends Document {
 }
 
 export const IntakeBatchSchema = SchemaFactory.createForClass(IntakeBatch);
+applySmartIdField(IntakeBatchSchema, IntakeBatch.name, 'intake_batch_id');

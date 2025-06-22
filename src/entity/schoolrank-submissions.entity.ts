@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { User } from './user.entity';
 import { Types } from 'mongoose';
+import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
 
 @Schema({
   timestamps: { createdAt: 'submissionTimestamp' },
@@ -104,3 +105,5 @@ export class SchoolRankSubmission extends Document {
 
 export const SchoolRankSubmissionSchema =
   SchemaFactory.createForClass(SchoolRankSubmission);
+
+  applySmartIdField(SchoolRankSubmissionSchema, SchoolRankSubmission.name, 'school_rank_submission_id');
