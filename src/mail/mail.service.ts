@@ -3,7 +3,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
-import { buildApiUrl } from 'src/common/utils/url-builder';
+import { buildApiUrl } from '../common/utils/url-builder';
 
 @Injectable()
 export class MailService {

@@ -1,4 +1,4 @@
-import { UserRole, UserStatus } from 'src/entity/user.entity';
+import { UserRole, UserStatus } from '../../entity/user.entity';
 import {
   IsString,
   MinLength,
@@ -10,7 +10,7 @@ import {
   IsBoolean,
 } from 'class-validator';
 import { Prop } from '@nestjs/mongoose';
-import { IntakeBatch } from 'src/entity/intake-batches.entity';
+import { IntakeBatch } from '../../entity/intake-batches.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {

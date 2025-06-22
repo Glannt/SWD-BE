@@ -16,6 +16,34 @@ Hệ thống chatbot tư vấn nghề nghiệp cho FPT University với:
 - 🤖 **AI-powered responses** với MongoDB + Vector Search
 - 🌱 **Auto-seed database** từ JSON files
 
+## ⚡ Quick Start - Chỉ 3 lệnh!
+
+### Prerequisites
+- Node.js + pnpm
+- MongoDB running on port 27017
+
+### Setup
+```bash
+# 1. Clone và install
+git clone [repo-url]
+cd SWD-BE_main
+pnpm install
+
+# 2. Copy environment file
+cp env.template .env
+
+# 3. Start (auto-seed sẽ chạy tự động)
+pnpm run start:dev
+```
+
+🎉 **Xong!** Chatbot sẵn sàng tại `http://localhost:3000`
+
+**Hệ thống tự động:**
+- ✅ Phát hiện database trống
+- ✅ Seed đầy đủ dữ liệu từ JSON files  
+- ✅ Khởi động ứng dụng với database hoàn chỉnh
+- ✅ Không cần setup thủ công!
+
 ## ✨ Tính năng chính
 
 ### 🔥 Core Features
@@ -31,37 +59,41 @@ Hệ thống chatbot tư vấn nghề nghiệp cho FPT University với:
 - Hướng dẫn về học bổng và tài chính
 - Chat interface thân thiện với real-time responses
 
-## 🚀 Quick Start
+## 🌱 Auto-Seed System
 
-### 1. Cài đặt
+### Cách hoạt động
+Khi chạy `pnpm run start:dev`, hệ thống tự động:
+
+1. **Kiểm tra** MongoDB có dữ liệu chưa
+2. **Seed tự động** từ `documents/*.json` nếu database trống
+3. **Skip** nếu đã có dữ liệu
+4. **Log chi tiết** về quá trình seed
+
 ```bash
-# Clone repository
-git clone [repo-url]
-cd SWD-BE_main
-
-# Install dependencies
-pnpm install
+🔍 Checking database data availability...
+📦 Database is empty. Starting auto-seed process...
+📄 Seeding Campuses... ✅ 5 campuses
+📄 Seeding Majors... ✅ 7 majors  
+📄 Seeding Scholarships... ✅ 5 scholarships
+✅ Auto-seed completed successfully!
 ```
 
-### 2. Cấu hình Environment
-```bash
-# Copy template
-cp env.template .env
-
-# Cấu hình các API keys trong .env:
-MONGODB_URI=mongodb://localhost:27017/FchatCareer
-GEMINI_API_KEY=your_gemini_api_key
-PINECONE_API_KEY=your_pinecone_api_key
-PINECONE_INDEX_NAME=fpt-university-768d
+### Nguồn dữ liệu
+```
+documents/
+├── FchatCareer.campuses.json       → campuses collection
+├── FchatCareer.majors.json         → majors collection
+├── FchatCareer.scholarships.json   → scholarships collection
+├── FchatCareer.tuitionFees.json    → tuitionfees collection
+└── ... (các file khác)
 ```
 
-### 3. Khởi động Development
-```bash
-# Start development server (auto-seed sẽ chạy tự động)
-pnpm run start:dev
+### API Management
+```http
+GET /system/data-seed/status        # Check auto-seed status
+POST /system/data-seed/seed         # Manual seed trigger
+GET /system/data-seed/files         # View available JSON files
 ```
-
-**🎉 Xong! Chatbot sẵn sàng tại http://localhost:3000**
 
 ## 🛠️ Scripts Available
 
@@ -75,8 +107,7 @@ pnpm run build              # Build for production
 ### Data Management
 ```bash
 pnpm run ingest:mongodb     # Tạo vector embeddings từ MongoDB
-pnpm run seed:mongodb       # Seed data từ JSON files (nếu cần)
-pnpm run ingest:standalone  # Standalone ingest script
+pnpm run seed:mongodb       # Manual seed nếu cần (có thể có lỗi import paths)
 ```
 
 ### Utilities
@@ -86,7 +117,7 @@ pnpm run restart           # Kill và restart development server
 pnpm run test              # Run tests
 ```
 
-## 🏗️ Kiến trúc hệ thống
+## 🏗️ Tech Stack & Architecture
 
 ### Data Flow
 ```
@@ -124,10 +155,9 @@ Content-Type: application/json
 
 ### System Management
 ```http
-GET /system/data-seed/status        # Check auto-seed status
-POST /system/data-seed/seed         # Manual seed trigger
-GET /system/data-seed/files         # View available JSON files
+GET /system/data-seed/status        # Auto-seed status
 GET /chatbot/system/status          # System health check
+GET /api/docs                       # Swagger documentation
 ```
 
 ### Authentication
@@ -135,70 +165,6 @@ GET /chatbot/system/status          # System health check
 POST /auth/register                 # User registration
 POST /auth/login                    # User login
 POST /auth/verify-email             # Email verification
-```
-
-### Documentation
-```http
-GET /api/docs                       # Swagger API documentation
-```
-
-## 🌱 Auto-Seed System
-
-### Cách hoạt động
-Khi chạy `pnpm run start:dev`, hệ thống tự động:
-
-1. **Kiểm tra** MongoDB có dữ liệu chưa
-2. **Seed tự động** từ `documents/*.json` nếu database trống
-3. **Skip** nếu đã có dữ liệu
-4. **Log chi tiết** về quá trình seed
-
-### Nguồn dữ liệu
-```
-documents/
-├── FchatCareer.campuses.json       → campuses collection
-├── FchatCareer.majors.json         → majors collection
-├── FchatCareer.scholarships.json   → scholarships collection
-├── FchatCareer.tuitionFees.json    → tuitionfees collection
-└── ... (các file khác)
-```
-
-### Monitoring
-```bash
-# Check seed status
-curl http://localhost:3000/system/data-seed/status
-
-# Manual seed
-curl -X POST http://localhost:3000/system/data-seed/seed
-```
-
-## 📁 Cấu trúc project
-
-```
-src/
-├── auth/                    # Authentication module
-├── chatbot/                 # Main chatbot functionality
-│   ├── services/
-│   │   ├── ask.service.ts           # Core chatbot logic
-│   │   ├── gemini.service.ts        # Google AI integration
-│   │   ├── pinecone.service.ts      # Vector database
-│   │   └── mongodb-data.service.ts  # MongoDB operations
-│   ├── controllers/
-│   │   ├── ask.controller.ts        # Chatbot API endpoints
-│   │   └── system.controller.ts     # System management
-│   └── cli/                         # Command line tools
-├── common/                  # Shared utilities
-│   ├── services/
-│   │   └── data-seed.service.ts     # Auto-seed functionality
-│   └── controllers/
-│       └── data-seed.controller.ts  # Seed management API
-├── entity/                  # MongoDB entities
-├── user/                    # User management
-├── mail/                    # Email service
-└── config/                  # Configuration
-
-documents/                   # JSON data files
-public/                     # Frontend assets
-├── index.html              # Chat interface
 ```
 
 ## 🎯 Dữ liệu hỗ trợ
@@ -234,27 +200,12 @@ public/                     # Frontend assets
 ### MongoDB Issues
 ```bash
 # Kiểm tra MongoDB service
-sudo systemctl status mongod
 mongosh --eval "db.adminCommand('ping')"
 
 # Kiểm tra dữ liệu
 mongosh FchatCareer --eval "show collections"
 mongosh FchatCareer --eval "db.majors.countDocuments()"
 ```
-
-### Pinecone Issues
-```bash
-# Test API key
-curl -X GET https://api.pinecone.io/indexes \
-  -H "Api-Key: YOUR_API_KEY"
-
-# Setup index nếu chưa có
-pnpm run setup
-```
-
-### Gemini AI Issues
-- Kiểm tra API key tại: https://makersuite.google.com/app/apikey
-- Đảm bảo API enabled và có quota
 
 ### Auto-seed Issues
 ```bash
@@ -268,30 +219,58 @@ curl -X POST http://localhost:3000/system/data-seed/seed
 ls -la documents/FchatCareer.*.json
 ```
 
+### API Key Issues
+- **Gemini AI**: https://makersuite.google.com/app/apikey
+- **Pinecone**: https://app.pinecone.io/
+- Đảm bảo APIs enabled và có quota
+
+## 📁 Cấu trúc project
+
+```
+src/
+├── auth/                    # Authentication module
+├── chatbot/                 # Main chatbot functionality
+│   ├── services/            # Core services (ask, gemini, pinecone, mongodb)
+│   ├── controllers/         # API endpoints
+│   └── cli/                 # Command line tools
+├── common/                  # Shared utilities
+│   ├── services/            # Auto-seed functionality
+│   └── controllers/         # Seed management API
+├── entity/                  # MongoDB entities
+├── user/                    # User management
+├── mail/                    # Email service
+└── config/                  # Configuration
+
+documents/                   # JSON data files (auto-seed source)
+public/                     # Frontend assets
+├── index.html              # Chat interface
+```
+
 ## 🚀 Deployment
 
 ### Development
 ```bash
-pnpm run start:dev          # NestJS development server
-node start-chatbot.js simple # Simple Express server
+pnpm run start:dev          # NestJS development với auto-seed
 ```
 
 ### Production
 ```bash
 pnpm run build              # Build application
 pnpm run start:prod         # Start production server
-node start-chatbot.js nestjs # Production NestJS mode
 ```
 
-### Docker (Coming soon)
-```dockerfile
-FROM node:18-alpine
-WORKDIR /app
-COPY package*.json ./
-RUN pnpm install
-COPY . .
-RUN pnpm run build
-CMD ["pnpm", "run", "start:prod"]
+### Environment Variables
+```env
+# Required
+MONGODB_URI=mongodb://localhost:27017/FchatCareer
+GEMINI_API_KEY=your_gemini_api_key
+PINECONE_API_KEY=your_pinecone_api_key
+PINECONE_INDEX_NAME=fpt-university-768d
+
+# Optional
+JWT_SECRET=your_jwt_secret
+REDIS_URL=redis://localhost:6379
+MAIL_HOST=smtp.example.com
 ```
 
 ## 🤝 Contributing
