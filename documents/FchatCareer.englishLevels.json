@@ -1,0 +1,198 @@
+[{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82350"
+  },
+  "LevelID": 1,
+  "BatchID": 1,
+  "LevelNumber": 1,
+  "FeeAmount": 13100000,
+  "Description": "Cấp độ tiếng Anh 1 - Campus Hà Nội/TP.HCM",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82351"
+  },
+  "LevelID": 2,
+  "BatchID": 1,
+  "LevelNumber": 2,
+  "FeeAmount": 13100000,
+  "Description": "Cấp độ tiếng Anh 2 - Campus Hà Nội/TP.HCM",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82352"
+  },
+  "LevelID": 3,
+  "BatchID": 1,
+  "LevelNumber": 3,
+  "FeeAmount": 13100000,
+  "Description": "Cấp độ tiếng Anh 3 - Campus Hà Nội/TP.HCM",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82353"
+  },
+  "LevelID": 4,
+  "BatchID": 1,
+  "LevelNumber": 4,
+  "FeeAmount": 13100000,
+  "Description": "Cấp độ tiếng Anh 4 - Campus Hà Nội/TP.HCM",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82354"
+  },
+  "LevelID": 5,
+  "BatchID": 1,
+  "LevelNumber": 5,
+  "FeeAmount": 13100000,
+  "Description": "Cấp độ tiếng Anh 5 - Campus Hà Nội/TP.HCM",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82355"
+  },
+  "LevelID": 6,
+  "BatchID": 1,
+  "LevelNumber": 6,
+  "FeeAmount": 13100000,
+  "Description": "Cấp độ tiếng Anh 6 - Campus Hà Nội/TP.HCM",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82356"
+  },
+  "LevelID": 7,
+  "BatchID": 1,
+  "LevelNumber": 1,
+  "FeeAmount": 9170000,
+  "Description": "Cấp độ tiếng Anh 1 - Campus Đà Nẵng/Cần Thơ",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82357"
+  },
+  "LevelID": 8,
+  "BatchID": 1,
+  "LevelNumber": 2,
+  "FeeAmount": 9170000,
+  "Description": "Cấp độ tiếng Anh 2 - Campus Đà Nẵng/Cần Thơ",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82358"
+  },
+  "LevelID": 9,
+  "BatchID": 1,
+  "LevelNumber": 3,
+  "FeeAmount": 9170000,
+  "Description": "Cấp độ tiếng Anh 3 - Campus Đà Nẵng/Cần Thơ",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82359"
+  },
+  "LevelID": 10,
+  "BatchID": 1,
+  "LevelNumber": 4,
+  "FeeAmount": 9170000,
+  "Description": "Cấp độ tiếng Anh 4 - Campus Đà Nẵng/Cần Thơ",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b8235a"
+  },
+  "LevelID": 11,
+  "BatchID": 1,
+  "LevelNumber": 5,
+  "FeeAmount": 9170000,
+  "Description": "Cấp độ tiếng Anh 5 - Campus Đà Nẵng/Cần Thơ",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b8235b"
+  },
+  "LevelID": 12,
+  "BatchID": 1,
+  "LevelNumber": 6,
+  "FeeAmount": 9170000,
+  "Description": "Cấp độ tiếng Anh 6 - Campus Đà Nẵng/Cần Thơ",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b8235c"
+  },
+  "LevelID": 13,
+  "BatchID": 1,
+  "LevelNumber": 1,
+  "FeeAmount": 6550000,
+  "Description": "Cấp độ tiếng Anh 1 - Campus Quy Nhơn",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b8235d"
+  },
+  "LevelID": 14,
+  "BatchID": 1,
+  "LevelNumber": 2,
+  "FeeAmount": 6550000,
+  "Description": "Cấp độ tiếng Anh 2 - Campus Quy Nhơn",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b8235e"
+  },
+  "LevelID": 15,
+  "BatchID": 1,
+  "LevelNumber": 3,
+  "FeeAmount": 6550000,
+  "Description": "Cấp độ tiếng Anh 3 - Campus Quy Nhơn",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b8235f"
+  },
+  "LevelID": 16,
+  "BatchID": 1,
+  "LevelNumber": 4,
+  "FeeAmount": 6550000,
+  "Description": "Cấp độ tiếng Anh 4 - Campus Quy Nhơn",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82360"
+  },
+  "LevelID": 17,
+  "BatchID": 1,
+  "LevelNumber": 5,
+  "FeeAmount": 6550000,
+  "Description": "Cấp độ tiếng Anh 5 - Campus Quy Nhơn",
+  "MaxLevel": 6
+},
+{
+  "_id": {
+    "$oid": "684ef5bf35f1693727b82361"
+  },
+  "LevelID": 18,
+  "BatchID": 1,
+  "LevelNumber": 6,
+  "FeeAmount": 6550000,
+  "Description": "Cấp độ tiếng Anh 6 - Campus Quy Nhơn",
+  "MaxLevel": 6
+}]

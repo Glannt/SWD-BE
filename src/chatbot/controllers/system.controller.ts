@@ -442,42 +442,7 @@ export class SystemController {
     return debug;
   }
 
-  /**
-   * Test Campus Discounts Entity
-   */
-  @Get('test-campus-discounts')
-  @ApiOperation({ 
-    summary: 'Test Campus Discounts Entity',
-    description: 'Test if campus discounts entity matches MongoDB data structure'
-  })
-  @ApiResponse({ 
-    status: 200, 
-    description: 'Campus discounts test results'
-  })
-  async testCampusDiscounts() {
-    try {
-      console.log('🧪 Testing Campus Discounts entity...');
-      const result = await this.mongoDbDataService.testCampusDiscounts();
-      
-      return {
-        success: true,
-        timestamp: new Date().toISOString(),
-        message: 'Campus discounts test completed',
-        data: result,
-        count: result.length
-      };
-    } catch (error) {
-      console.error('❌ Campus discounts test failed:', error);
-      return {
-        success: false,
-        timestamp: new Date().toISOString(),
-        message: 'Campus discounts test failed',
-        error: error.message,
-        data: null,
-        count: 0
-      };
-    }
-  }
+
 
   /**
    * Export Database Structure - Lấy toàn bộ cấu trúc và dữ liệu mẫu từ MongoDB

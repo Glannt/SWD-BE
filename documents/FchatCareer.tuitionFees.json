@@ -1,0 +1,336 @@
+[{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82314"
+  },
+  "FeeID": 1,
+  "MajorID": 1,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 29000000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Hà Nội và TP.HCM, đã bao gồm giáo trình và trang thiết bị"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82315"
+  },
+  "FeeID": 2,
+  "MajorID": 2,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 29000000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Hà Nội và TP.HCM, đã bao gồm giáo trình và trang thiết bị"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82316"
+  },
+  "FeeID": 3,
+  "MajorID": 3,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 29000000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Hà Nội và TP.HCM, đã bao gồm giáo trình và trang thiết bị"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82317"
+  },
+  "FeeID": 4,
+  "MajorID": 4,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 29000000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Hà Nội và TP.HCM, đã bao gồm giáo trình và trang thiết bị"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82318"
+  },
+  "FeeID": 5,
+  "MajorID": 5,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 29000000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Hà Nội và TP.HCM, đã bao gồm giáo trình và trang thiết bị"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82319"
+  },
+  "FeeID": 6,
+  "MajorID": 6,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 29000000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Hà Nội và TP.HCM, đã bao gồm giáo trình và trang thiết bị"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b8231a"
+  },
+  "FeeID": 7,
+  "MajorID": 7,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 29000000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Hà Nội và TP.HCM, đã bao gồm giáo trình và trang thiết bị"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b8231b"
+  },
+  "FeeID": 8,
+  "MajorID": 1,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 20300000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Đà Nẵng và Cần Thơ đã áp dụng ưu đãi 30%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b8231c"
+  },
+  "FeeID": 9,
+  "MajorID": 2,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 20300000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Đà Nẵng và Cần Thơ đã áp dụng ưu đãi 30%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b8231d"
+  },
+  "FeeID": 10,
+  "MajorID": 3,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 20300000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Đà Nẵng và Cần Thơ đã áp dụng ưu đãi 30%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b8231e"
+  },
+  "FeeID": 11,
+  "MajorID": 4,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 20300000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Đà Nẵng và Cần Thơ đã áp dụng ưu đãi 30%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b8231f"
+  },
+  "FeeID": 12,
+  "MajorID": 5,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 20300000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Đà Nẵng và Cần Thơ đã áp dụng ưu đãi 30%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82320"
+  },
+  "FeeID": 13,
+  "MajorID": 6,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 20300000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Đà Nẵng và Cần Thơ đã áp dụng ưu đãi 30%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82321"
+  },
+  "FeeID": 14,
+  "MajorID": 7,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 20300000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Đà Nẵng và Cần Thơ đã áp dụng ưu đãi 30%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82322"
+  },
+  "FeeID": 15,
+  "MajorID": 1,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 14500000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Quy Nhơn đã áp dụng ưu đãi 50%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82323"
+  },
+  "FeeID": 16,
+  "MajorID": 2,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 14500000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Quy Nhơn đã áp dụng ưu đãi 50%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82324"
+  },
+  "FeeID": 17,
+  "MajorID": 3,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 14500000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Quy Nhơn đã áp dụng ưu đãi 50%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82325"
+  },
+  "FeeID": 18,
+  "MajorID": 4,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 14500000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Quy Nhơn đã áp dụng ưu đãi 50%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82326"
+  },
+  "FeeID": 19,
+  "MajorID": 5,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 14500000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Quy Nhơn đã áp dụng ưu đãi 50%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82327"
+  },
+  "FeeID": 20,
+  "MajorID": 6,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 14500000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Quy Nhơn đã áp dụng ưu đãi 50%"
+},
+{
+  "_id": {
+    "$oid": "684ef46c35f1693727b82328"
+  },
+  "FeeID": 21,
+  "MajorID": 7,
+  "BatchID": 1,
+  "SemesterRange": "Kỳ 1-9",
+  "BaseAmount": 14500000,
+  "IsInclusive": true,
+  "Currency": "VND",
+  "EffectiveFrom": "2025-01-01",
+  "EffectiveTo": null,
+  "IncludesMaterials": true,
+  "Notes": "Học phí cho campus Quy Nhơn đã áp dụng ưu đãi 50%"
+}]

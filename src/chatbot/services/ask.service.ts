@@ -103,7 +103,7 @@ export class AskService {
       
       // Enhanced fallback with error context
       console.log('🔄 Using enhanced static fallback...');
-             return this.getFallbackAnswer(question);
+      return this.getFallbackAnswer(question);
     }
   }
 

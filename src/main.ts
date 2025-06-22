@@ -6,6 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
+import { DataSeedService } from './common/services/data-seed.service';
 import * as path from 'path';
 import cookieParser from 'cookie-parser';
 
@@ -85,6 +86,17 @@ async function bootstrap() {
 
   // Serve static files
   app.useStaticAssets(path.join(__dirname, '..', 'public'));
+
+  // Auto-seed database if needed
+  console.log('🌱 Checking database and auto-seeding if needed...');
+  try {
+    const dataSeedService = app.get(DataSeedService);
+    await dataSeedService.checkAndSeedData();
+    console.log('✅ Database check and seed process completed');
+  } catch (error) {
+    console.error('❌ Error during database seed check:', error);
+    console.warn('⚠️ Application will continue, but some features may not work without data');
+  }
 
   const port = configService.get<string>('PORT') || 3000;
   await app.listen(port);

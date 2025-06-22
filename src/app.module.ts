@@ -10,6 +10,7 @@ import { UserModule } from './user/user.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { MailModule } from './mail/mail.module';
 import { NestRedisModule } from './redis/redis.module';
+import { DataSeedModule } from './common/services/data-seed.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { NestRedisModule } from './redis/redis.module';
     // Advanced features
     MailModule,        // Email service for verification
     NestRedisModule,   // Redis caching for sessions/tokens
+    DataSeedModule,    // Auto-seed database from JSON files
   ],
   controllers: [AppController],
   providers: [AppService],
