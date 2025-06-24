@@ -99,6 +99,9 @@ export class AuthService {
     if (existingUser) {
       throw new BadRequestException(MESSAGES.AUTH.EMAIL_EXIST);
     }
+    if(user.confirmPassword != user.password){
+      throw new BadRequestException(MESSAGES.AUTH.PASSWORD_CONFIRM_NOT_MATCH);
+    }
     const userCreated = await this.userService.createUser(user);
     if (!userCreated) return null;
     const { user_id } = userCreated;

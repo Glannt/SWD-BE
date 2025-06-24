@@ -1,8 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { Major } from './major.entity';
 import { IntakeBatch } from './intake-batches.entity';
-import { Types } from 'mongoose';
+import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 
 @Schema({ collection: 'tuitionFees' })
 export class TuitionFee extends Document {
@@ -42,3 +42,5 @@ TuitionFeeSchema.index(
   { major: 1, batch: 1, semesterRange: 1 },
   { unique: true },
 );
+
+applySmartIdField(TuitionFeeSchema, TuitionFee.name, 'tuition_fee_id');

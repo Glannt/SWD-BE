@@ -4,6 +4,7 @@ import { Document } from 'mongoose';
 export enum ScholarshipCoverage {
   FULL = 'Full',
   PARTIAL = 'Partial',
+  PERCENTAGE = 'percentage'
 }
 
 @Schema({ collection: 'scholarships' })

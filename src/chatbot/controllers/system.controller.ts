@@ -17,12 +17,12 @@ export class SystemController {
    * Kiểm tra trạng thái hệ thống chatbot
    */
   @Get('status')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Check Chatbot System Status',
     description: 'Get the current status of all chatbot components: MongoDB, Pinecone, and Gemini AI'
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'System status information',
     schema: {
       type: 'object',
@@ -102,7 +102,7 @@ export class SystemController {
     // Determine overall status
     const allHealthy = Object.values(status.services).every(service => service.status === 'healthy');
     const anyHealthy = Object.values(status.services).some(service => service.status === 'healthy');
-    
+
     if (allHealthy) {
       status.status = 'healthy';
     } else if (anyHealthy) {
@@ -118,12 +118,12 @@ export class SystemController {
    * Lấy thống kê chi tiết từ MongoDB
    */
   @Get('data-stats')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Get MongoDB Data Statistics',
     description: 'Get detailed statistics about data stored in MongoDB'
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'MongoDB data statistics'
   })
   async getDataStatistics() {
@@ -148,12 +148,12 @@ export class SystemController {
    * Test kết nối với tất cả services
    */
   @Get('health-check')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Comprehensive Health Check',
     description: 'Perform comprehensive health check of all services with detailed testing'
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Detailed health check results'
   })
   async healthCheck() {
@@ -236,8 +236,8 @@ export class SystemController {
     }
 
     // Test integration (if all previous tests passed)
-    if (results.tests.mongodb?.status === 'pass' && 
-        results.tests.pinecone?.status === 'pass' && 
+    if (results.tests.mongodb?.status === 'pass' &&
+        results.tests.pinecone?.status === 'pass' &&
         results.tests.gemini?.status === 'pass') {
       console.log('🔍 Testing full integration...');
       try {
@@ -281,7 +281,7 @@ export class SystemController {
     const testResults = Object.values(results.tests);
     const allPass = testResults.every(test => test?.status === 'pass');
     const anyFail = testResults.some(test => test?.status === 'fail');
-    
+
     if (allPass) {
       results.overall = 'healthy';
     } else if (anyFail) {
@@ -297,7 +297,7 @@ export class SystemController {
    * Debug endpoint để test từng bước xử lý câu hỏi
    */
   @Get('debug/:question')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Debug Question Processing',
     description: 'Debug step-by-step question processing to identify issues'
   })
@@ -370,24 +370,24 @@ export class SystemController {
       try {
         // Check if question triggers MongoDB logic
         const lowerQuestion = debug.question.toLowerCase();
-        const triggersMongoDb = 
-          lowerQuestion.includes('ngành') || lowerQuestion.includes('kỹ thuật') || 
+        const triggersMongoDb =
+          lowerQuestion.includes('ngành') || lowerQuestion.includes('kỹ thuật') ||
           lowerQuestion.includes('phần mềm') || lowerQuestion.includes('campus') ||
           lowerQuestion.includes('học phí');
 
         if (triggersMongoDb) {
           const stats = await this.mongoDbDataService.getDataStatistics();
-          
+
           // Test specific queries based on question
-          let mongoResults = [];
-          
+          const mongoResults = [];
+
           if (lowerQuestion.includes('phần mềm') || lowerQuestion.includes('kỹ thuật')) {
             const major = await this.mongoDbDataService.getMajorByCodeOrName('phần mềm');
             if (major) {
               mongoResults.push({ type: 'major', data: major });
             }
           }
-          
+
           debug.steps.step3_mongoQuery = {
             status: 'success',
             triggered: true,
@@ -415,12 +415,12 @@ export class SystemController {
       try {
         const lowerQuestion = debug.question.toLowerCase();
         let fallbackTriggered = false;
-        
-        if (lowerQuestion.includes('ngành') || lowerQuestion.includes('kỹ thuật') || 
+
+        if (lowerQuestion.includes('ngành') || lowerQuestion.includes('kỹ thuật') ||
             lowerQuestion.includes('phần mềm')) {
           fallbackTriggered = true;
         }
-        
+
         debug.steps.step4_fallback = {
           status: 'success',
           triggered: fallbackTriggered,
@@ -448,19 +448,19 @@ export class SystemController {
    * Export Database Structure - Lấy toàn bộ cấu trúc và dữ liệu mẫu từ MongoDB
    */
   @Get('export-database-structure')
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Export Database Structure',
     description: 'Export all collections structure and sample data from MongoDB'
   })
-  @ApiResponse({ 
-    status: 200, 
+  @ApiResponse({
+    status: 200,
     description: 'Database structure and sample data'
   })
   async exportDatabaseStructure() {
     try {
       console.log('📤 Exporting MongoDB database structure...');
       const result = await this.mongoDbDataService.exportAllCollections();
-      
+
       return {
         success: true,
         timestamp: new Date().toISOString(),
@@ -480,4 +480,4 @@ export class SystemController {
       };
     }
   }
-} 
+}

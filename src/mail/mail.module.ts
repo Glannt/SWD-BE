@@ -5,7 +5,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { join } from 'path';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 // import { CacheModule } from '@nestjs/cache-manager';
-import { NestRedisModule } from 'src/redis/redis.module';
+import { NestRedisModule } from '../redis/redis.module';
 
 @Module({
   imports: [

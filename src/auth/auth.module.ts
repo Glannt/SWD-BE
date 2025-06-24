@@ -8,8 +8,8 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { ConfigService } from '@nestjs/config';
-import { NestRedisModule } from 'src/redis/redis.module';
-import { MailModule } from 'src/mail/mail.module';
+import { NestRedisModule } from '../redis/redis.module';
+import { MailModule } from '../mail/mail.module';
 @Module({
   imports: [
     MailModule,

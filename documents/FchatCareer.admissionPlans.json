@@ -1,48 +1,34 @@
-[{
-  "_id": {
-    "$oid": "684ef59735f1693727b8234a"
+[
+  {
+    "admissionYear": 1,
+    "planName": "Xét kết quả học tập cấp THPT (học bạ)",
+    "description": "Sử dụng kết quả học tập lớp 11 và học kỳ 1 lớp 12 để xét tuyển thông qua hệ thống SchoolRank",
+    "method": "Direct",
+    "startDate": "2024-11-01",
+    "endDate": "2025-08-31"
   },
-  "PlanID": 1,
-  "AdmissionYearID": 1,
-  "PlanName": "Xét kết quả học tập cấp THPT (học bạ)",
-  "Description": "Sử dụng kết quả học tập lớp 11 và học kỳ 1 lớp 12 để xét tuyển thông qua hệ thống SchoolRank",
-  "Method": "Direct",
-  "StartDate": "2024-11-01",
-  "EndDate": "2025-08-31"
-},
-{
-  "_id": {
-    "$oid": "684ef59735f1693727b8234b"
+  {
+    "admissionYear": 1,
+    "planName": "Sử dụng kết quả thi đánh giá năng lực",
+    "description": "Sử dụng kết quả thi đánh giá năng lực của Đại học Quốc gia Hà Nội và Đại học Quốc gia TPHCM",
+    "method": "Exam",
+    "startDate": "2024-11-01",
+    "endDate": "2025-08-31"
   },
-  "PlanID": 2,
-  "AdmissionYearID": 1,
-  "PlanName": "Sử dụng kết quả thi đánh giá năng lực",
-  "Description": "Sử dụng kết quả thi đánh giá năng lực của Đại học Quốc gia Hà Nội và Đại học Quốc gia TPHCM",
-  "Method": "Exam",
-  "StartDate": "2024-11-01",
-  "EndDate": "2025-08-31"
-},
-{
-  "_id": {
-    "$oid": "684ef59735f1693727b8234c"
+  {
+    "admissionYear": 1,
+    "planName": "Xét kết quả thi tốt nghiệp THPT",
+    "description": "Sử dụng tổ hợp Toán + 2 môn bất kỳ + Điểm ưu tiên theo quy định của Bộ",
+    "method": "Exam",
+    "startDate": "2025-06-01",
+    "endDate": "2025-08-31"
   },
-  "PlanID": 3,
-  "AdmissionYearID": 1,
-  "PlanName": "Xét kết quả thi tốt nghiệp THPT",
-  "Description": "Sử dụng tổ hợp Toán + 2 môn bất kỳ + Điểm ưu tiên theo quy định của Bộ",
-  "Method": "Exam",
-  "StartDate": "2025-06-01",
-  "EndDate": "2025-08-31"
-},
-{
-  "_id": {
-    "$oid": "684ef59735f1693727b8234d"
-  },
-  "PlanID": 4,
-  "AdmissionYearID": 1,
-  "PlanName": "Phương thức tuyển sinh khác",
-  "Description": "Dành cho thí sinh có các văn bằng, chứng chỉ đặc biệt như BTEC HND, Melbourne Polytechnic, FUNiX, tốt nghiệp THPT nước ngoài, v.v.",
-  "Method": "Portfolio",
-  "StartDate": "2024-11-01",
-  "EndDate": "2025-08-31"
-}]
+  {
+    "admissionYear": "AdmissionYearID_1",
+    "planName": "Phương thức tuyển sinh khác",
+    "description": "Dành cho thí sinh có các văn bằng, chứng chỉ đặc biệt như BTEC HND, Melbourne Polytechnic, FUNiX, tốt nghiệp THPT nước ngoài, v.v.",
+    "method": "Portfolio",
+    "startDate": "2024-11-01",
+    "endDate": "2025-08-31"
+  }
+]
