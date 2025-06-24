@@ -1,0 +1,297 @@
+[{
+  "_id": {
+    "$oid": "684ef66735f1693727b82386"
+  },
+  "QuotaID": 1,
+  "MajorID": 1,
+  "AdmissionID": 1,
+  "CampusID": 1,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82387"
+  },
+  "QuotaID": 2,
+  "MajorID": 1,
+  "AdmissionID": 1,
+  "CampusID": 2,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82388"
+  },
+  "QuotaID": 3,
+  "MajorID": 2,
+  "AdmissionID": 1,
+  "CampusID": 1,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82389"
+  },
+  "QuotaID": 4,
+  "MajorID": 2,
+  "AdmissionID": 1,
+  "CampusID": 2,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8238a"
+  },
+  "QuotaID": 5,
+  "MajorID": 3,
+  "AdmissionID": 1,
+  "CampusID": 1,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8238b"
+  },
+  "QuotaID": 6,
+  "MajorID": 3,
+  "AdmissionID": 1,
+  "CampusID": 2,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8238c"
+  },
+  "QuotaID": 7,
+  "MajorID": 4,
+  "AdmissionID": 1,
+  "CampusID": 1,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8238d"
+  },
+  "QuotaID": 8,
+  "MajorID": 4,
+  "AdmissionID": 1,
+  "CampusID": 2,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8238e"
+  },
+  "QuotaID": 9,
+  "MajorID": 5,
+  "AdmissionID": 1,
+  "CampusID": 1,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8238f"
+  },
+  "QuotaID": 10,
+  "MajorID": 5,
+  "AdmissionID": 1,
+  "CampusID": 2,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82390"
+  },
+  "QuotaID": 11,
+  "MajorID": 6,
+  "AdmissionID": 1,
+  "CampusID": 1,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82391"
+  },
+  "QuotaID": 12,
+  "MajorID": 6,
+  "AdmissionID": 1,
+  "CampusID": 2,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82392"
+  },
+  "QuotaID": 13,
+  "MajorID": 7,
+  "AdmissionID": 1,
+  "CampusID": 1,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82393"
+  },
+  "QuotaID": 14,
+  "MajorID": 7,
+  "AdmissionID": 1,
+  "CampusID": 2,
+  "Quota": 600,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82394"
+  },
+  "QuotaID": 15,
+  "MajorID": 1,
+  "AdmissionID": 1,
+  "CampusID": 3,
+  "Quota": 300,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82395"
+  },
+  "QuotaID": 16,
+  "MajorID": 2,
+  "AdmissionID": 1,
+  "CampusID": 3,
+  "Quota": 300,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82396"
+  },
+  "QuotaID": 17,
+  "MajorID": 3,
+  "AdmissionID": 1,
+  "CampusID": 3,
+  "Quota": 300,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82397"
+  },
+  "QuotaID": 18,
+  "MajorID": 5,
+  "AdmissionID": 1,
+  "CampusID": 3,
+  "Quota": 300,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82398"
+  },
+  "QuotaID": 19,
+  "MajorID": 6,
+  "AdmissionID": 1,
+  "CampusID": 3,
+  "Quota": 300,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b82399"
+  },
+  "QuotaID": 20,
+  "MajorID": 1,
+  "AdmissionID": 1,
+  "CampusID": 4,
+  "Quota": 250,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8239a"
+  },
+  "QuotaID": 21,
+  "MajorID": 3,
+  "AdmissionID": 1,
+  "CampusID": 4,
+  "Quota": 250,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8239b"
+  },
+  "QuotaID": 22,
+  "MajorID": 5,
+  "AdmissionID": 1,
+  "CampusID": 4,
+  "Quota": 250,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8239c"
+  },
+  "QuotaID": 23,
+  "MajorID": 7,
+  "AdmissionID": 1,
+  "CampusID": 4,
+  "Quota": 250,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8239d"
+  },
+  "QuotaID": 24,
+  "MajorID": 1,
+  "AdmissionID": 1,
+  "CampusID": 5,
+  "Quota": 200,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8239e"
+  },
+  "QuotaID": 25,
+  "MajorID": 2,
+  "AdmissionID": 1,
+  "CampusID": 5,
+  "Quota": 200,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b8239f"
+  },
+  "QuotaID": 26,
+  "MajorID": 3,
+  "AdmissionID": 1,
+  "CampusID": 5,
+  "Quota": 200,
+  "RegisteredStudents": 0
+},
+{
+  "_id": {
+    "$oid": "684ef66735f1693727b823a0"
+  },
+  "QuotaID": 27,
+  "MajorID": 6,
+  "AdmissionID": 1,
+  "CampusID": 5,
+  "Quota": 200,
+  "RegisteredStudents": 0
+}]
