@@ -19,24 +19,24 @@ export class AskService {
   async processQuestion(question: string): Promise<string> {
     const startTime = Date.now();
     console.log(`🤖 [${new Date().toISOString()}] Processing question: ${question}`);
-    
+
     try {
       // Input validation
       if (!question || question.trim().length === 0) {
         throw new Error('Question is empty or invalid');
       }
-      
+
       const cleanQuestion = question.trim();
       console.log(`📋 Cleaned question: "${cleanQuestion}"`);
-      
+
       // Bước 1: MongoDB Primary Search (Optimized)
       let context = '';
       let mongoSuccess = false;
-      
+
       try {
         console.log('🗄️ [STEP 1] Searching MongoDB (Primary Source)...');
         const mongoContext = await this.mongoDbDataService.getRealtimeContext(cleanQuestion);
-        
+
         if (mongoContext && mongoContext.length > 0) {
           context = mongoContext;
           mongoSuccess = true;
@@ -47,13 +47,13 @@ export class AskService {
       } catch (mongoError) {
         console.error('❌ MongoDB search failed:', mongoError.message);
       }
-      
+
       // Bước 2: Vector Enhancement (Always try for better context)
       try {
         console.log('🔍 [STEP 2] Vector search for enhanced context...');
         const questionEmbedding = await this.geminiService.createEmbedding(cleanQuestion);
         const searchResults = await this.pineconeService.queryVectors(questionEmbedding, mongoSuccess ? 3 : 5);
-        
+
         if (searchResults && searchResults.length > 0) {
           const vectorContext = searchResults
             .filter(result => result.metadata && result.metadata.text)
@@ -65,7 +65,7 @@ export class AskService {
               return `[${source}${score}] ${text}`;
             })
             .join('\n');
-          
+
           if (mongoSuccess) {
             context = `${context}\n\n--- Thông tin bổ sung từ Vector DB ---\n${vectorContext}`;
             console.log(`✅ Enhanced MongoDB with ${searchResults.length} vector results`);
@@ -79,28 +79,28 @@ export class AskService {
       } catch (vectorError) {
         console.warn(`⚠️ Vector search failed: ${vectorError.message}`);
       }
-      
+
       // Fallback if no context found
       if (!context || context.trim().length === 0) {
         console.log('⚠️ No context found from any source, using general information');
         context = 'Thông tin tổng quan về Đại học FPT: đào tạo công nghệ thông tin, kinh doanh, với nhiều cơ sở tại Việt Nam.';
       }
-      
+
       console.log(`📄 Final context: ${context.length} chars`);
-      
+
       // Bước 3: AI Answer Generation (Optimized)
       console.log('🧠 [STEP 3] Generating AI answer...');
       const answer = await this.geminiService.generateAnswer(context, cleanQuestion);
-      
+
       const processingTime = Date.now() - startTime;
       console.log(`✅ [SUCCESS] Question processed in ${processingTime}ms`);
-      
+
       return answer;
-      
+
     } catch (error) {
       const processingTime = Date.now() - startTime;
       console.error(`❌ [ERROR] Question processing failed after ${processingTime}ms:`, error.message);
-      
+
       // Enhanced fallback with error context
       console.log('🔄 Using enhanced static fallback...');
       return this.getFallbackAnswer(question);
@@ -116,7 +116,7 @@ export class AskService {
   private async getRealtimeMongoContext_DEPRECATED(question: string): Promise<string | null> {
     try {
       const lowerQuestion = question.toLowerCase();
-      let contextParts: string[] = [];
+      const contextParts: string[] = [];
 
       console.log(`🔍 Analyzing question for MongoDB context: "${lowerQuestion}"`);
 
@@ -141,18 +141,18 @@ export class AskService {
       }
 
       // Tìm kiếm thông tin ngành học - CẢI THIỆN LOGIC
-      if (lowerQuestion.includes('ngành') || lowerQuestion.includes('major') || lowerQuestion.includes('chuyên ngành') || 
+      if (lowerQuestion.includes('ngành') || lowerQuestion.includes('major') || lowerQuestion.includes('chuyên ngành') ||
           lowerQuestion.includes('kỹ thuật') || lowerQuestion.includes('học')) {
         console.log('🎓 Searching for major information...');
-        
+
         // Debug: Check data availability first
         const stats = await this.mongoDbDataService.getDataStatistics();
         console.log('📊 MongoDB stats for major search:', stats);
-        
+
         if (stats.majors === 0) {
           console.log('❌ No majors found in MongoDB!');
         }
-        
+
         // Mở rộng từ khóa tìm kiếm ngành học
         const majorKeywords = [
           // Mã ngành
@@ -175,7 +175,7 @@ export class AskService {
           'khách sạn', 'quản trị khách sạn', 'hotel management',
           'tiếng anh', 'ngôn ngữ anh', 'english'
         ];
-        
+
         for (const keyword of majorKeywords) {
           if (lowerQuestion.includes(keyword)) {
             console.log(`🔍 Found keyword: "${keyword}"`);
@@ -187,7 +187,7 @@ export class AskService {
             }
           }
         }
-        
+
         // Nếu không tìm thấy ngành cụ thể, thử tìm tất cả ngành
         if (contextParts.length === 0) {
           console.log('🔄 No specific major found, getting all majors...');
@@ -196,11 +196,11 @@ export class AskService {
             // Lấy một vài ngành phổ biến để giới thiệu
             const seMajor = await this.mongoDbDataService.getMajorByCodeOrName('SE');
             const aiMajor = await this.mongoDbDataService.getMajorByCodeOrName('AI');
-            
-            let majorInfo = [];
+
+            const majorInfo = [];
             if (seMajor) majorInfo.push(`${seMajor.name} (${seMajor.code})`);
             if (aiMajor) majorInfo.push(`${aiMajor.name} (${aiMajor.code})`);
-            
+
             if (majorInfo.length > 0) {
               contextParts.push(`FPT University có các ngành đào tạo chính: ${majorInfo.join(', ')} và nhiều ngành khác. Tổng cộng ${stats.majors} ngành đào tạo.`);
               console.log(`✅ Found general major info: ${stats.majors} majors`);
@@ -210,7 +210,7 @@ export class AskService {
       }
 
       // Tìm kiếm học phí
-      if (lowerQuestion.includes('học phí') || lowerQuestion.includes('chi phí') || lowerQuestion.includes('tuition') || 
+      if (lowerQuestion.includes('học phí') || lowerQuestion.includes('chi phí') || lowerQuestion.includes('tuition') ||
           lowerQuestion.includes('giá') || lowerQuestion.includes('tiền')) {
         console.log('💰 Searching for tuition information...');
         const majorKeywords = ['se', 'ai', 'is', 'ia', 'ds', 'iot', 'phần mềm', 'trí tuệ', 'an toàn'];
@@ -229,7 +229,7 @@ export class AskService {
       }
 
       // Tìm kiếm học bổng
-      if (lowerQuestion.includes('học bổng') || lowerQuestion.includes('scholarship') || 
+      if (lowerQuestion.includes('học bổng') || lowerQuestion.includes('scholarship') ||
           lowerQuestion.includes('hỗ trợ') || lowerQuestion.includes('miễn giảm')) {
         console.log('🏆 Searching for scholarship information...');
         const scholarships = await this.mongoDbDataService.getActiveScholarships();
@@ -242,7 +242,7 @@ export class AskService {
 
       const result = contextParts.length > 0 ? contextParts.join('\n\n') : null;
       console.log(`📄 MongoDB context result: ${result ? 'Found' : 'Not found'}`);
-      
+
       return result;
     } catch (error) {
       console.error('❌ Lỗi khi lấy dữ liệu MongoDB realtime:', error);
@@ -257,16 +257,16 @@ export class AskService {
    */
   private getFallbackAnswer(question: string): string {
     const lowerQuestion = question.toLowerCase();
-    
+
     console.log(`🔄 Using fallback answer for: "${lowerQuestion}"`);
-    
+
     // Fallback cho các ngành học cụ thể
     if (lowerQuestion.includes('ngành') || lowerQuestion.includes('kỹ thuật') || lowerQuestion.includes('phần mềm') ||
         lowerQuestion.includes('major') || lowerQuestion.includes('software') || lowerQuestion.includes('ai') ||
         lowerQuestion.includes('trí tuệ') || lowerQuestion.includes('an toàn') || lowerQuestion.includes('dữ liệu')) {
-      
+
       let response = `🎓 **Thông tin các ngành đào tạo tại FPT University (Fallback):**\n\n`;
-      
+
       if (lowerQuestion.includes('phần mềm') || lowerQuestion.includes('software') || lowerQuestion.includes('se')) {
         response += `**🔧 Kỹ thuật phần mềm (SE):**
 - Đào tạo kỹ sư phần mềm chuyên nghiệp
@@ -275,7 +275,7 @@ export class AskService {
 - Thời gian: 4 năm, 144 tín chỉ
 - Học phí: ~20.500.000 VND/học kỳ\n\n`;
       }
-      
+
       if (lowerQuestion.includes('ai') || lowerQuestion.includes('trí tuệ')) {
         response += `**🤖 Trí tuệ nhân tạo (AI):**
 - Chương trình tiên tiến về AI, Machine Learning, Deep Learning
@@ -284,7 +284,7 @@ export class AskService {
 - Thời gian: 4 năm, 144 tín chỉ
 - Học phí: ~21.500.000 VND/học kỳ\n\n`;
       }
-      
+
       if (lowerQuestion.includes('an toàn') || lowerQuestion.includes('security')) {
         response += `**🔒 An toàn thông tin (IA):**
 - Chuyên ngành về bảo mật mạng, an toàn hệ thống
@@ -293,22 +293,22 @@ export class AskService {
 - Thời gian: 4 năm, 144 tín chỉ
 - Học phí: ~20.500.000 VND/học kỳ\n\n`;
       }
-      
+
       response += `📞 **Liên hệ để biết thêm chi tiết:**
 - Hotline: (024) 7300 1866
 - Email: daihocfpt@fpt.edu.vn
 - Website: fpt.edu.vn
 
 ⚠️ *Thông tin này là dự phòng. Để có thông tin chính xác và cập nhật nhất, vui lòng liên hệ trực tiếp.*`;
-      
+
       return response;
     }
-    
+
     if (lowerQuestion.includes('học phí') || lowerQuestion.includes('chi phí')) {
       return `📚 **Thông tin học phí FPT University (Fallback):**
 
 **Kỹ thuật phần mềm (SE):** 20.500.000 VND/học kỳ
-**Trí tuệ nhân tạo (AI):** 21.500.000 VND/học kỳ  
+**Trí tuệ nhân tạo (AI):** 21.500.000 VND/học kỳ
 **An toàn thông tin (IS):** 20.500.000 VND/học kỳ
 **Quản trị kinh doanh (BA):** 19.500.000 VND/học kỳ
 
@@ -318,7 +318,7 @@ export class AskService {
 
 ⚠️ *Thông tin này là dự phòng. Để có thông tin chính xác nhất, vui lòng liên hệ trực tiếp.*`;
     }
-    
+
     if (lowerQuestion.includes('campus') || lowerQuestion.includes('cơ sở') || lowerQuestion.includes('địa chỉ')) {
       return `🏫 **Các campus của FPT University (Fallback):**
 
@@ -326,7 +326,7 @@ export class AskService {
 📍 Khu Công nghệ cao Hòa Lạc, Km29 Đại lộ Thăng Long, Thạch Thất, Hà Nội
 📞 (024) 7300 1866
 
-**🌟 Hồ Chí Minh**  
+**🌟 Hồ Chí Minh**
 📍 Lô E2a-7, Đường D1, Khu Công nghệ cao, TP. Thủ Đức
 📞 (028) 7300 1866
 
@@ -336,28 +336,28 @@ export class AskService {
 
 ⚠️ *Thông tin này là dự phòng. Để có thông tin chính xác nhất, vui lòng liên hệ trực tiếp.*`;
     }
-    
+
     if (lowerQuestion.includes('xin chào') || lowerQuestion.includes('hello') || lowerQuestion.includes('hi')) {
-      return `Xin chào! 👋 Tôi là AI chatbot tư vấn nghề nghiệp của FPT University. 
+      return `Xin chào! 👋 Tôi là AI chatbot tư vấn nghề nghiệp của FPT University.
 
 🔄 **Hệ thống đang hoạt động với:**
 - 🎯 RAG (Retrieval-Augmented Generation) với Pinecone + Gemini AI
-- 🗄️ MongoDB real-time data integration  
+- 🗄️ MongoDB real-time data integration
 - 📊 JSON file backup data
 - 🔧 Fallback responses
 
 Tôi có thể trả lời câu hỏi về:
 🎓 Các ngành đào tạo
-💰 Học phí 
+💰 Học phí
 🏆 Học bổng
 🏫 Thông tin campus
 📞 Thông tin liên hệ
 
 Hãy đặt câu hỏi để tôi có thể hỗ trợ bạn! 😊`;
     }
-    
+
     // Câu trả lời mặc định
-    return `Xin lỗi, hiện tại tôi đang gặp sự cố kỹ thuật với cả hệ thống vector database và MongoDB. 
+    return `Xin lỗi, hiện tại tôi đang gặp sự cố kỹ thuật với cả hệ thống vector database và MongoDB.
 
 **🔧 Các hệ thống đang gặp vấn đề:**
 - Vector Search (Pinecone + Gemini)
@@ -371,4 +371,4 @@ Bạn có thể liên hệ trực tiếp:
 
 Hoặc thử đặt câu hỏi lại sau vài phút.`;
   }
-} 
+}
