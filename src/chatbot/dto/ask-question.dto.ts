@@ -13,4 +13,12 @@ export class AskQuestionDto {
   @MinLength(1, { message: 'Câu hỏi phải có ít nhất 1 ký tự' })
   @MaxLength(500, { message: 'Câu hỏi không được quá 500 ký tự' })
   question: string;
-} 
+
+  // @ApiProperty({
+  //   description: 'ID của phiên chat để theo dõi lịch sử',
+  //   example: 'user123_session_abc',
+  //   required: false
+  // })
+  // @IsString()
+  // sessionId?: string;
+}

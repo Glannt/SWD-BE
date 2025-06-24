@@ -29,7 +29,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "seed:mongodb": "ts-node src/chatbot/cli/seed-mongodb-cli.ts",
     "seed:auto": "echo 'Auto-seed runs automatically on app start. Use manual API endpoints if needed.'",
-    "ingest:mongodb": "ts-node src/chatbot/cli/ingest-mongodb-cli.ts",
+    "ingest:mongodb": "ts-node src/cli/ingest-mongodb-cli.ts",
     "ingest:standalone": "node standalone-ingest.js",
     "test:integration": "node test-mongodb-integration.js"
   },

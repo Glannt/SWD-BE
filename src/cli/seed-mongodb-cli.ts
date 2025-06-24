@@ -1,15 +1,15 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from '../../app.module';
-import { MongoDbDataService } from '../services/mongodb-data.service';
+import { AppModule } from '../app.module';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Campus } from '../../entity/campus.entity';
-import { Major } from '../../entity/major.entity';
-import { TuitionFee } from '../../entity/tution-fees.entity';
-import { Scholarship } from '../../entity/scholarships.entity';
+import { Campus } from '../entity/campus.entity';
+import { Major } from '../entity/major.entity';
+import { TuitionFee } from '../entity/tution-fees.entity';
+import { Scholarship } from '../entity/scholarships.entity';
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 import * as fs from 'fs';
+import { MongoDbDataService } from '@/mongo/mongo.service';
 
 // Load environment variables
 dotenv.config();
@@ -21,9 +21,9 @@ async function bootstrap() {
   console.log('🌱 Starting MongoDB seeding process...');
   console.log('📋 Configuration:');
   console.log('- MongoDB URI:', process.env.MONGODB_URI ? '✅ Configured' : '❌ Missing');
-  
+
   const app = await NestFactory.createApplicationContext(AppModule);
-  
+
   // Get models directly
   const campusModel = app.get<Model<Campus>>('CampusModel');
   const majorModel = app.get<Model<Major>>('MajorModel');
@@ -36,7 +36,7 @@ async function bootstrap() {
     console.log('\n📊 Checking current MongoDB data...');
     const stats = await mongoDbDataService.getDataStatistics();
     console.log('Current data:', stats);
-    
+
     if (stats.campuses > 0 || stats.majors > 0 || stats.tuitionFees > 0 || stats.scholarships > 0) {
       console.log('⚠️  Data already exists in MongoDB.');
       console.log('💡 Do you want to continue and potentially duplicate data? (Ctrl+C to cancel)');
@@ -46,11 +46,11 @@ async function bootstrap() {
     // Read JSON file
     const jsonFilePath = path.join(process.cwd(), 'documents', 'fpt_university_2025_data_v1_update.json');
     console.log(`\n📄 Reading JSON file: ${jsonFilePath}`);
-    
+
     if (!fs.existsSync(jsonFilePath)) {
       throw new Error(`JSON file not found: ${jsonFilePath}`);
     }
-    
+
     const jsonData = JSON.parse(fs.readFileSync(jsonFilePath, 'utf8'));
     console.log('✅ JSON file loaded successfully');
 
@@ -163,13 +163,13 @@ async function bootstrap() {
     console.log('\n📊 Final statistics:');
     const finalStats = await mongoDbDataService.getDataStatistics();
     console.log('✅ Seeding completed!', finalStats);
-    
+
     console.log('\n🎉 MongoDB seeding completed successfully!');
     console.log('📝 Next steps:');
     console.log('1. Run: pnpm run ingest:mongodb');
     console.log('2. Run: pnpm start:dev');
     console.log('3. Test the chatbot!');
-    
+
   } catch (error) {
     console.error('❌ Error during seeding:', error);
     console.log('\n🔧 Troubleshooting:');
@@ -183,4 +183,4 @@ async function bootstrap() {
 }
 
 // Chạy ứng dụng
-bootstrap(); 
+bootstrap();

@@ -1,4 +1,4 @@
-import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
+import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 

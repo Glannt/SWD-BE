@@ -4,7 +4,7 @@ import { Major } from './major.entity';
 import { AdmissionYear } from './admission-year.entity';
 import { Campus } from './campus.entity';
 import { Types } from 'mongoose';
-import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
+import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 
 @Schema({ timestamps: true, collection: 'majorAdmissionQuotas' })
 export class MajorAdmissionQuota extends Document {

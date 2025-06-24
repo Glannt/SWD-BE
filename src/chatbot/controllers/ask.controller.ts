@@ -3,10 +3,13 @@ import { ApiTags, ApiOperation, ApiResponse, ApiBody } from '@nestjs/swagger';
 import { AskService } from '../services/ask.service';
 import { AskQuestionDto } from '../dto/ask-question.dto';
 import { AskResponseDto } from '../dto/ask-response.dto';
+import { Logger } from '@nestjs/common';
 
 @Controller('chatbot')
 @ApiTags('chatbot')
 export class AskController {
+  private readonly logger = new Logger(AskController.name);
+
   constructor(private readonly askService: AskService) {}
 
   /**
@@ -29,9 +32,10 @@ export class AskController {
   @ApiResponse({ status: 404, description: 'Not found - no answer generated' })
   @ApiResponse({ status: 500, description: 'Internal server error - AI service unavailable' })
   async ask(@Body() askQuestionDto: AskQuestionDto): Promise<AskResponseDto> {
-    console.log('🤖 Pinecone Chatbot - Received question:', askQuestionDto.question);
-    const answer = await this.askService.processQuestion(askQuestionDto.question);
-    console.log('🤖 Pinecone Chatbot - Generated answer:', answer);
+    const { question } = askQuestionDto;
+    const sessionId = "";
+    this.logger.log(`[${sessionId}] Received question: "${question}"`);
+    const answer = await this.askService.processQuestion(askQuestionDto);
     return { answer };
   }
 }

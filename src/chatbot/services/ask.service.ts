@@ -1,14 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { GeminiService } from './gemini.service';
-import { PineconeService } from './pinecone.service';
-import { MongoDbDataService } from './mongodb-data.service';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
+import { forwardRef, Inject, Injectable, Logger } from '@nestjs/common';
+import { AskQuestionDto } from '../dto/ask-question.dto';
+import { MongoDbDataService } from '../../mongo/mongo.service';
+import { PineconeService } from '../../pinecone/pinecone.service';
+import { GeminiService } from '../../gemini/gemini.service';
 
 @Injectable()
 export class AskService {
+  private readonly logger = new Logger(AskService.name);
+
   constructor(
     private readonly geminiService: GeminiService,
     private readonly pineconeService: PineconeService,
+    // @Inject(forwardRef(() => MongoDbDataService))
     private readonly mongoDbDataService: MongoDbDataService,
+    // @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {}
 
   /**
@@ -16,9 +23,10 @@ export class AskService {
    * @param question Câu hỏi của người dùng
    * @returns Câu trả lời được tạo bởi Gemini dựa trên dữ liệu từ MongoDB và Vector DB
    */
-  async processQuestion(question: string): Promise<string> {
+  async processQuestion(askQuestionDto: AskQuestionDto): Promise<string> {
+    const { question } = askQuestionDto;
     const startTime = Date.now();
-    console.log(`🤖 [${new Date().toISOString()}] Processing question: ${question}`);
+    this.logger.log(`🤖 [${new Date().toISOString()}] Processing question: ${question}`);
 
     try {
       // Input validation
@@ -27,30 +35,30 @@ export class AskService {
       }
 
       const cleanQuestion = question.trim();
-      console.log(`📋 Cleaned question: "${cleanQuestion}"`);
+      this.logger.log(`📋 Cleaned question: "${cleanQuestion}"`);
 
       // Bước 1: MongoDB Primary Search (Optimized)
       let context = '';
-      let mongoSuccess = false;
+      const mongoSuccess = false;
 
       try {
-        console.log('🗄️ [STEP 1] Searching MongoDB (Primary Source)...');
-        const mongoContext = await this.mongoDbDataService.getRealtimeContext(cleanQuestion);
+        this.logger.log('🗄️ [STEP 1] Searching MongoDB (Primary Source)...');
+        // const mongoContext = await this.mongoDbDataService.getRealtimeContext(cleanQuestion);
 
-        if (mongoContext && mongoContext.length > 0) {
-          context = mongoContext;
-          mongoSuccess = true;
-          console.log(`✅ MongoDB context found: ${mongoContext.length} chars`);
-        } else {
-          console.log('⚠️ No MongoDB context found');
-        }
+        // if (mongoContext && mongoContext.length > 0) {
+        //   context = mongoContext;
+        //   mongoSuccess = true;
+        //   this.logger.log(`✅ MongoDB context found: ${mongoContext.length} chars`);
+        // } else {
+        //   this.logger.log('⚠️ No MongoDB context found');
+        // }
       } catch (mongoError) {
-        console.error('❌ MongoDB search failed:', mongoError.message);
+        this.logger.error('❌ MongoDB search failed:', mongoError.message);
       }
 
       // Bước 2: Vector Enhancement (Always try for better context)
       try {
-        console.log('🔍 [STEP 2] Vector search for enhanced context...');
+        this.logger.log('🔍 [STEP 2] Vector search for enhanced context...');
         const questionEmbedding = await this.geminiService.createEmbedding(cleanQuestion);
         const searchResults = await this.pineconeService.queryVectors(questionEmbedding, mongoSuccess ? 3 : 5);
 
@@ -68,41 +76,41 @@ export class AskService {
 
           if (mongoSuccess) {
             context = `${context}\n\n--- Thông tin bổ sung từ Vector DB ---\n${vectorContext}`;
-            console.log(`✅ Enhanced MongoDB with ${searchResults.length} vector results`);
+            this.logger.log(`✅ Enhanced MongoDB with ${searchResults.length} vector results`);
           } else {
             context = vectorContext;
-            console.log(`✅ Using ${searchResults.length} vector results as primary context`);
+            this.logger.log(`✅ Using ${searchResults.length} vector results as primary context`);
           }
         } else {
-          console.log('⚠️ No vector results found');
+          this.logger.log('⚠️ No vector results found');
         }
       } catch (vectorError) {
-        console.warn(`⚠️ Vector search failed: ${vectorError.message}`);
+        this.logger.warn(`⚠️ Vector search failed: ${vectorError.message}`);
       }
 
       // Fallback if no context found
       if (!context || context.trim().length === 0) {
-        console.log('⚠️ No context found from any source, using general information');
+        this.logger.log('⚠️ No context found from any source, using general information');
         context = 'Thông tin tổng quan về Đại học FPT: đào tạo công nghệ thông tin, kinh doanh, với nhiều cơ sở tại Việt Nam.';
       }
 
-      console.log(`📄 Final context: ${context.length} chars`);
+      this.logger.log(`📄 Final context: ${context.length} chars`);
 
       // Bước 3: AI Answer Generation (Optimized)
-      console.log('🧠 [STEP 3] Generating AI answer...');
+      this.logger.log('🧠 [STEP 3] Generating AI answer...');
       const answer = await this.geminiService.generateAnswer(context, cleanQuestion);
 
       const processingTime = Date.now() - startTime;
-      console.log(`✅ [SUCCESS] Question processed in ${processingTime}ms`);
+      this.logger.log(`✅ [SUCCESS] Question processed in ${processingTime}ms`);
 
       return answer;
 
     } catch (error) {
       const processingTime = Date.now() - startTime;
-      console.error(`❌ [ERROR] Question processing failed after ${processingTime}ms:`, error.message);
+      this.logger.error(`❌ [ERROR] Question processing failed after ${processingTime}ms:`, error.message);
 
       // Enhanced fallback with error context
-      console.log('🔄 Using enhanced static fallback...');
+      this.logger.log('🔄 Using enhanced static fallback...');
       return this.getFallbackAnswer(question);
     }
   }
@@ -118,11 +126,11 @@ export class AskService {
       const lowerQuestion = question.toLowerCase();
       const contextParts: string[] = [];
 
-      console.log(`🔍 Analyzing question for MongoDB context: "${lowerQuestion}"`);
+      this.logger.log(`🔍 Analyzing question for MongoDB context: "${lowerQuestion}"`);
 
       // Tìm kiếm campus
       if (lowerQuestion.includes('campus') || lowerQuestion.includes('cơ sở') || lowerQuestion.includes('địa chỉ')) {
-        console.log('🏫 Searching for campus information...');
+        this.logger.log('🏫 Searching for campus information...');
         const stats = await this.mongoDbDataService.getDataStatistics();
         if (stats.campuses > 0) {
           // Tìm campus cụ thể nếu có
@@ -132,7 +140,7 @@ export class AskService {
               const campus = await this.mongoDbDataService.getCampusByName(keyword);
               if (campus) {
                 contextParts.push(`Campus ${campus.name}: ${campus.address}. ${campus.contactInfo}. ${campus.descriptionHighlights}`);
-                console.log(`✅ Found campus: ${campus.name}`);
+                this.logger.log(`✅ Found campus: ${campus.name}`);
                 break;
               }
             }
@@ -143,14 +151,14 @@ export class AskService {
       // Tìm kiếm thông tin ngành học - CẢI THIỆN LOGIC
       if (lowerQuestion.includes('ngành') || lowerQuestion.includes('major') || lowerQuestion.includes('chuyên ngành') ||
           lowerQuestion.includes('kỹ thuật') || lowerQuestion.includes('học')) {
-        console.log('🎓 Searching for major information...');
+        this.logger.log('🎓 Searching for major information...');
 
         // Debug: Check data availability first
         const stats = await this.mongoDbDataService.getDataStatistics();
-        console.log('📊 MongoDB stats for major search:', stats);
+        this.logger.log('📊 MongoDB stats for major search:', stats);
 
         if (stats.majors === 0) {
-          console.log('❌ No majors found in MongoDB!');
+          this.logger.log('❌ No majors found in MongoDB!');
         }
 
         // Mở rộng từ khóa tìm kiếm ngành học
@@ -178,11 +186,11 @@ export class AskService {
 
         for (const keyword of majorKeywords) {
           if (lowerQuestion.includes(keyword)) {
-            console.log(`🔍 Found keyword: "${keyword}"`);
+            this.logger.log(`🔍 Found keyword: "${keyword}"`);
             const major = await this.mongoDbDataService.getMajorByCodeOrName(keyword);
             if (major) {
               contextParts.push(`Ngành ${major.name} (${major.code}): ${major.description}. Cơ hội nghề nghiệp: ${major.careerOpportunities}. Tổng tín chỉ: ${major.totalCredits}. Thời gian: ${major.programDuration}`);
-              console.log(`✅ Found major: ${major.name} (${major.code})`);
+              this.logger.log(`✅ Found major: ${major.name} (${major.code})`);
               break;
             }
           }
@@ -190,7 +198,7 @@ export class AskService {
 
         // Nếu không tìm thấy ngành cụ thể, thử tìm tất cả ngành
         if (contextParts.length === 0) {
-          console.log('🔄 No specific major found, getting all majors...');
+          this.logger.log('🔄 No specific major found, getting all majors...');
           const stats = await this.mongoDbDataService.getDataStatistics();
           if (stats.majors > 0) {
             // Lấy một vài ngành phổ biến để giới thiệu
@@ -203,7 +211,7 @@ export class AskService {
 
             if (majorInfo.length > 0) {
               contextParts.push(`FPT University có các ngành đào tạo chính: ${majorInfo.join(', ')} và nhiều ngành khác. Tổng cộng ${stats.majors} ngành đào tạo.`);
-              console.log(`✅ Found general major info: ${stats.majors} majors`);
+              this.logger.log(`✅ Found general major info: ${stats.majors} majors`);
             }
           }
         }
@@ -212,7 +220,7 @@ export class AskService {
       // Tìm kiếm học phí
       if (lowerQuestion.includes('học phí') || lowerQuestion.includes('chi phí') || lowerQuestion.includes('tuition') ||
           lowerQuestion.includes('giá') || lowerQuestion.includes('tiền')) {
-        console.log('💰 Searching for tuition information...');
+        this.logger.log('💰 Searching for tuition information...');
         const majorKeywords = ['se', 'ai', 'is', 'ia', 'ds', 'iot', 'phần mềm', 'trí tuệ', 'an toàn'];
         for (const keyword of majorKeywords) {
           if (lowerQuestion.includes(keyword)) {
@@ -221,7 +229,7 @@ export class AskService {
               const fee = tuitionFees[0];
               const majorInfo = fee.major as any;
               contextParts.push(`Học phí ngành ${majorInfo?.name}: ${fee.baseAmount.toLocaleString('vi-VN')} ${fee.currency} cho ${fee.semesterRange}. Hiệu lực từ: ${fee.effectiveFrom?.toLocaleDateString('vi-VN')}`);
-              console.log(`✅ Found tuition for: ${majorInfo?.name}`);
+              this.logger.log(`✅ Found tuition for: ${majorInfo?.name}`);
               break;
             }
           }
@@ -231,21 +239,21 @@ export class AskService {
       // Tìm kiếm học bổng
       if (lowerQuestion.includes('học bổng') || lowerQuestion.includes('scholarship') ||
           lowerQuestion.includes('hỗ trợ') || lowerQuestion.includes('miễn giảm')) {
-        console.log('🏆 Searching for scholarship information...');
+        this.logger.log('🏆 Searching for scholarship information...');
         const scholarships = await this.mongoDbDataService.getActiveScholarships();
         if (scholarships && scholarships.length > 0) {
           const topScholarships = scholarships.slice(0, 3);
           contextParts.push(`Học bổng hiện có: ${topScholarships.map(s => `${s.name} (${s.coverage}${s.value ? ` - ${s.value.toLocaleString('vi-VN')} VND` : ''})`).join(', ')}. Tổng cộng ${scholarships.length} chương trình học bổng.`);
-          console.log(`✅ Found ${scholarships.length} scholarships`);
+          this.logger.log(`✅ Found ${scholarships.length} scholarships`);
         }
       }
 
       const result = contextParts.length > 0 ? contextParts.join('\n\n') : null;
-      console.log(`📄 MongoDB context result: ${result ? 'Found' : 'Not found'}`);
+      this.logger.log(`📄 MongoDB context result: ${result ? 'Found' : 'Not found'}`);
 
       return result;
     } catch (error) {
-      console.error('❌ Lỗi khi lấy dữ liệu MongoDB realtime:', error);
+      this.logger.error('❌ Lỗi khi lấy dữ liệu MongoDB realtime:', error);
       return null;
     }
   }
@@ -258,7 +266,7 @@ export class AskService {
   private getFallbackAnswer(question: string): string {
     const lowerQuestion = question.toLowerCase();
 
-    console.log(`🔄 Using fallback answer for: "${lowerQuestion}"`);
+    this.logger.log(`🔄 Using fallback answer for: "${lowerQuestion}"`);
 
     // Fallback cho các ngành học cụ thể
     if (lowerQuestion.includes('ngành') || lowerQuestion.includes('kỹ thuật') || lowerQuestion.includes('phần mềm') ||

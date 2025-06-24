@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { AdmissionYear } from './admission-year.entity';
 import { Types } from 'mongoose';
-import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
+import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 
 export enum AdmissionMethod {
   DIRECT = 'Direct',

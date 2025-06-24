@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { User } from './user.entity';
 import { Types } from 'mongoose';
-import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
+import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 
 @Schema({
   timestamps: { createdAt: 'submissionTimestamp' },

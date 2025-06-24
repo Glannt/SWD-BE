@@ -1,8 +1,8 @@
 import { NestFactory } from '@nestjs/core';
-import { AppModule } from '../../app.module';
-import { IngestService } from '../services/ingest.service';
-import { MongoDbDataService } from '../services/mongodb-data.service';
+import { AppModule } from '../app.module';
+import { IngestService } from '../chatbot/services/ingest.service';
 import * as dotenv from 'dotenv';
+import { MongoDbDataService } from '../mongo/mongo.service';
 
 // Load environment variables
 dotenv.config();
@@ -19,7 +19,7 @@ async function bootstrap() {
   console.log('- Gemini API Key:', process.env.GEMINI_API_KEY ? '✅ Configured' : '❌ Missing');
   console.log('- Pinecone API Key:', process.env.PINECONE_API_KEY ? '✅ Configured' : '❌ Missing');
   console.log('- MongoDB URI:', process.env.MONGODB_URI ? '✅ Configured' : '❌ Missing');
-  
+
   const app = await NestFactory.createApplicationContext(AppModule);
   const ingestService = app.get(IngestService);
   const mongoDbDataService = app.get(MongoDbDataService);
@@ -29,7 +29,7 @@ async function bootstrap() {
     console.log('\n🔍 Analyzing MongoDB Data...');
     const stats = await mongoDbDataService.getDataStatistics();
     const totalRecords = stats.campuses + stats.majors + stats.tuitionFees + stats.scholarships;
-    
+
     console.log('📊 MongoDB Collections Analysis:');
     console.log(`   🏫 Campuses: ${stats.campuses} records`);
     console.log(`   🎓 Academic Majors: ${stats.majors} records`);
@@ -37,7 +37,7 @@ async function bootstrap() {
     console.log(`   🏆 Scholarships: ${stats.scholarships} records`);
     console.log(`   ═══════════════════════════════`);
     console.log(`   📝 Total Available: ${totalRecords} records`);
-    
+
     if (totalRecords === 0) {
       console.log('\n❌ Critical: No data available in MongoDB!');
       console.log('\n🔧 Resolution Required:');
@@ -47,7 +47,7 @@ async function bootstrap() {
       console.log('4. Check read permissions for database');
       console.log('\n📋 Expected Collections:');
       console.log('   - campuses (campus information)');
-      console.log('   - majors (academic programs)');  
+      console.log('   - majors (academic programs)');
       console.log('   - tuitionfees (fee structures)');
       console.log('   - scholarships (financial aid)');
       console.log('\n📞 Contact database administrator to populate MongoDB.');
@@ -57,7 +57,7 @@ async function bootstrap() {
     // Comprehensive system health check
     console.log('\n🏥 System Health Check...');
     const systemStatus = await ingestService.checkDataStatus();
-    
+
     console.log('📋 Component Status:');
     console.log(`   MongoDB: ${systemStatus.mongodb.status} - ${systemStatus.mongodb.message || 'No additional info'}`);
     console.log(`   Pinecone: ${systemStatus.pinecone.status} - ${systemStatus.pinecone.message || 'No additional info'}`);
@@ -88,11 +88,11 @@ async function bootstrap() {
     console.log(`📊 Processing ${totalRecords} database records`);
     console.log('⏳ Estimated time: 2-5 minutes (depends on data volume)');
     console.log('🔄 Progress will be shown in batches...');
-    
+
     const startTime = Date.now();
     const chunksProcessed = await ingestService.ingestFromMongoDB();
     const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-    
+
     console.log('\n🎉 MongoDB Ingestion Completed Successfully!');
     console.log('═══════════════════════════════════════════');
     console.log(`📊 Ingestion Summary:`);
@@ -102,59 +102,59 @@ async function bootstrap() {
     console.log(`   🧠 Chunks Generated: ${chunksProcessed}`);
     console.log(`   🎯 Vector Database: Updated`);
     console.log(`   ✅ Status: Ready for Production`);
-    
+
     console.log('\n🔥 Chatbot Capabilities Enhanced:');
     console.log('   🎯 Real-time MongoDB queries (primary)');
     console.log('   🔍 Vector similarity search (context enhancement)');
     console.log('   🧠 AI-powered response generation');
     console.log('   🔄 Intelligent fallback mechanisms');
-    
+
     console.log('\n📝 Next Steps:');
     console.log('1. 🚀 Start the application: pnpm run start:dev');
     console.log('2. 🌐 Access chatbot: http://localhost:3000');
     console.log('3. 🧪 Test with queries about FPT University');
     console.log('4. 📊 Monitor performance via system endpoints');
-    
+
     console.log('\n💡 Maintenance Notes:');
     console.log('   • Re-run this script when MongoDB data is updated');
     console.log('   • Monitor vector database for optimal performance');
     console.log('   • Regular health checks recommended');
     console.log('   • Backup vector embeddings before major updates');
-    
+
     console.log('\n🔗 Useful Commands:');
     console.log('   pnpm run ingest:mongodb  # Re-ingest when data changes');
     console.log('   pnpm run start:dev       # Start development server');
     console.log('   pnpm run test:integration # Run integration tests');
-    
+
   } catch (error) {
     console.error('\n💥 Ingestion Process Failed:', error);
-    
+
     console.log('\n🔧 Comprehensive Troubleshooting Guide:');
     console.log('\n1. 🗄️  MongoDB Issues:');
     console.log('   • Check connection: mongosh --eval "db.adminCommand(\'ping\')"');
     console.log('   • Verify data: mongosh [db] --eval "db.majors.countDocuments()"');
     console.log('   • Test permissions: ensure read access to all collections');
-    
+
     console.log('\n2. 🎯 Pinecone Issues:');
     console.log('   • Validate API key: check account dashboard');
     console.log('   • Confirm index: verify index name exists');
     console.log('   • Test connectivity: curl Pinecone API endpoints');
-    
+
     console.log('\n3. 🧠 Gemini AI Issues:');
     console.log('   • Check API key: verify Google AI credentials');
     console.log('   • Verify quotas: ensure sufficient API usage limits');
     console.log('   • Test embedding: try simple embedding generation');
-    
+
     console.log('\n4. 🔧 Environment Issues:');
     console.log('   • Review .env file: ensure all variables set');
     console.log('   • Check network: verify external API access');
     console.log('   • Validate dependencies: pnpm install');
-    
+
     console.log('\n5. 📞 Support Resources:');
     console.log('   • Check logs for detailed error messages');
     console.log('   • Review system status via health endpoints');
     console.log('   • Contact technical team if issues persist');
-    
+
     process.exit(1);
   } finally {
     await app.close();
@@ -163,4 +163,4 @@ async function bootstrap() {
 }
 
 // Execute the ingestion tool
-bootstrap(); 
+bootstrap();

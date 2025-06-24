@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ChatbotModule } from './chatbot/chatbot.module';
 import { RAGModule } from './rag/rag.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
@@ -12,6 +11,10 @@ import { MailModule } from './mail/mail.module';
 import { NestRedisModule } from './redis/redis.module';
 import { DataSeedModule } from './common/services/data-seed.module';
 import { CampusModule } from './campus/campus.module';
+import { PineconeModule } from './pinecone/pinecone.module';
+import { MongoDbDataModule } from './mongo/mongo.module';
+import { GeminiModule } from './gemini/gemini.module';
+import { ChatbotModule } from './chatbot/chatbot.module';
 
 @Module({
   imports: [
@@ -20,7 +23,7 @@ import { CampusModule } from './campus/campus.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    
+
     // Database connection
     MongooseModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
@@ -30,18 +33,22 @@ import { CampusModule } from './campus/campus.module';
       },
       inject: [ConfigService],
     }),
-    
+
     // Core modules
-    ChatbotModule,     // Pinecone-based RAG (exports AskService)
     RAGModule,         // Simplified RAG system
     AuthModule,        // Authentication & Authorization with email verification
     UserModule,        // User management
     ChatModule,        // Chat functionality
-    
+    PineconeModule,
+    MongoDbDataModule,
+    GeminiModule,
+    ChatbotModule,     // Pinecone-based RAG (exports AskService)
+
     // Advanced features
     MailModule,        // Email service for verification
     NestRedisModule,   // Redis caching for sessions/tokens
-    DataSeedModule, CampusModule,    // Auto-seed database from JSON files
+    DataSeedModule,
+    CampusModule,    // Auto-seed database from JSON files
   ],
   controllers: [AppController],
   providers: [AppService],
