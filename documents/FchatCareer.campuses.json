@@ -1,0 +1,50 @@
+[{
+  "_id": {
+    "$oid": "684ef4d135f1693727b82336"
+  },
+  "CampusID": 1,
+  "Name": "Hà Nội",
+  "Address": "Khu Giáo dục và Đào tạo – Khu Công nghệ cao Hòa Lạc – Km29 Đại lộ Thăng Long, H. Thạch Thất, TP. Hà Nội",
+  "ContactInfo": "Điện thoại: (024) 7300 5588, Email: tuyensinhhanoi@fpt.edu.vn",
+  "DescriptionHighlights": "Campus với kiến trúc độc đáo hình rồng, đạt nhiều giải thưởng danh giá như giải nhất 'Kiến trúc Xanh Việt Nam'"
+},
+{
+  "_id": {
+    "$oid": "684ef4d135f1693727b82337"
+  },
+  "CampusID": 2,
+  "Name": "TP.HCM",
+  "Address": "Lô E2a-7, Đường D1 Khu Công nghệ cao, P. Long Thạnh Mỹ, TP. Thủ Đức, TP. Hồ Chí Minh",
+  "ContactInfo": "Điện thoại: (028) 7300 5588, Email: tuyensinhhcm@fpt.edu.vn",
+  "DescriptionHighlights": "Campus với tạo hình những đỉnh núi kỳ công rực rỡ xanh mướt, được ví như 'một kiến trúc đại học xanh độc đáo'"
+},
+{
+  "_id": {
+    "$oid": "684ef4d135f1693727b82338"
+  },
+  "CampusID": 3,
+  "Name": "Đà Nẵng",
+  "Address": "Khu đô thị công nghệ FPT Đà Nẵng, P. Hoà Hải, Q. Ngũ Hành Sơn, TP. Đà Nẵng",
+  "ContactInfo": "Điện thoại: (0236) 730 0999, Email: tuyensinhdanang@fpt.edu.vn",
+  "DescriptionHighlights": "Campus với triết lý thiên nhiên và đô thị giao thoa, đạt giải thưởng 'Designed Award Winning Architecture Projects' từ World Architecture"
+},
+{
+  "_id": {
+    "$oid": "684ef4d135f1693727b82339"
+  },
+  "CampusID": 4,
+  "Name": "Cần Thơ",
+  "Address": "Số 600 Đường Nguyễn Văn Cừ (nối dài), P. An Bình, Q. Ninh Kiều, TP. Cần Thơ",
+  "ContactInfo": "Điện thoại: (0292) 730 3636, Email: tuyensinhcantho@fpt.edu.vn",
+  "DescriptionHighlights": "Campus với lối kiến trúc châu Âu đương đại, được mệnh danh là 'ngôi trường mọc lên ở trời Tây'"
+},
+{
+  "_id": {
+    "$oid": "684ef4d135f1693727b8233a"
+  },
+  "CampusID": 5,
+  "Name": "Quy Nhơn",
+  "Address": "Khu đô thị mới An Phú Thịnh, Phường Nhơn Bình & Phường Đống Đa, TP. Quy Nhơn, Bình Định",
+  "ContactInfo": "Điện thoại: (0256) 7300 999, Email: tuyensinhquynhon@fpt.edu.vn",
+  "DescriptionHighlights": "Campus AI được thiết kế bởi Huni Architectes (Pháp), lấy cảm hứng từ các khối bo mạch điện tử"
+}]

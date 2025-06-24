@@ -8,15 +8,18 @@ import {
   Request,
   Res,
   UseGuards,
+  BadRequestException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { User } from 'src/common/decorators/user.decorator';
+import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
+import { User } from '../common/decorators/user.decorator';
 import { Response } from 'express';
-import { IUser } from 'src/common/interfaces/user.interface';
-import { RegisterDto } from 'src/user/dtos/create-user.dto';
-import { ResponseMessage } from 'src/common/decorators/message.decorator';
+import { IUser } from '../common/interfaces/user.interface';
+import { RegisterDto } from '../user/dtos/create-user.dto';
+import { ResponseMessage } from '../common/decorators/message.decorator';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { MESSAGES } from '../common/constants/messages.constants';
 
 @Controller('auth')
 export class AuthController {
@@ -35,8 +38,6 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad request' })
   @Post('logout')
   async logout(@User() user: IUser, @Res({ passthrough: true }) res: Response) {
-    console.log('toi dai');
-
     return this.authService.logout(user, res);
   }
 
@@ -45,8 +46,12 @@ export class AuthController {
   @ApiOperation({ summary: 'Register a new user account' })
   @ApiResponse({ status: 201, description: 'User registered successfully.' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  handleRegister(@Body() registerDTO: RegisterDto) {
-    return this.authService.register(registerDTO);
+  async handleRegister(@Body() registerDTO: RegisterDto) {
+    const result = await this.authService.register(registerDTO);
+    if (!result) {
+      throw new BadRequestException(MESSAGES.AUTH.REGISTER_FAILED);
+    }
+    return result;
   }
 
   @ResponseMessage('Verify email')

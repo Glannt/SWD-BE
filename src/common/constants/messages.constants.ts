@@ -10,6 +10,8 @@ export const MESSAGES = {
     INVALID_VERIFICATION_TOKEN: 'Invalid verification token!',
     ALREADY_VERIFIED: 'Email has already been verified!',
     EMAIL_VERIFIED: 'Email verified successfully!',
+    PASSWORD_CONFIRM_NOT_MATCH: 'Password confirmation does not match!',
+    REGISTER_FAILED: 'Đăng ký thất bại!',
   },
   USERS: {
     CREATE_SUCCESS: 'User created successfully!',

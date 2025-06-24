@@ -5,7 +5,7 @@ import { Campus } from '../../entity/campus.entity';
 import { Major } from '../../entity/major.entity';
 import { TuitionFee } from '../../entity/tution-fees.entity';
 import { Scholarship } from '../../entity/scholarships.entity';
-import { CampusDiscount } from '../../entity/campus-discounts.entity';
+
 
 @Injectable()
 export class MongoDbDataService {
@@ -16,7 +16,7 @@ export class MongoDbDataService {
     @InjectModel(Major.name) private majorModel: Model<Major>,
     @InjectModel(TuitionFee.name) private tuitionFeeModel: Model<TuitionFee>,
     @InjectModel(Scholarship.name) private scholarshipModel: Model<Scholarship>,
-    @InjectModel(CampusDiscount.name) private campusDiscountModel: Model<CampusDiscount>,
+
   ) {}
 
   /**
@@ -305,25 +305,9 @@ export class MongoDbDataService {
     }
   }
 
-  async testCampusDiscounts() {
-    console.log('🧪 Testing Campus Discounts data...');
-    try {
-      const discounts = await this.campusDiscountModel.find().limit(5);
-      console.log(`📊 Found ${discounts.length} campus discounts`);
-      
-      if (discounts.length > 0) {
-        console.log('📝 Sample discount:', JSON.stringify(discounts[0], null, 2));
-        console.log('✅ Campus Discounts entity is working correctly');
-      } else {
-        console.log('⚠️ No campus discounts found in database');
-      }
-      
-      return discounts;
-    } catch (error) {
-      console.error('❌ Error testing campus discounts:', error);
-      throw error;
-    }
-  }
+
+
+
 
   /**
    * Export toàn bộ collections với structure và sample data
@@ -336,7 +320,7 @@ export class MongoDbDataService {
       
       // List các collections đã biết trước
       const knownCollections = [
-        'campuses', 'majors', 'tuitionFees', 'scholarships', 'campusDiscounts',
+        'campuses', 'majors', 'tuitionFees', 'scholarships',
         'admissionPlans', 'admissionYears', 'intakeBatches', 'majorAdmissionQuotas',
         'englishLevels', 'user', 'chatMessages', 'chatSessions', 'schoolRankSubmissions'
       ];
@@ -412,34 +396,34 @@ export class MongoDbDataService {
     const structure: any = {};
     
     for (const [key, value] of Object.entries(doc)) {
-      const fieldPath = prefix ? `${prefix}.${key}` : key;
+      const fullKey = prefix ? `${prefix}.${key}` : key;
       
-      if (value === null || value === undefined) {
-        structure[key] = { type: 'null', value: value };
+      if (value === null) {
+        structure[fullKey] = 'null';
       } else if (Array.isArray(value)) {
-        structure[key] = { 
-          type: 'array', 
-          length: value.length,
-          elementType: value.length > 0 ? typeof value[0] : 'unknown',
-          sample: value.slice(0, 2) // First 2 elements as sample
-        };
-      } else if (typeof value === 'object') {
-        if ((value as any)._id || value.toString().match(/^[0-9a-fA-F]{24}$/)) {
-          structure[key] = { type: 'ObjectId', value: value.toString() };
+        structure[fullKey] = `array[${value.length}]`;
+        if (value.length > 0) {
+          const firstElement = value[0];
+          if (typeof firstElement === 'object' && firstElement !== null) {
+            structure[`${fullKey}[0]`] = this.analyzeDocumentStructure(firstElement, '');
+          } else {
+            structure[`${fullKey}[0]`] = typeof firstElement;
+          }
+        }
+      } else if (typeof value === 'object' && value !== null) {
+        if (value.constructor.name === 'ObjectId') {
+          structure[fullKey] = 'ObjectId';
         } else if (value instanceof Date) {
-          structure[key] = { type: 'Date', value: value.toISOString() };
+          structure[fullKey] = 'Date';
         } else {
-          structure[key] = { 
-            type: 'object', 
-            fields: this.analyzeDocumentStructure(value, fieldPath)
-          };
+          structure[fullKey] = 'object';
+          // Recursively analyze nested objects (limit depth to avoid infinite recursion)
+          if (prefix.split('.').length < 2) {
+            Object.assign(structure, this.analyzeDocumentStructure(value, fullKey));
+          }
         }
       } else {
-        structure[key] = { 
-          type: typeof value, 
-          value: typeof value === 'string' && value.length > 100 ? 
-            value.substring(0, 100) + '...' : value
-        };
+        structure[fullKey] = typeof value;
       }
     }
     

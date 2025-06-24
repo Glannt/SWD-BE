@@ -1,4 +1,4 @@
-import { UserRole, UserStatus } from 'src/entity/user.entity';
+import { UserRole, UserStatus } from '../../entity/user.entity';
 import {
   IsString,
   MinLength,
@@ -10,8 +10,9 @@ import {
   IsBoolean,
 } from 'class-validator';
 import { Prop } from '@nestjs/mongoose';
-import { IntakeBatch } from 'src/entity/intake-batches.entity';
+import { IntakeBatch } from '../../entity/intake-batches.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { OmitType } from '@nestjs/mapped-types';
 
 export class CreateUserDto {
   @ApiProperty({ example: 'jane.doe@example.com' })
@@ -52,8 +53,17 @@ export class CreateUserDto {
   status?: UserStatus;
 }
 
-export class RegisterDto extends CreateUserDto {
+export class RegisterDto extends OmitType(CreateUserDto, ['role'] as const) {
+
+  @ApiProperty({ example: 'password123' })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(6)
+  confirmPassword: string;
+
   @ApiProperty({ example: true })
   @IsBoolean()
   isRegister: boolean = true;
 }
+
+

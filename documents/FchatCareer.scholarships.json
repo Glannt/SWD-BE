@@ -1,0 +1,52 @@
+[
+  {
+    "name": "Học bổng Chuyên gia Toàn cầu",
+    "description": "Miễn học phí toàn khóa học và tài trợ chi phí sinh hoạt 30 triệu đồng/năm. Sau khi tốt nghiệp được lựa chọn làm việc tại 1 trong 5 quốc gia: Mỹ, Nhật Bản, Hàn Quốc, Đức và Singapore",
+    "value": 100,
+    "coverage": "percentage",
+    "requirements": "Thí sinh đạt giải Nhất/Nhì/Ba trong kỳ thi chọn học sinh giỏi cấp quốc gia, đăng ký học ngành Công nghệ thông tin và vượt qua phỏng vấn với giám đốc FPT tại các quốc gia",
+    "applicationProcess": "Nộp đơn cho Trường Đại học FPT, vượt qua vòng hồ sơ và dự phỏng vấn",
+    "deadlineInfo": "Theo lịch tuyển sinh chung",
+    "isActive": true
+  },
+  {
+    "name": "Học bổng Học đường",
+    "description": "Miễn học phí toàn khóa học dành cho tất cả các trường THPT thuộc Khu vực 1, mỗi trường một suất",
+    "value": 100,
+    "coverage": "percentage",
+    "requirements": "Học sinh có SchoolRank thuộc Top10, đăng ký nguyện vọng với Ban giám hiệu trường THPT",
+    "applicationProcess": "Đăng ký nguyện vọng nhận học bổng với Ban giám hiệu trường THPT nơi đang học",
+    "deadlineInfo": "Theo lịch tuyển sinh chung",
+    "isActive": true
+  },
+  {
+    "name": "Học bổng Toàn phần",
+    "description": "Miễn học phí toàn khóa học",
+    "value": 100,
+    "coverage": "percentage",
+    "requirements": "Nằm trong thành phần đội tuyển Olympic quốc tế hoặc đạt giải Nhất HSG quốc gia hoặc đạt điểm >= 90% thi đánh giá năng lực ĐHQG hoặc điểm TB >= 9 thi tốt nghiệp THPT",
+    "applicationProcess": "Nộp hồ sơ chứng minh đạt tiêu chí",
+    "deadlineInfo": "Theo lịch tuyển sinh chung",
+    "isActive": true
+  },
+  {
+    "name": "Học bổng 2 năm",
+    "description": "Miễn học phí 2 năm đầu tiên",
+    "value": 50,
+    "coverage": "percentage",
+    "requirements": "Đạt giải Nhì HSG quốc gia hoặc đạt điểm >= 85% thi đánh giá năng lực ĐHQG hoặc điểm TB >= 8.5 thi tốt nghiệp THPT",
+    "applicationProcess": "Nộp hồ sơ chứng minh đạt tiêu chí",
+    "deadlineInfo": "Theo lịch tuyển sinh chung",
+    "isActive": true
+  },
+  {
+    "name": "Học bổng 1 năm",
+    "description": "Miễn học phí năm đầu tiên",
+    "value": 25,
+    "coverage": "percentage",
+    "requirements": "Đạt giải Ba HSG quốc gia hoặc đạt điểm >= 80% thi đánh giá năng lực ĐHQG hoặc điểm TB >= 8 thi tốt nghiệp THPT",
+    "applicationProcess": "Nộp hồ sơ chứng minh đạt tiêu chí",
+    "deadlineInfo": "Theo lịch tuyển sinh chung",
+    "isActive": true
+  }
+]

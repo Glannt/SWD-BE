@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { Campus } from './campus.entity';
 import { IntakeBatch } from './intake-batches.entity';
-import { Types } from 'mongoose';
-import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
+import { Major } from './major.entity';
+import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 
 export enum DiscountType {
   PERCENTAGE = 'percentage',
@@ -52,5 +52,7 @@ export class CampusDiscount extends Document {
 export const CampusDiscountSchema =
   SchemaFactory.createForClass(CampusDiscount);
 CampusDiscountSchema.index({ campus: 1, batch: 1 }, { unique: true });
+
+applySmartIdField(CampusDiscountSchema, CampusDiscount.name, 'campus_discount_id');
 
 applySmartIdField(CampusDiscountSchema, CampusDiscount.name, 'campus_discount_id');

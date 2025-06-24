@@ -1,0 +1,41 @@
+[
+  {
+    "campus": "CampusID_3",
+    "batch": "BatchID_1",
+    "discountName": "Ưu đãi phát triển kinh tế miền Trung",
+    "discountType": "percentage",
+    "discountValue": 30,
+    "conditions": "Áp dụng cho sinh viên học tại campus Đà Nẵng",
+    "startDate": "2025-01-01",
+    "endDate": null,
+    "validFrom": "2025-01-01",
+    "validTo": "2029-12-31",
+    "description": "Ưu đãi 30% học phí toàn khóa học dành cho sinh viên học tại campus Đà Nẵng nhằm thúc đẩy nguồn nhân lực chất lượng cao cho Vùng kinh tế trọng điểm miền Trung"
+  },
+  {
+    "campus": "CampusID_4",
+    "batch": "BatchID_1",
+    "discountName": "Ưu đãi phát triển kinh tế Đồng bằng sông Cửu Long",
+    "discountType": "percentage",
+    "discountValue": 30,
+    "conditions": "Áp dụng cho sinh viên học tại campus Cần Thơ",
+    "startDate": "2025-01-01",
+    "endDate": null,
+    "validFrom": "2025-01-01",
+    "validTo": "2029-12-31",
+    "description": "Ưu đãi 30% học phí toàn khóa học dành cho sinh viên học tại campus Cần Thơ nhằm thúc đẩy nguồn nhân lực chất lượng cao cho Vùng kinh tế trọng điểm Đồng bằng sông Cửu Long"
+  },
+  {
+    "campus": "CampusID_5",
+    "batch": "BatchID_1",
+    "discountName": "Ưu đãi đặc biệt Campus AI Quy Nhơn",
+    "discountType": "percentage",
+    "discountValue": 50,
+    "conditions": "Áp dụng cho sinh viên học tại campus Quy Nhơn",
+    "startDate": "2025-01-01",
+    "endDate": null,
+    "validFrom": "2025-01-01",
+    "validTo": "2029-12-31",
+    "description": "Ưu đãi 50% học phí toàn khóa học dành cho sinh viên học tại campus Quy Nhơn, hỗ trợ phát triển 'thung lũng Silicon' Việt Nam"
+  }
+]

@@ -1,6 +1,6 @@
 import { Types } from 'mongoose';
-import { IntakeBatch } from 'src/entity/intake-batches.entity';
-import { UserRole, UserStatus } from 'src/entity/user.entity';
+import { IntakeBatch } from '../entity/intake-batches.entity';
+import { UserRole, UserStatus } from '../entity/user.entity';
 
 export type UserInterface = {
   _id: Types.ObjectId;

@@ -5,13 +5,13 @@ import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 import { Cache } from 'cache-manager';
 // import { Schema, Types } from 'mongoose';
-import { MESSAGES } from 'src/common/constants/messages.constants';
-import { IUser } from 'src/common/interfaces/user.interface';
-import { User, UserDocument } from 'src/entity/user.entity';
-import { MailService } from 'src/mail/mail.service';
+import { MESSAGES } from '../common/constants/messages.constants';
+import { IUser } from '../common/interfaces/user.interface';
+import { User, UserDocument } from '../entity/user.entity';
+import { MailService } from '../mail/mail.service';
 // import { UserInterface } from 'src/types/user.interface';
-import { RegisterDto } from 'src/user/dtos/create-user.dto';
-import { UserService } from 'src/user/user.service';
+import { RegisterDto } from '../user/dtos/create-user.dto';
+import { UserService } from '../user/user.service';
 import * as uuid from 'uuid';
 @Injectable()
 export class AuthService {
@@ -98,6 +98,9 @@ export class AuthService {
     const existingUser = await this.userService.findOneByEmail(user.email);
     if (existingUser) {
       throw new BadRequestException(MESSAGES.AUTH.EMAIL_EXIST);
+    }
+    if(user.confirmPassword != user.password){
+      throw new BadRequestException(MESSAGES.AUTH.PASSWORD_CONFIRM_NOT_MATCH);
     }
     const userCreated = await this.userService.createUser(user);
     if (!userCreated) return null;

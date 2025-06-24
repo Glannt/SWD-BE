@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
 import { User } from './user.entity';
-import { Types } from 'mongoose';
+import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 
 export enum ChatSessionStatus {
   ACTIVE = 'active',
@@ -27,3 +27,5 @@ export class ChatSession extends Document {
 }
 
 export const ChatSessionSchema = SchemaFactory.createForClass(ChatSession);
+
+applySmartIdField(ChatSessionSchema, ChatSession.name, 'chat_session_id');
