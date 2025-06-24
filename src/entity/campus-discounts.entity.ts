@@ -54,3 +54,5 @@ export const CampusDiscountSchema =
 CampusDiscountSchema.index({ campus: 1, batch: 1 }, { unique: true });
 
 applySmartIdField(CampusDiscountSchema, CampusDiscount.name, 'campus_discount_id');
+
+applySmartIdField(CampusDiscountSchema, CampusDiscount.name, 'campus_discount_id');

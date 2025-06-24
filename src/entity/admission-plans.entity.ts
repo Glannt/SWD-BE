@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { AdmissionYear } from './admission-year.entity';
 import { Types } from 'mongoose';
+import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
 
 export enum AdmissionMethod {
   DIRECT = 'Direct',
@@ -29,8 +30,8 @@ export class AdmissionPlan extends Document {
   @Prop({ required: true })
   endDate: Date;
 
-  @Prop({ type: Object })
-  requirementsJSON: Record<string, any>;
 }
 
 export const AdmissionPlanSchema = SchemaFactory.createForClass(AdmissionPlan);
+
+applySmartIdField(AdmissionPlanSchema, AdmissionPlan.name, 'admission_plan_id');

@@ -1,3 +1,4 @@
+import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -35,3 +36,5 @@ export class Major extends Document {
 }
 
 export const MajorSchema = SchemaFactory.createForClass(Major);
+
+applySmartIdField(MajorSchema, Major.name, 'major_id');

@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ChatSession } from './chat-session.entity';
+import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
 
 export enum MessageSender {
   USER = 'user',
@@ -29,3 +30,5 @@ export class ChatMessage extends Document {
 export const ChatMessageSchema = SchemaFactory.createForClass(ChatMessage);
 ChatMessageSchema.index({ session: 1 });
 ChatMessageSchema.index({ createdAt: 1 });
+
+applySmartIdField(ChatMessageSchema, ChatMessage.name, 'chat_message_id');
