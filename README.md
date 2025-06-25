@@ -1,188 +1,217 @@
-# 🎓 FPT University Chatbot - AI Career Counseling System
+# 🎓 FPT University Chatbot - AI Assistant with Authentication
 
 <p align="center">
   <img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" />
 </p>
 
-> **Chatbot tư vấn nghề nghiệp thông minh sử dụng RAG (Retrieval-Augmented Generation) với MongoDB, Pinecone Vector Database và Google Gemini AI**
+> **Chatbot tư vấn thông minh sử dụng Pinecone Assistant + GPT-4o với hệ thống xác thực người dùng**
 
 ## 📋 Tổng quan
 
-Hệ thống chatbot tư vấn nghề nghiệp cho FPT University với:
-- 🎓 **19+ ngành học** với thông tin chi tiết
-- 🏫 **5 cơ sở** (Hà Nội, TP.HCM, Đà Nẵng, Cần Thơ, Quy Nhon)
-- 💰 **Thông tin học phí** realtime từ database
-- 🏆 **Học bổng và hỗ trợ tài chính**
-- 🤖 **AI-powered responses** với MongoDB + Vector Search
-- 🌱 **Auto-seed database** từ JSON files
+Hệ thống chatbot tư vấn cho FPT University với:
+- 🤖 **Pinecone Assistant** với GPT-4o
+- 🔐 **User Authentication** với JWT + Email verification  
+- 📚 **Document-based Q&A** với citations
+- 🚀 **Production Ready** NestJS architecture
 
-## ⚡ Quick Start - Chỉ 3 lệnh!
+## ⚡ Quick Start - CHỈ 2 LỆNH!
 
 ### Prerequisites
 - Node.js + pnpm
-- MongoDB running on port 27017
+- MongoDB running on port 27017 (cho user data)
 
-### Setup
+### Setup (Hoàn toàn tự động)
 ```bash
-# 1. Clone và install
-git clone [repo-url]
-cd SWD-BE_main
+# 1. Cài đặt dependencies
 pnpm install
 
-# 2. Copy environment file
-cp env.template .env
-
-# 3. Start (auto-seed sẽ chạy tự động)
+# 2. Start server (Tự động upload tài liệu FPT University)
 pnpm run start:dev
 ```
 
-🎉 **Xong!** Chatbot sẵn sàng tại `http://localhost:3000`
+🎉 **XONG!** Chatbot sẵn sàng tại `http://localhost:3000`
 
-**Hệ thống tự động:**
-- ✅ Phát hiện database trống
-- ✅ Seed đầy đủ dữ liệu từ JSON files  
-- ✅ Khởi động ứng dụng với database hoàn chỉnh
-- ✅ Không cần setup thủ công!
+**✅ Tự động hóa hoàn toàn:**
+- ✅ Tự động khởi tạo Pinecone Assistant
+- ✅ Tự động upload tài liệu "THÔNG TIN ĐẠI HỌC FPT 2025.docx"
+- ✅ Tự động kiểm tra và bỏ qua nếu đã có tài liệu
+- ✅ Tự động seed database từ JSON files
+- ✅ Sẵn sàng sử dụng ngay lập tức
+
+### Cấu hình Environment (Optional)
+Nếu muốn sử dụng API keys riêng:
+```bash
+cp env.template .env
+# Cập nhật PINECONE_API_KEY, GEMINI_API_KEY trong .env
+```
 
 ## ✨ Tính năng chính
 
 ### 🔥 Core Features
-- **MongoDB-first approach** - Dữ liệu realtime từ database
-- **Vector Enhanced Search** - RAG với Pinecone + Gemini AI
-- **Auto-seed System** - Tự động setup database khi khởi động
-- **Production Ready** - NestJS architecture với caching
-- **Developer Friendly** - API documentation với Swagger
+- **Pinecone Assistant** - AI Assistant với GPT-4o
+- **User Authentication** - Đăng ký, đăng nhập, xác thực email
+- **Document Processing** - Tự động xử lý PDF, DOC, DOCX
+- **Citation System** - Trích dẫn nguồn chính xác
+- **RESTful API** - Swagger documentation
 
 ### 🎯 AI Capabilities
-- Tư vấn về ngành học và cơ hội nghề nghiệp
-- Thông tin học phí chi tiết theo campus
-- Hướng dẫn về học bổng và tài chính
-- Chat interface thân thiện với real-time responses
+- Trả lời câu hỏi dựa trên tài liệu đã upload
+- Chat interface với real-time responses
+- Automatic document chunking và vectorization
+- Source attribution cho minh bạch thông tin
 
-## 🌱 Auto-Seed System
+## 🏗️ Architecture
 
-### Cách hoạt động
-Khi chạy `pnpm run start:dev`, hệ thống tự động:
-
-1. **Kiểm tra** MongoDB có dữ liệu chưa
-2. **Seed tự động** từ `documents/*.json` nếu database trống
-3. **Skip** nếu đã có dữ liệu
-4. **Log chi tiết** về quá trình seed
-
-```bash
-🔍 Checking database data availability...
-📦 Database is empty. Starting auto-seed process...
-📄 Seeding Campuses... ✅ 5 campuses
-📄 Seeding Majors... ✅ 7 majors  
-📄 Seeding Scholarships... ✅ 5 scholarships
-✅ Auto-seed completed successfully!
+### Simplified Data Flow
 ```
-
-### Nguồn dữ liệu
-```
-documents/
-├── FchatCareer.campuses.json       → campuses collection
-├── FchatCareer.majors.json         → majors collection
-├── FchatCareer.scholarships.json   → scholarships collection
-├── FchatCareer.tuitionFees.json    → tuitionfees collection
-└── ... (các file khác)
-```
-
-### API Management
-```http
-GET /system/data-seed/status        # Check auto-seed status
-POST /system/data-seed/seed         # Manual seed trigger
-GET /system/data-seed/files         # View available JSON files
-```
-
-## 🛠️ Scripts Available
-
-### Development
-```bash
-pnpm run start:dev          # Development server với auto-seed
-pnpm run start:prod         # Production server
-pnpm run build              # Build for production
-```
-
-### Data Management
-```bash
-pnpm run ingest:mongodb     # Tạo vector embeddings từ MongoDB
-pnpm run seed:mongodb       # Manual seed nếu cần (có thể có lỗi import paths)
-```
-
-### Utilities
-```bash
-pnpm run kill              # Kill tất cả Node processes
-pnpm run restart           # Kill và restart development server
-pnpm run test              # Run tests
-```
-
-## 🏗️ Tech Stack & Architecture
-
-### Data Flow
-```
-User Question
+User Authentication → JWT Token
      ↓
-🗄️ MongoDB Primary Search (realtime data)
-     ↓ (enhance context)
-🔍 Pinecone Vector Search (semantic search)
-     ↓ (AI generation)
-🧠 Gemini AI Response Generation
-     ↓ (fallback nếu cần)
-📝 Static Fallback Responses
+User Question → Pinecone Assistant → GPT-4o → Response (with citations)
 ```
 
 ### Tech Stack
-- **Backend**: NestJS + TypeScript + Express
-- **Database**: MongoDB (primary data)
-- **Vector DB**: Pinecone (768d embeddings)
-- **AI**: Google Gemini (text-embedding-004, gemini-2.0-flash)
+- **Backend**: NestJS + TypeScript
+- **Database**: MongoDB (user data) 
+- **AI**: Pinecone Assistant + GPT-4o
 - **Auth**: JWT + Redis caching
 - **Email**: Nodemailer với verification
 
 ## 📊 API Endpoints
 
-### Chatbot Core
+### 🔐 Authentication
 ```http
-POST /ask
-POST /chatbot/ask
+POST /auth/register                 # User registration
+POST /auth/login                    # User login  
+POST /auth/verify-email             # Email verification
+POST /auth/logout                   # User logout
+```
+
+### 🤖 Chatbot Core
+```http
+POST /ask                          # Chat (backward compatibility)
+POST /assistant/chat               # New chat endpoint
 Content-Type: application/json
 
 {
-  "question": "Học phí ngành kỹ thuật phần mềm là bao nhiêu?"
+  "question": "Học phí ngành kỹ thuật phần mềm là bao nhiêu?",
+  "sessionId": "optional_session_id"
 }
 ```
 
-### System Management
+### 📚 Document Management
 ```http
-GET /system/data-seed/status        # Auto-seed status
-GET /chatbot/system/status          # System health check
-GET /api/docs                       # Swagger documentation
+POST /assistant/upload             # Upload documents
+GET /assistant/status              # Assistant health
+GET /assistant/files               # List uploaded files
 ```
 
-### Authentication
-```http
-POST /auth/register                 # User registration
-POST /auth/login                    # User login
-POST /auth/verify-email             # Email verification
+## 🛠️ Environment Variables
+
+```env
+# Server
+PORT=3000
+
+# Database
+MONGODB_URI=mongodb://localhost:27017/FchatCareer
+
+# AI Services
+PINECONE_API_KEY=your_pinecone_api_key
+GEMINI_API_KEY=your_gemini_api_key
+
+# Authentication
+JWT_ACCESS_TOKEN_SECRET=your_jwt_secret
+JWT_ACCESS_TOKEN_EXPIRATION_TIME=3600s
+
+# Email Service
+MAIL_HOST=smtp.gmail.com
+MAIL_USER=your_email@gmail.com
+MAIL_PASS=your_app_password
+MAIL_FROM=your_email@gmail.com
+
+# Redis (optional for caching)
+REDIS_HOST=localhost
+REDIS_PORT=6379
 ```
 
-## 🎯 Dữ liệu hỗ trợ
+## 🚀 Scripts Available
 
-### Ngành học (19+ ngành)
-- **CNTT**: SE (Kỹ thuật phần mềm), AI (Trí tuệ nhân tạo), IS (Hệ thống thông tin), IA (An toàn thông tin), DS (Khoa học dữ liệu), IOT
-- **Thiết kế**: GD (Thiết kế đồ họa), MC (Đa phương tiện)
-- **Kinh doanh**: MKT (Marketing), BF (Tài chính ngân hàng), BA (Quản trị kinh doanh), HRM (Quản trị nhân lực), ACT (Kế toán), EM (Quản lý sự kiện), HM (Quản trị khách sạn)
-- **Ngôn ngữ**: EL (Ngôn ngữ Anh), JL (Tiếng Nhật), KL (Tiếng Hàn)
+### Development
+```bash
+pnpm run start:dev              # Development server (auto-upload tài liệu)
+pnpm run start:prod             # Production server
+pnpm run build                  # Build for production
+```
 
-### Cơ sở (5 cơ sở)
-- Hà Nội, TP.HCM, Đà Nẵng, Cần Thơ, Quy Nhon
+### AI Assistant (Optional - tự động chạy khi start:dev)
+```bash
+pnpm run assistant:upload       # Manual upload FPT University documents
+pnpm run assistant:status       # Check assistant status
+```
 
-### Thông tin khác
-- Học phí chi tiết theo ngành và campus
-- 8+ loại học bổng với các mức hỗ trợ khác nhau
-- Cơ hội nghề nghiệp sau tốt nghiệp
-- Yêu cầu tuyển sinh và điều kiện đào tạo
+### Utilities
+```bash
+pnpm run lint                   # Code linting
+pnpm run test                   # Run tests
+pnpm run kill                   # Kill all Node processes
+```
+
+## 📚 Usage Examples
+
+### 1. User Registration & Login
+```javascript
+// Register
+POST /auth/register
+{
+  "email": "student@fpt.edu.vn",
+  "password": "SecurePass123",
+  "fullName": "Nguyễn Văn A"
+}
+
+// Login
+POST /auth/login  
+{
+  "email": "student@fpt.edu.vn",
+  "password": "SecurePass123"
+}
+```
+
+### 2. Chat with AI Assistant
+```javascript
+// Chat (requires authentication)
+POST /assistant/chat
+Authorization: Bearer <jwt_token>
+{
+  "question": "Ngành AI học những gì?",
+  "sessionId": "user123_session1"
+}
+
+// Response with citations
+{
+  "answer": "Ngành Trí tuệ nhân tạo tại FPT University...",
+  "citations": [
+    {
+      "position": 45,
+      "references": [
+        {
+          "pages": [12, 13], 
+          "file": {
+            "name": "THÔNG TIN ĐẠI HỌC FPT 2025.docx"
+          }
+        }
+      ]
+    }
+  ]
+}
+```
+
+### 3. Document Upload (Optional - đã tự động)
+```bash
+curl -X POST http://localhost:3000/assistant/upload \
+  -H "Authorization: Bearer <jwt_token>" \
+  -F "file=@./document.pdf"
+```
+
+**Lưu ý**: Tài liệu FPT University đã được tự động upload khi start server.
 
 ## 💡 Ví dụ câu hỏi
 
@@ -191,106 +220,86 @@ POST /auth/verify-email             # Email verification
 "Ngành trí tuệ nhân tạo học những gì?"
 "Cơ sở Hà Nội ở đâu?"
 "Có những học bổng nào?"
-"Ra trường ngành CNTT làm được gì?"
 "Yêu cầu đầu vào ngành AI như thế nào?"
+"Cơ hội nghề nghiệp sau tốt nghiệp?"
 ```
 
 ## 🛠️ Troubleshooting
 
-### MongoDB Issues
+### Authentication Issues
 ```bash
-# Kiểm tra MongoDB service
-mongosh --eval "db.adminCommand('ping')"
+# Check JWT token
+curl -H "Authorization: Bearer <token>" http://localhost:3000/users/profile
 
-# Kiểm tra dữ liệu
-mongosh FchatCareer --eval "show collections"
-mongosh FchatCareer --eval "db.majors.countDocuments()"
+# Reset password
+POST /auth/forgot-password
 ```
 
-### Auto-seed Issues
+### AI Assistant Issues
 ```bash
-# Check seed status
-curl http://localhost:3000/system/data-seed/status
+# Check assistant status
+curl http://localhost:3000/assistant/status
 
-# Manual seed nếu cần
-curl -X POST http://localhost:3000/system/data-seed/seed
-
-# Verify JSON files
-ls -la documents/FchatCareer.*.json
+# View uploaded files
+curl http://localhost:3000/assistant/files
 ```
 
-### API Key Issues
-- **Gemini AI**: https://makersuite.google.com/app/apikey
-- **Pinecone**: https://app.pinecone.io/
-- Đảm bảo APIs enabled và có quota
+### MongoDB Issues  
+```bash
+# Check MongoDB connection
+mongosh mongodb://localhost:27017/FchatCareer
 
-## 📁 Cấu trúc project
+# Restart MongoDB service
+sudo systemctl restart mongod
+```
 
+## 📱 API Documentation
+
+Truy cập Swagger documentation tại: `http://localhost:3000/api/docs`
+
+## 🔧 Development
+
+### Project Structure
 ```
 src/
-├── auth/                    # Authentication module
-├── chatbot/                 # Main chatbot functionality
-│   ├── services/            # Core services (ask, gemini, pinecone, mongodb)
-│   ├── controllers/         # API endpoints
-│   └── cli/                 # Command line tools
-├── common/                  # Shared utilities
-│   ├── services/            # Auto-seed functionality
-│   └── controllers/         # Seed management API
-├── entity/                  # MongoDB entities
-├── user/                    # User management
-├── mail/                    # Email service
-└── config/                  # Configuration
-
-documents/                   # JSON data files (auto-seed source)
-public/                     # Frontend assets
-├── index.html              # Chat interface
+├── auth/                    # 🔐 Authentication & Authorization
+├── user/                    # 👤 User Management
+├── pinecone-assistant/      # 🤖 AI Assistant integration
+├── common/                  # 🛠️ Shared utilities
+├── config/                  # ⚙️ Configuration
+├── entity/                  # 📄 Database entities
+├── mail/                    # 📧 Email service
+└── main.ts                  # 🚀 Application entry point
 ```
+
+### Key Features
+- ✅ JWT Authentication với refresh tokens
+- ✅ Email verification system
+- ✅ User profile management
+- ✅ AI-powered document Q&A
+- ✅ Automatic document processing
+- ✅ Citation và source tracking
+- ✅ Production-ready architecture
 
 ## 🚀 Deployment
 
-### Development
+### Docker
 ```bash
-pnpm run start:dev          # NestJS development với auto-seed
+# Build image
+docker build -t fpt-chatbot .
+
+# Run container
+docker run -p 3000:3000 fpt-chatbot
 ```
 
-### Production
-```bash
-pnpm run build              # Build application
-pnpm run start:prod         # Start production server
-```
-
-### Environment Variables
-```env
-# Required
-MONGODB_URI=mongodb://localhost:27017/FchatCareer
-GEMINI_API_KEY=your_gemini_api_key
-PINECONE_API_KEY=your_pinecone_api_key
-PINECONE_INDEX_NAME=fpt-university-768d
-
-# Optional
-JWT_SECRET=your_jwt_secret
-REDIS_URL=redis://localhost:6379
-MAIL_HOST=smtp.example.com
-```
-
-## 🤝 Contributing
-
-1. Fork project
-2. Tạo feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit changes (`git commit -m 'Add amazing feature'`)
-4. Push to branch (`git push origin feature/amazing-feature`)
-5. Tạo Pull Request
-
-## 📞 Support
-
-- **Developer**: FPT University Team
-- **Email**: daihocfpt@fpt.edu.vn
-- **Hotline**: (024) 7300 1866
-
-## 📝 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
+### Production checklist
+- ✅ Cập nhật production database URLs
+- ✅ Cấu hình email service (SMTP)
+- ✅ Setup Redis cho session caching
+- ✅ Configure reverse proxy (Nginx)
+- ✅ Setup SSL certificates
+- ✅ Configure monitoring và logging
 
 ---
 
-> 🎓 **FPT University Chatbot** - Tư vấn nghề nghiệp thông minh với AI. Được phát triển với ❤️ bởi FPT University Team.
+🎓 **FPT University Chatbot** - Developed with ❤️ using NestJS + Pinecone Assistant

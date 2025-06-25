@@ -1,8 +1,8 @@
 {
   "name": "swd-be",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
+  "description": "FPT University Chatbot - AI Assistant with Authentication",
+  "author": "FPT University Team",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
@@ -12,26 +12,15 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-
-    "ingest": "ts-node src/chatbot/cli/ingest-cli.ts",
-    "setup": "node setup-768d-index.js",
-    "chatbot": "node start-chatbot.js simple",
-    "chatbot:dev": "node start-chatbot.js simple",
-    "chatbot:prod": "node start-chatbot.js nestjs",
-    "deploy": "pnpm run build && pnpm run chatbot:prod",
     "kill": "taskkill /F /IM node.exe 2>nul || echo 'No Node processes to kill'",
-    "restart": "pnpm run kill && pnpm run chatbot",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "seed:mongodb": "ts-node src/chatbot/cli/seed-mongodb-cli.ts",
-    "seed:auto": "echo 'Auto-seed runs automatically on app start. Use manual API endpoints if needed.'",
-    "ingest:mongodb": "ts-node src/cli/ingest-mongodb-cli.ts",
-    "ingest:standalone": "node standalone-ingest.js",
-    "test:integration": "node test-mongodb-integration.js"
+    "assistant:upload": "ts-node src/pinecone-assistant/cli/upload-fpt-docs.ts",
+    "assistant:status": "echo 'Use GET /assistant/status endpoint to check status'"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
@@ -47,7 +36,7 @@
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
     "@nestjs/swagger": "^11.2.0",
-    "@pinecone-database/pinecone": "^4.0.0",
+    "@pinecone-database/pinecone": "^6.1.1",
     "@types/multer": "^1.4.13",
     "bcrypt": "^6.0.0",
     "cache-manager": "^7.0.0",

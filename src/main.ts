@@ -9,8 +9,7 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 import { DataSeedService } from './common/services/data-seed.service';
 import * as path from 'path';
 import cookieParser from 'cookie-parser';
-import { IngestService } from './chatbot/services/ingest.service';
-import { MongoDbDataService } from './mongo/mongo.service';
+import { PineconeAssistantService } from './pinecone-assistant/pinecone-assistant.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -69,7 +68,8 @@ async function bootstrap() {
       'JWT-auth',
     )
     .addTag('app', 'Application endpoints')
-    .addTag('chatbot', 'AI Chatbot endpoints (Pinecone + Gemini)')
+    .addTag('assistant', 'Pinecone Assistant endpoints (Primary AI System)')
+    .addTag('chatbot', 'AI Chatbot endpoints (Legacy Pinecone + Gemini)')
     .addTag('rag', 'RAG Chat endpoints (Simplified + Gemini)')
     .addTag('auth', 'Authentication & Authorization')
     .addTag('users', 'User management')
@@ -100,145 +100,88 @@ async function bootstrap() {
     console.warn('⚠️ Application will continue, but some features may not work without data');
   }
 
-  // init pinecone
-  const ingestService = app.get(IngestService);
-  const mongoDbDataService = app.get(MongoDbDataService);
+  // Initialize Pinecone Assistant and auto-upload documents
+  const pineconeAssistantService = app.get(PineconeAssistantService);
 
   try {
-    // Detailed MongoDB data analysis
-    console.log('\n🔍 Analyzing MongoDB Data...');
-    const stats = await mongoDbDataService.getDataStatistics();
-    const totalRecords = stats.campuses + stats.majors + stats.tuitionFees + stats.scholarships;
-
-    console.log('📊 MongoDB Collections Analysis:');
-    console.log(`   🏫 Campuses: ${stats.campuses} records`);
-    console.log(`   🎓 Academic Majors: ${stats.majors} records`);
-    console.log(`   💰 Tuition Fees: ${stats.tuitionFees} records`);
-    console.log(`   🏆 Scholarships: ${stats.scholarships} records`);
+    // Check Pinecone Assistant status
+    console.log('\n🤖 Checking Pinecone Assistant Status...');
+    const assistantStatus = await pineconeAssistantService.getAssistantStatus();
+    
+    console.log('🎯 Pinecone Assistant Analysis:');
+    console.log(`   🤖 Assistant Status: ${assistantStatus.status}`);
+    console.log(`   ❤️ Health: ${assistantStatus.healthy ? 'Healthy' : 'Unhealthy'}`);
+    console.log(`   📄 Documents: ${assistantStatus.fileCount} files`);
+    console.log(`   ⏰ Created: ${assistantStatus.createdAt ? new Date(assistantStatus.createdAt).toLocaleDateString() : 'Unknown'}`);
     console.log(`   ═══════════════════════════════`);
-    console.log(`   📝 Total Available: ${totalRecords} records`);
 
-    if (totalRecords === 0) {
-      console.log('\n❌ Critical: No data available in MongoDB!');
+    if (!assistantStatus.healthy) {
+      console.log('\n❌ Critical: Pinecone Assistant is not healthy!');
       console.log('\n🔧 Resolution Required:');
-      console.log('1. Verify MongoDB connection string');
-      console.log('2. Confirm database name is correct');
-      console.log('3. Ensure collections exist and contain data');
-      console.log('4. Check read permissions for database');
-      console.log('\n📋 Expected Collections:');
-      console.log('   - campuses (campus information)');
-      console.log('   - majors (academic programs)');
-      console.log('   - tuitionfees (fee structures)');
-      console.log('   - scholarships (financial aid)');
-      console.log('\n📞 Contact database administrator to populate MongoDB.');
-      process.exit(1);
+      console.log('1. Verify PINECONE_API_KEY is valid and active');
+      console.log('2. Check Pinecone service status');
+      console.log('3. Ensure sufficient quota in your Pinecone account');
+      console.log('4. Verify network connectivity to Pinecone');
+      console.log('\n📞 Visit https://app.pinecone.io for account management.');
+      // Don't exit - let the app start but with warnings
+    } else {
+      // Auto-upload FPT documents if healthy
+      console.log('\n📚 Auto-uploading FPT University documents...');
+      const uploadSuccess = await pineconeAssistantService.autoUploadFPTDocuments();
+      
+      if (uploadSuccess) {
+        console.log('✅ Documents are ready!');
+      } else {
+        console.log('⚠️ Documents upload failed, but application will continue');
+      }
     }
 
-    // Comprehensive system health check
-    console.log('\n🏥 System Health Check...');
-    const systemStatus = await ingestService.checkDataStatus();
-
-    console.log('📋 Component Status:');
-    console.log(`   MongoDB: ${systemStatus.mongodb.status} - ${systemStatus.mongodb.message || 'No additional info'}`);
-    console.log(`   Pinecone: ${systemStatus.pinecone.status} - ${systemStatus.pinecone.message || 'No additional info'}`);
-    console.log(`   Recommendation: ${systemStatus.recommendation}`);
-
-    if (systemStatus.mongodb.status !== 'healthy') {
-      console.log('\n❌ MongoDB Health Check Failed!');
-      console.log('🔧 MongoDB Troubleshooting:');
-      console.log('1. Verify MongoDB service is running');
-      console.log('2. Check network connectivity to MongoDB server');
-      console.log('3. Validate connection credentials');
-      console.log('4. Ensure database permissions are sufficient');
-      process.exit(1);
-    }
-
-    if (systemStatus.pinecone.status !== 'healthy') {
-      console.log('\n❌ Pinecone Health Check Failed!');
-      console.log('🔧 Pinecone Troubleshooting:');
-      console.log('1. Verify PINECONE_API_KEY is correct and active');
-      console.log('2. Confirm PINECONE_INDEX_NAME exists in your account');
-      console.log('3. Check Pinecone service status');
-      console.log('4. Verify network access to Pinecone APIs');
-      process.exit(1);
-    }
-
-    // Execute MongoDB-exclusive ingestion
-    console.log(`\n🚀 Initiating MongoDB Data Ingestion...`);
-    console.log(`📊 Processing ${totalRecords} database records`);
-    console.log('⏳ Estimated time: 2-5 minutes (depends on data volume)');
-    console.log('🔄 Progress will be shown in batches...');
-
-    const startTime = Date.now();
-    const chunksProcessed = await ingestService.ingestFromMongoDB();
-    const duration = ((Date.now() - startTime) / 1000).toFixed(2);
-
-    console.log('\n🎉 MongoDB Ingestion Completed Successfully!');
+    console.log('\n✅ Pinecone Assistant Ready!');
     console.log('═══════════════════════════════════════════');
-    console.log(`📊 Ingestion Summary:`);
-    console.log(`   ⏱️  Duration: ${duration} seconds`);
-    console.log(`   📥 Source: MongoDB Database`);
-    console.log(`   📄 Records Processed: ${totalRecords}`);
-    console.log(`   🧠 Chunks Generated: ${chunksProcessed}`);
-    console.log(`   🎯 Vector Database: Updated`);
-    console.log(`   ✅ Status: Ready for Production`);
+    console.log('🎯 System Overview:');
+    console.log('   📚 Knowledge Source: Pinecone Assistant');
+    console.log('   🤖 AI Model: GPT-4o via Pinecone');
+    console.log('   📄 Document Processing: Automatic chunking & vectorization');
+    console.log('   🔍 Search: Semantic similarity with citations');
+    console.log('   ✅ Status: Ready for Production');
 
-    console.log('\n🔥 Chatbot Capabilities Enhanced:');
-    console.log('   🎯 Real-time MongoDB queries (primary)');
-    console.log('   🔍 Vector similarity search (context enhancement)');
-    console.log('   🧠 AI-powered response generation');
-    console.log('   🔄 Intelligent fallback mechanisms');
+    console.log('\n🔥 Enhanced Features:');
+    console.log('   🎯 Document-based Q&A with citations');
+    console.log('   📚 Automatic document processing');
+    console.log('   🧠 GPT-4o powered responses');
+    console.log('   🔗 Source attribution for transparency');
 
-    console.log('\n📝 Next Steps:');
-    console.log('1. 🚀 Start the application: pnpm run start:dev');
-    console.log('2. 🌐 Access chatbot: http://localhost:3000');
-    console.log('3. 🧪 Test with queries about FPT University');
-    console.log('4. 📊 Monitor performance via system endpoints');
-
-    console.log('\n💡 Maintenance Notes:');
-    console.log('   • Re-run this script when MongoDB data is updated');
-    console.log('   • Monitor vector database for optimal performance');
-    console.log('   • Regular health checks recommended');
-    console.log('   • Backup vector embeddings before major updates');
+    console.log('\n📝 Quick Start:');
+    console.log('1. 📤 Upload documents: POST /assistant/upload');
+    console.log('2. 💬 Ask questions: POST /assistant/chat');
+    console.log('3. 📊 Check status: GET /assistant/status');
+    console.log('4. 📋 View files: GET /assistant/files');
 
     console.log('\n🔗 Useful Commands:');
-    console.log('   pnpm run ingest:mongodb  # Re-ingest when data changes');
-    console.log('   pnpm run start:dev       # Start development server');
-    console.log('   pnpm run test:integration # Run integration tests');
+    console.log('   npm run assistant:upload  # Upload FPT University documents');
+    console.log('   npm run start:dev         # Start development server');
+    console.log('   npm run assistant:status  # Check assistant status');
 
   } catch (error) {
-    console.error('\n💥 Ingestion Process Failed:', error);
+    console.error('\n💥 Pinecone Assistant Initialization Failed:', error);
 
-    console.log('\n🔧 Comprehensive Troubleshooting Guide:');
-    console.log('\n1. 🗄️  MongoDB Issues:');
-    console.log('   • Check connection: mongosh --eval "db.adminCommand(\'ping\')"');
-    console.log('   • Verify data: mongosh [db] --eval "db.majors.countDocuments()"');
-    console.log('   • Test permissions: ensure read access to all collections');
+    console.log('\n🔧 Troubleshooting Guide:');
+    console.log('\n1. 🎯 Pinecone Issues:');
+    console.log('   • Validate API key: check PINECONE_API_KEY in .env');
+    console.log('   • Check account: visit https://app.pinecone.io');
+    console.log('   • Verify quotas: ensure sufficient Pinecone usage limits');
 
-    console.log('\n2. 🎯 Pinecone Issues:');
-    console.log('   • Validate API key: check account dashboard');
-    console.log('   • Confirm index: verify index name exists');
-    console.log('   • Test connectivity: curl Pinecone API endpoints');
-
-    console.log('\n3. 🧠 Gemini AI Issues:');
-    console.log('   • Check API key: verify Google AI credentials');
-    console.log('   • Verify quotas: ensure sufficient API usage limits');
-    console.log('   • Test embedding: try simple embedding generation');
-
-    console.log('\n4. 🔧 Environment Issues:');
-    console.log('   • Review .env file: ensure all variables set');
+    console.log('\n2. 🔧 Environment Issues:');
+    console.log('   • Review .env file: ensure PINECONE_API_KEY is set');
     console.log('   • Check network: verify external API access');
-    console.log('   • Validate dependencies: pnpm install');
+    console.log('   • Validate dependencies: npm install');
 
-    console.log('\n5. 📞 Support Resources:');
-    console.log('   • Check logs for detailed error messages');
-    console.log('   • Review system status via health endpoints');
-    console.log('   • Contact technical team if issues persist');
+    console.log('\n3. 📞 Support Resources:');
+    console.log('   • Check Pinecone status: https://status.pinecone.io');
+    console.log('   • Review logs for detailed error messages');
+    console.log('   • Contact Pinecone support if issues persist');
 
-    process.exit(1);
-  } finally {
-    await app.close();
-    console.log('\n👋 Application context closed gracefully.');
+    console.warn('\n⚠️ Application will continue with limited functionality');
   }
 
 

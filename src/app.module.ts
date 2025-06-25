@@ -3,18 +3,12 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { RAGModule } from './rag/rag.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
-import { ChatModule } from './modules/chat/chat.module';
 import { MailModule } from './mail/mail.module';
 import { NestRedisModule } from './redis/redis.module';
 import { DataSeedModule } from './common/services/data-seed.module';
-import { CampusModule } from './campus/campus.module';
-import { PineconeModule } from './pinecone/pinecone.module';
-import { MongoDbDataModule } from './mongo/mongo.module';
-import { GeminiModule } from './gemini/gemini.module';
-import { ChatbotModule } from './chatbot/chatbot.module';
+import { PineconeAssistantModule } from './pinecone-assistant/pinecone-assistant.module';
 
 @Module({
   imports: [
@@ -35,20 +29,14 @@ import { ChatbotModule } from './chatbot/chatbot.module';
     }),
 
     // Core modules
-    RAGModule,         // Simplified RAG system
     AuthModule,        // Authentication & Authorization with email verification
     UserModule,        // User management
-    ChatModule,        // Chat functionality
-    PineconeModule,
-    MongoDbDataModule,
-    GeminiModule,
-    ChatbotModule,     // Pinecone-based RAG (exports AskService)
+    PineconeAssistantModule, // AI Assistant integration
 
-    // Advanced features
+    // Supporting modules
     MailModule,        // Email service for verification
     NestRedisModule,   // Redis caching for sessions/tokens
-    DataSeedModule,
-    CampusModule,    // Auto-seed database from JSON files
+    DataSeedModule,    // Database seeding functionality
   ],
   controllers: [AppController],
   providers: [AppService],
