@@ -22,7 +22,6 @@ import { PineconeAssistantModule } from './pinecone-assistant/pinecone-assistant
     MongooseModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
         const uri = configService.get<string>('MONGODB_URI') || 'mongodb://localhost:27017/FchatCareer';
-        console.log('MongoDB URI:', uri);
         return { uri };
       },
       inject: [ConfigService],

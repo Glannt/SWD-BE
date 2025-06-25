@@ -38,13 +38,13 @@ export class PineconeAssistantService implements OnModuleInit {
         await this.pinecone.createAssistant({
           name: this.assistantName,
           instructions: `Bạn là FPT AI Assistant - trợ lý tư vấn hướng nghiệp thông minh của Đại học FPT.
-          
+
           Nhiệm vụ của bạn:
           - Hỗ trợ học sinh cấp 3 trong việc hiểu rõ về các ngành đào tạo tại FPT University
           - Tư vấn chọn ngành học phù hợp với sở thích và năng lực
           - Cung cấp thông tin về học phí, điều kiện tuyển sinh, cơ hội nghề nghiệp
           - Trả lời bằng tiếng Việt, văn phong thân thiện và rõ ràng
-          
+
           Luôn dựa vào thông tin được cung cấp trong tài liệu. Nếu không có thông tin, hãy trả lời trung thực rằng bạn không biết và gợi ý liên hệ trực tiếp với nhà trường.`,
           region: 'us',
         });
@@ -64,7 +64,7 @@ export class PineconeAssistantService implements OnModuleInit {
   async uploadDocument(filePath: string, metadata?: Record<string, any>) {
     try {
       this.logger.log(`📤 Uploading document: ${filePath}`);
-      
+
       const assistant = this.pinecone.Assistant(this.assistantName);
       const response = await assistant.uploadFile({
         path: filePath,
@@ -85,7 +85,7 @@ export class PineconeAssistantService implements OnModuleInit {
   async chat(question: string, sessionId?: string) {
     try {
       this.logger.log(`🤖 Processing question: ${question}`);
-      
+
       const assistant = this.pinecone.Assistant(this.assistantName);
       const chatResponse = await assistant.chat({
         messages: [{ role: 'user', content: question }],
@@ -170,27 +170,27 @@ export class PineconeAssistantService implements OnModuleInit {
     try {
       // Check if documents already exist
       const status = await this.getAssistantStatus();
-      
+
       if (status.fileCount > 0) {
         this.logger.log('📄 Documents already exist in Pinecone Assistant');
         return true;
       }
 
       this.logger.log('📤 Auto-uploading FPT University documents...');
-      
+
       // Import upload function dynamically to avoid circular dependency
       const { uploadFPTDocuments } = await import('./cli/upload-fpt-docs');
-      
+
       // Execute upload with service instance (this will handle its own logging)
       await uploadFPTDocuments(this);
-      
+
       this.logger.log('✅ Auto-upload completed successfully');
       return true;
-      
+
     } catch (error) {
       this.logger.error('❌ Auto-upload failed:', error.message);
       this.logger.warn('⚠️ Application will continue without documents');
       return false;
     }
   }
-} 
+}
