@@ -46,8 +46,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Register a new user account' })
   @ApiResponse({ status: 201, description: 'User registered successfully.' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  async handleRegister(@Body() registerDTO: RegisterDto) {
-    const result = await this.authService.register(registerDTO);
+  async handleRegister(@Body() registerDTO: RegisterDto, @Req() req: any) {
+    const result = await this.authService.register(registerDTO, req);
     if (!result) {
       throw new BadRequestException(MESSAGES.AUTH.REGISTER_FAILED);
     }

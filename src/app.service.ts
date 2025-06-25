@@ -13,14 +13,14 @@ export class AppService implements OnModuleInit {
 
   async onModuleInit() {
     // Auto-seed database if needed
-    this.logger.log('🌱 Checking database and auto-seeding if needed...');
-    try {
-      await this.dataSeedService.checkAndSeedData();
-      this.logger.log('✅ Database check and seed process completed');
-    } catch (error) {
-      this.logger.error('❌ Error during database seed check:', error);
-      this.logger.warn('⚠️ Application will continue, but some features may not work without data');
-    }
+    // this.logger.log('🌱 Checking database and auto-seeding if needed...');
+    // try {
+    //   await this.dataSeedService.checkAndSeedData();
+    //   this.logger.log('✅ Database check and seed process completed');
+    // } catch (error) {
+    //   this.logger.error('❌ Error during database seed check:', error);
+    //   this.logger.warn('⚠️ Application will continue, but some features may not work without data');
+    // }
 
     // Initialize Pinecone Assistant and auto-upload documents
     try {

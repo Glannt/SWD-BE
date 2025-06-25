@@ -74,6 +74,7 @@
     "@types/jest": "^29.5.14",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^22.15.33",
+    "@types/nodemailer": "^6.4.17",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
     "@types/supertest": "^6.0.3",
