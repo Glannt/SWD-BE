@@ -1,8 +1,9 @@
 import { Controller, Get, Post, Body, HttpCode } from '@nestjs/common';
 import { AppService } from './app.service';
-import { AskService } from './chatbot/services/ask.service';
-import { AskQuestionDto } from './chatbot/dto/ask-question.dto';
-import { AskResponseDto } from './chatbot/dto/ask-response.dto';
+// import { AskService } from './chatbot/services/ask.service'; // Replaced by PineconeAssistantService
+import { PineconeAssistantService } from './pinecone-assistant/pinecone-assistant.service';
+import { ChatRequestDto } from './pinecone-assistant/dto/chat-request.dto';
+import { ChatResponseDto } from './pinecone-assistant/dto/chat-response.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
 
@@ -13,7 +14,7 @@ export class AppController {
 
   constructor(
     private readonly appService: AppService,
-    private readonly askService: AskService,
+    private readonly assistantService: PineconeAssistantService,
   ) {}
 
   @Get()
@@ -35,16 +36,40 @@ export class AppController {
   @ApiResponse({
     status: 200,
     description: 'AI-generated answer based on FPT University knowledge base',
-    type: AskResponseDto
+    type: ChatResponseDto
   })
   @ApiResponse({ status: 400, description: 'Bad request - invalid question format' })
   @ApiResponse({ status: 500, description: 'Internal server error - AI service unavailable' })
   @HttpCode(200)
-  async ask(@Body() askQuestionDto: AskQuestionDto) {
+  async ask(@Body() chatRequestDto: ChatRequestDto): Promise<ChatResponseDto> {
     try {
-      this.logger.log(`Received question: "${askQuestionDto.question}"`);
-      const answer = await this.askService.processQuestion(askQuestionDto);
-      return { answer };
+      this.logger.log(`Received question: "${chatRequestDto.question}"`);
+      const response = await this.assistantService.chat(chatRequestDto.question, chatRequestDto.sessionId);
+      
+      // Transform the response to match our DTO
+      return {
+        answer: response.answer,
+        citations: response.citations?.map((citation: any) => ({
+          position: citation.position,
+          references: citation.references?.map((ref: any) => ({
+            pages: ref.pages,
+            file: {
+              id: ref.file.id,
+              name: ref.file.name,
+              metadata: ref.file.metadata,
+              createdOn: ref.file.createdOn ? new Date(ref.file.createdOn).toISOString() : undefined,
+              updatedOn: ref.file.updatedOn ? new Date(ref.file.updatedOn).toISOString() : undefined,
+              status: ref.file.status,
+              size: ref.file.size,
+            },
+          })),
+        })),
+        usage: response.usage ? {
+          prompt_tokens: (response.usage as any).promptTokens || (response.usage as any).prompt_tokens || 0,
+          completion_tokens: (response.usage as any).completionTokens || (response.usage as any).completion_tokens || 0,
+          total_tokens: (response.usage as any).totalTokens || (response.usage as any).total_tokens || 0,
+        } : undefined,
+      };
     } catch (error) {
       this.logger.error(`Error processing question: ${error.message}`, error.stack);
 
