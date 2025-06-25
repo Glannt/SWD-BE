@@ -94,19 +94,24 @@ export class AuthService {
     return 'LOGOUT SUCCESSFULLY';
   }
 
-  async register(user: RegisterDto) {
+  async register(user: RegisterDto, req?: Request) {
     const existingUser = await this.userService.findOneByEmail(user.email);
     if (existingUser) {
       throw new BadRequestException(MESSAGES.AUTH.EMAIL_EXIST);
     }
-    if(user.confirmPassword != user.password){
+    if (user.confirmPassword != user.password) {
       throw new BadRequestException(MESSAGES.AUTH.PASSWORD_CONFIRM_NOT_MATCH);
     }
     const userCreated = await this.userService.createUser(user);
     if (!userCreated) return null;
     const { user_id } = userCreated;
     const verificationToken = uuid.v4();
-    await this.mailService.sendVerificationEmail(user.email, verificationToken);
+
+    await this.mailService.sendVerificationEmail(
+      user.email,
+      verificationToken,
+      req,
+    );
     return {
       user_id: user_id,
     };

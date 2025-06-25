@@ -17,7 +17,7 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
 
   // Global configuration - Keep disabled for direct /ask route compatibility
-  // app.setGlobalPrefix(configService.get<string>('GLOBAL_PREFIX') || 'api');
+  app.setGlobalPrefix(configService.get<string>('GLOBAL_PREFIX') || 'api');
 
   // API Versioning
   app.enableVersioning({

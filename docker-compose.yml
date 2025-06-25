@@ -1,0 +1,120 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      # Database
+      - MONGODB_URI_FILE=/run/secrets/mongodb_uri
+      - REDIS_URL=redis://redis:6379
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+      # Mail Configuration
+      - MAIL_SERVICE=gmail
+      - MAIL_USER=tongnguyenthanhdo@gmail.com
+      - MAIL_PASS_FILE=/run/secrets/mail_password
+      - EMAIL_FROM=tongnguyenthanhdo@gmail.com
+
+      # JWT Configuration
+      - JWT_ACCESS_TOKEN_SECRET_FILE=/run/secrets/jwt_access_secret
+      - JWT_REFRESH_TOKEN_SECRET_FILE=/run/secrets/jwt_refresh_secret
+      - JWT_ACCESS_EXPIRE=15m
+      - JWT_REFRESH_EXPIRE=7d
+
+      # Gemini AI Configuration
+      - GEMINI_API_KEY_FILE=/run/secrets/gemini_api_key
+
+      # Pinecone Configuration
+      - PINECONE_API_KEY=pcsk_2F6NgS_KuhGe8eP3td4vaVQGRJqPd3HBFu98Mz4sedkNm5b6AwTPi3rt2xTpcyK33Ppnck
+      - PINECONE_INDEX_NAME=fchat
+
+      # App Configuration
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=http://localhost:3000
+
+      # Optional: Additional configurations
+      - CORS_ORIGIN=*
+      - RATE_LIMIT_TTL=60
+      - RATE_LIMIT_LIMIT=100
+    secrets:
+      - mongodb_uri
+      - mail_password
+      - gemini_api_key
+      - jwt_access_secret
+      - jwt_refresh_secret
+    depends_on:
+      - mongo
+      - redis
+    networks:
+      - backend
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'curl', '-f', 'http://localhost:3000/health']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  mongo:
+    image: mongo:6.0
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      - MONGO_INITDB_DATABASE=${MONGO_DATABASE:-FchatCareer}
+    volumes:
+      - mongo_data:/data/db
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - backend
+    ports:
+      - '27017:27017'
+    healthcheck:
+      test: ['CMD', 'mongosh', '--eval', "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  redis:
+    image: redis:7.2-alpine
+    container_name: redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+    networks:
+      - backend
+    ports:
+      - '6379:6379'
+    healthcheck:
+      test: ['CMD', 'redis-cli', 'ping']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+secrets:
+  mongodb_uri:
+    file: ./secrets/mongodb_uri.txt
+  mail_password:
+    file: ./secrets/mail_password.txt
+  gemini_api_key:
+    file: ./secrets/gemini_api_key.txt
+  jwt_access_secret:
+    file: ./secrets/jwt_access_secret.txt
+  jwt_refresh_secret:
+    file: ./secrets/jwt_refresh_secret.txt
+
+volumes:
+  mongo_data:
+    driver: local
+  redis_data:
+    driver: local
+
+networks:
+  backend:
+    driver: bridge
