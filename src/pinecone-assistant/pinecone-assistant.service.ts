@@ -1,6 +1,7 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Pinecone } from '@pinecone-database/pinecone';
 import { ConfigService } from '@nestjs/config';
+import { ChatsessionService } from '@/chatsession/chatsession.service';
 
 @Injectable()
 export class PineconeAssistantService implements OnModuleInit {
@@ -8,7 +9,10 @@ export class PineconeAssistantService implements OnModuleInit {
   private pinecone: Pinecone;
   private assistantName = 'fpt-university-advisor';
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    private readonly chatSessionService: ChatsessionService,
+  ) {
     this.pinecone = new Pinecone({
       apiKey: this.configService.get<string>('PINECONE_API_KEY'),
     });
@@ -30,7 +34,7 @@ export class PineconeAssistantService implements OnModuleInit {
       // Check if assistant already exists
       const assistants = await this.pinecone.listAssistants();
       const existingAssistant = assistants.assistants?.find(
-        (a) => a.name === this.assistantName
+        (a) => a.name === this.assistantName,
       );
 
       if (!existingAssistant) {
@@ -80,12 +84,30 @@ export class PineconeAssistantService implements OnModuleInit {
   }
 
   /**
-   * Chat with assistant
+   * Chat with assistant with session management
    */
-  async chat(question: string, sessionId?: string) {
+  async chat(
+    question: string,
+    sessionId?: string,
+    userId?: string,
+    anonymousId?: string,
+  ) {
     try {
       this.logger.log(`🤖 Processing question: ${question}`);
+      this.logger.log(
+        `📝 Session ID: ${sessionId || 'new-session'}, User ID: ${userId || 'anonymous'}`,
+      );
 
+      // Get or create session
+      // const session = await this.chatSessionService.getOrCreateSession(
+      //   sessionId,
+      //   userId,
+      //   anonymousId,
+      // );
+
+      // this.logger.log(`📋 Using session: ${session.chat_session_id}`);
+
+      // Get AI response from Pinecone Assistant
       const assistant = this.pinecone.Assistant(this.assistantName);
       const chatResponse = await assistant.chat({
         messages: [{ role: 'user', content: question }],
@@ -93,8 +115,25 @@ export class PineconeAssistantService implements OnModuleInit {
       });
 
       this.logger.log('✅ Answer generated successfully');
+      const answer =
+        chatResponse.message?.content ||
+        'Xin lỗi, tôi không thể trả lời câu hỏi này.';
+
+      // Save both question and answer to session using handleChat
+      const result = await this.chatSessionService.handleChat(
+        question,
+        answer,
+        sessionId,
+        userId,
+        anonymousId,
+      );
+
+      this.logger.log(`💾 Messages saved to session: ${result.sessionId}`);
+
       return {
-        answer: chatResponse.message?.content || 'Xin lỗi, tôi không thể trả lời câu hỏi này.',
+        answer: answer,
+        sessionId: result.sessionId,
+        messageId: result.messageId,
         citations: chatResponse.citations || [],
         usage: chatResponse.usage,
       };
@@ -139,7 +178,7 @@ export class PineconeAssistantService implements OnModuleInit {
     try {
       const assistants = await this.pinecone.listAssistants();
       const assistant = assistants.assistants?.find(
-        (a) => a.name === this.assistantName
+        (a) => a.name === this.assistantName,
       );
 
       if (!assistant) {
@@ -186,7 +225,6 @@ export class PineconeAssistantService implements OnModuleInit {
 
       this.logger.log('✅ Auto-upload completed successfully');
       return true;
-
     } catch (error) {
       this.logger.error('❌ Auto-upload failed:', error.message);
       this.logger.warn('⚠️ Application will continue without documents');
