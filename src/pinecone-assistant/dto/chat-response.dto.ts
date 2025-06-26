@@ -50,21 +50,38 @@ export class ChatUsage {
 export class ChatResponseDto {
   @ApiProperty({
     description: 'Câu trả lời từ AI Assistant',
-    example: 'Học phí ngành Kỹ thuật phần mềm tại FPT University là 20.500.000 VND/học kỳ.',
+    example:
+      'Học phí ngành Kỹ thuật phần mềm tại FPT University là 25.000.000 VNĐ/năm học...',
   })
   answer: string;
 
   @ApiProperty({
-    description: 'Danh sách citations từ tài liệu tham khảo',
-    type: [ChatCitation],
+    description: 'ID của session chat (nếu có session management)',
+    example: 'chat_session_001',
     required: false,
   })
-  citations?: ChatCitation[];
+  sessionId?: string;
 
   @ApiProperty({
-    description: 'Thông tin về token usage',
-    type: ChatUsage,
+    description: 'ID của message (nếu có session management)',
+    example: 'chat_message_001',
     required: false,
   })
-  usage?: ChatUsage;
-} 
+  messageId?: string;
+
+  @ApiProperty({
+    description: 'Danh sách citations từ tài liệu tham khảo',
+    required: false,
+  })
+  citations?: any[];
+
+  @ApiProperty({
+    description: 'Thông tin sử dụng tokens',
+    required: false,
+  })
+  usage?: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}

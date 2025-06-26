@@ -9,6 +9,7 @@ import { MailModule } from './mail/mail.module';
 import { NestRedisModule } from './redis/redis.module';
 import { DataSeedModule } from './common/services/data-seed.module';
 import { PineconeAssistantModule } from './pinecone-assistant/pinecone-assistant.module';
+import { ChatsessionModule } from './chatsession/chatsession.module';
 
 @Module({
   imports: [
@@ -21,21 +22,24 @@ import { PineconeAssistantModule } from './pinecone-assistant/pinecone-assistant
     // Database connection
     MongooseModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
-        const uri = configService.get<string>('MONGODB_URI') || 'mongodb://localhost:27017/FchatCareer';
+        const uri =
+          configService.get<string>('MONGODB_URI') ||
+          'mongodb://localhost:27017/FchatCareer';
         return { uri };
       },
       inject: [ConfigService],
     }),
 
     // Core modules
-    AuthModule,        // Authentication & Authorization with email verification
-    UserModule,        // User management
+    AuthModule, // Authentication & Authorization with email verification
+    UserModule, // User management
     PineconeAssistantModule, // AI Assistant integration
+    ChatsessionModule, // Chat session management
 
     // Supporting modules
-    MailModule,        // Email service for verification
-    NestRedisModule,   // Redis caching for sessions/tokens
-    DataSeedModule,    // Database seeding functionality
+    MailModule, // Email service for verification
+    NestRedisModule, // Redis caching for sessions/tokens
+    DataSeedModule, // Database seeding functionality
   ],
   controllers: [AppController],
   providers: [AppService],

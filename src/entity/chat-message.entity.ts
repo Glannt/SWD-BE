@@ -25,6 +25,9 @@ export class ChatMessage extends Document {
 
   @Prop()
   confidence: number;
+
+  @Prop()
+  chat_message_id: string;
 }
 
 export const ChatMessageSchema = SchemaFactory.createForClass(ChatMessage);

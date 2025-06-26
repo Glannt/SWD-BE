@@ -15,9 +15,27 @@ export class ChatRequestDto {
   @ApiProperty({
     description: 'Session ID (tùy chọn) để track cuộc hội thoại',
     required: false,
-    example: 'session_123',
+    example: 'chat_session_001',
   })
   @IsOptional()
   @IsString()
   sessionId?: string;
-} 
+
+  @ApiProperty({
+    description: 'ID của người dùng đã đăng nhập',
+    example: '507f1f77bcf86cd799439011',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  user_id?: string;
+
+  @ApiProperty({
+    description: 'ID ẩn danh cho người dùng chưa đăng nhập',
+    example: 'anon_user_123',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  anonymousId?: string;
+}

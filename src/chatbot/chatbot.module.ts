@@ -7,6 +7,7 @@ import { ConfigModule } from '../config/config.module';
 import { GeminiModule } from '../gemini/gemini.module';
 import { PineconeModule } from '../pinecone/pinecone.module';
 import { MongoDbDataModule } from '../mongo/mongo.module';
+import { ChatsessionModule } from '../chatsession/chatsession.module';
 
 @Module({
   imports: [
@@ -14,15 +15,10 @@ import { MongoDbDataModule } from '../mongo/mongo.module';
     MongoDbDataModule,
     GeminiModule,
     ConfigModule,
+    ChatsessionModule,
   ],
   controllers: [AskController, SystemController],
-  providers: [
-    AskService,
-    IngestService,
-  ],
-  exports: [
-    AskService,
-    IngestService,
-  ],
+  providers: [AskService, IngestService],
+  exports: [AskService, IngestService],
 })
 export class ChatbotModule {}

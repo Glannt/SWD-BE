@@ -9,7 +9,13 @@ import {
   Logger,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ApiTags, ApiOperation, ApiResponse, ApiConsumes, ApiBody } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiConsumes,
+  ApiBody,
+} from '@nestjs/swagger';
 import { PineconeAssistantService } from './pinecone-assistant.service';
 import { ChatRequestDto } from './dto/chat-request.dto';
 import { ChatResponseDto } from './dto/chat-response.dto';
@@ -29,12 +35,13 @@ export class PineconeAssistantController {
   @Post('chat')
   @ApiOperation({
     summary: 'Tư vấn với FPT AI Assistant',
-    description: 'Gửi câu hỏi tới AI Assistant và nhận câu trả lời với citations từ tài liệu tham khảo',
+    description:
+      'Gửi câu hỏi tới AI Assistant và nhận câu trả lời với citations từ tài liệu tham khảo. Tự động quản lý session chat.',
   })
   @ApiBody({ type: ChatRequestDto })
   @ApiResponse({
     status: 200,
-    description: 'Câu trả lời từ AI Assistant với citations',
+    description: 'Câu trả lời từ AI Assistant với citations và session info',
     type: ChatResponseDto,
   })
   @ApiResponse({ status: 400, description: 'Câu hỏi không hợp lệ' })
@@ -42,14 +49,22 @@ export class PineconeAssistantController {
   async chat(@Body() chatRequest: ChatRequestDto): Promise<ChatResponseDto> {
     try {
       this.logger.log(`Chat request: ${chatRequest.question}`);
+      this.logger.log(
+        `Session ID: ${chatRequest.sessionId || 'new-session'}, User ID: ${chatRequest.user_id || 'anonymous'}`,
+      );
+
       const response = await this.assistantService.chat(
         chatRequest.question,
         chatRequest.sessionId,
+        chatRequest.user_id,
+        chatRequest.anonymousId,
       );
-      
+
       // Transform the response to match our DTO
       return {
         answer: response.answer,
+        sessionId: response.sessionId,
+        messageId: response.messageId,
         citations: response.citations?.map((citation: any) => ({
           position: citation.position,
           references: citation.references?.map((ref: any) => ({
@@ -58,22 +73,39 @@ export class PineconeAssistantController {
               id: ref.file.id,
               name: ref.file.name,
               metadata: ref.file.metadata,
-              createdOn: ref.file.createdOn ? new Date(ref.file.createdOn).toISOString() : undefined,
-              updatedOn: ref.file.updatedOn ? new Date(ref.file.updatedOn).toISOString() : undefined,
+              createdOn: ref.file.createdOn
+                ? new Date(ref.file.createdOn).toISOString()
+                : undefined,
+              updatedOn: ref.file.updatedOn
+                ? new Date(ref.file.updatedOn).toISOString()
+                : undefined,
               status: ref.file.status,
               size: ref.file.size,
             },
           })),
         })),
-        usage: response.usage ? {
-          prompt_tokens: (response.usage as any).promptTokens || (response.usage as any).prompt_tokens || 0,
-          completion_tokens: (response.usage as any).completionTokens || (response.usage as any).completion_tokens || 0,
-          total_tokens: (response.usage as any).totalTokens || (response.usage as any).total_tokens || 0,
-        } : undefined,
+        usage: response.usage
+          ? {
+              prompt_tokens:
+                (response.usage as any).promptTokens ||
+                (response.usage as any).prompt_tokens ||
+                0,
+              completion_tokens:
+                (response.usage as any).completionTokens ||
+                (response.usage as any).completion_tokens ||
+                0,
+              total_tokens:
+                (response.usage as any).totalTokens ||
+                (response.usage as any).total_tokens ||
+                0,
+            }
+          : undefined,
       };
     } catch (error) {
       this.logger.error('Chat error:', error);
-      throw new BadRequestException('Không thể xử lý câu hỏi của bạn. Vui lòng thử lại.');
+      throw new BadRequestException(
+        'Không thể xử lý câu hỏi của bạn. Vui lòng thử lại.',
+      );
     }
   }
 
@@ -104,7 +136,10 @@ export class PineconeAssistantController {
         if (allowedTypes.includes(file.mimetype)) {
           cb(null, true);
         } else {
-          cb(new BadRequestException('Chỉ hỗ trợ file PDF, DOC, DOCX, TXT, MD'), false);
+          cb(
+            new BadRequestException('Chỉ hỗ trợ file PDF, DOC, DOCX, TXT, MD'),
+            false,
+          );
         }
       },
       limits: {
@@ -115,7 +150,8 @@ export class PineconeAssistantController {
   @ApiConsumes('multipart/form-data')
   @ApiOperation({
     summary: 'Upload tài liệu',
-    description: 'Upload tài liệu (PDF, DOC, DOCX, TXT, MD) để AI Assistant có thể sử dụng',
+    description:
+      'Upload tài liệu (PDF, DOC, DOCX, TXT, MD) để AI Assistant có thể sử dụng',
   })
   @ApiBody({
     schema: {
@@ -228,4 +264,4 @@ export class PineconeAssistantController {
   async listFiles() {
     return this.assistantService.listFiles();
   }
-} 
+}
