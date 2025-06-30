@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
 import { ConfigService } from '../config/config.service';
 
@@ -7,6 +7,7 @@ export class GeminiService {
   private genAI: GoogleGenerativeAI;
   private embeddingModel: GenerativeModel;
   private chatModel: GenerativeModel;
+  private logger: Logger;
 
   constructor(private configService: ConfigService) {
     // Lấy API key từ ConfigService
@@ -36,6 +37,8 @@ export class GeminiService {
         maxOutputTokens: 8192,
       },
     });
+
+    this.logger = new Logger(GeminiService.name);
   }
 
   /**
@@ -45,21 +48,27 @@ export class GeminiService {
    */
   async createEmbedding(text: string): Promise<number[]> {
     try {
-      console.log(`📝 Đang tạo embedding cho văn bản: ${text.substring(0, 50)}...`);
+      console.log(
+        `📝 Đang tạo embedding cho văn bản: ${text.substring(0, 50)}...`,
+      );
 
       // Gọi API để tạo embedding với cú pháp đúng
       const result = await this.embeddingModel.embedContent(text);
 
       const embedding = result.embedding.values;
 
-      console.log(`✅ Đã tạo embedding thành công với ${embedding.length} chiều`);
+      console.log(
+        `✅ Đã tạo embedding thành công với ${embedding.length} chiều`,
+      );
       return embedding;
     } catch (error) {
       console.error('❌ Lỗi khi tạo embedding:', error);
 
       // Trả về vector giả lập với kích thước 768 (phù hợp với text-embedding-004)
       console.log('🔄 Trả về vector giả lập với kích thước 768');
-      return Array(768).fill(0).map(() => Math.random() - 0.5);
+      return Array(768)
+        .fill(0)
+        .map(() => Math.random() - 0.5);
     }
   }
 
@@ -114,11 +123,24 @@ export class GeminiService {
       const response = result.response;
       const answer = response.text();
 
-      console.log(`✅ Đã tạo câu trả lời thành công: ${answer.substring(0, 100)}...`);
+      console.log(
+        `✅ Đã tạo câu trả lời thành công: ${answer.substring(0, 100)}...`,
+      );
       return answer;
     } catch (error) {
       console.error('❌ Lỗi khi tạo câu trả lời:', error);
       return 'Xin lỗi, hiện tại tôi không thể trả lời câu hỏi của bạn do gặp sự cố kỹ thuật. Vui lòng thử lại sau hoặc liên hệ (024) 7300 1866 để được hỗ trợ trực tiếp.';
+    }
+  }
+
+  async generateText(prompt: string): Promise<string> {
+    try {
+      const result = await this.chatModel.generateContent(prompt);
+      const response = result.response;
+      return response.text();
+    } catch (error) {
+      this.logger.error('Error generating text from Gemini:', error);
+      throw new Error('Failed to generate text from LLM.');
     }
   }
 }

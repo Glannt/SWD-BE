@@ -2,6 +2,8 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Pinecone } from '@pinecone-database/pinecone';
 import { ConfigService } from '@nestjs/config';
 import { ChatsessionService } from '@/chatsession/chatsession.service';
+import { HubspotService } from '../hubspot/hubspot.service';
+import { GeminiService } from '../gemini/gemini.service';
 
 @Injectable()
 export class PineconeAssistantService implements OnModuleInit {
@@ -9,9 +11,17 @@ export class PineconeAssistantService implements OnModuleInit {
   private pinecone: Pinecone;
   private assistantName = 'fpt-university-advisor';
 
+  // State machine for collecting user info for HubSpot
+  private userState = new Map<
+    string,
+    { step: 'email' | 'firstname' | 'lastname' | 'done'; data: any }
+  >();
+
   constructor(
     private configService: ConfigService,
     private readonly chatSessionService: ChatsessionService,
+    private readonly hubspotService: HubspotService,
+    private readonly geminiService: GeminiService,
   ) {
     this.pinecone = new Pinecone({
       apiKey: this.configService.get<string>('PINECONE_API_KEY'),
@@ -94,20 +104,29 @@ export class PineconeAssistantService implements OnModuleInit {
   ) {
     try {
       this.logger.log(`🤖 Processing question: ${question}`);
+      const effectiveSessionId = sessionId || anonymousId;
+
+      // HubSpot agent logic
+      if (effectiveSessionId && this.userState.has(effectiveSessionId)) {
+        return this.handleHubspotDataCollection(question, effectiveSessionId);
+      }
+
+      // Check if user wants to save info
+      const isInterested = await this.shouldOfferHubspot(question);
+      if (isInterested && effectiveSessionId) {
+        this.userState.set(effectiveSessionId, { step: 'email', data: {} });
+        return {
+          answer:
+            'Tuyệt vời! Tôi có thể giúp bạn lưu thông tin để bộ phận tuyển sinh liên hệ. Vui lòng cung cấp email của bạn trước nhé.',
+          sessionId: effectiveSessionId,
+        };
+      }
+
+      // Default chat flow
       this.logger.log(
         `📝 Session ID: ${sessionId || 'new-session'}, User ID: ${userId || 'anonymous'}`,
       );
 
-      // Get or create session
-      // const session = await this.chatSessionService.getOrCreateSession(
-      //   sessionId,
-      //   userId,
-      //   anonymousId,
-      // );
-
-      // this.logger.log(`📋 Using session: ${session.chat_session_id}`);
-
-      // Get AI response from Pinecone Assistant
       const assistant = this.pinecone.Assistant(this.assistantName);
       const chatResponse = await assistant.chat({
         messages: [{ role: 'user', content: question }],
@@ -119,7 +138,6 @@ export class PineconeAssistantService implements OnModuleInit {
         chatResponse.message?.content ||
         'Xin lỗi, tôi không thể trả lời câu hỏi này.';
 
-      // Save both question and answer to session using handleChat
       const result = await this.chatSessionService.handleChat(
         question,
         answer,
@@ -140,6 +158,77 @@ export class PineconeAssistantService implements OnModuleInit {
     } catch (error) {
       this.logger.error('❌ Failed to chat with assistant:', error);
       throw error;
+    }
+  }
+
+  private async shouldOfferHubspot(userInput: string): Promise<boolean> {
+    const prompt = `
+      User input: "${userInput}"
+      Based on the user input, do they seem interested in getting tư vấn (consultation),
+      đăng ký (registering), or receiving more information that would require personal contact?
+      Answer only "yes" or "no".
+    `;
+    const response = await this.geminiService.generateText(prompt);
+    return response.toLowerCase().includes('yes');
+  }
+
+  private async handleHubspotDataCollection(
+    userInput: string,
+    sessionId: string,
+  ) {
+    const state = this.userState.get(sessionId);
+
+    switch (state.step) {
+      case 'email':
+        state.data.email = userInput;
+        state.step = 'firstname';
+        this.userState.set(sessionId, state);
+        return {
+          answer:
+            'Cảm ơn bạn. Tiếp theo, vui lòng cho tôi biết tên của bạn (first name).',
+          sessionId,
+        };
+
+      case 'firstname':
+        state.data.firstname = userInput;
+        state.step = 'lastname';
+        this.userState.set(sessionId, state);
+        return {
+          answer: 'Rất tốt. Cuối cùng, xin cho biết họ của bạn (last name).',
+          sessionId,
+        };
+
+      case 'lastname':
+        state.data.lastname = userInput;
+        this.userState.delete(sessionId); // Clean up state
+
+        try {
+          this.logger.log('Creating HubSpot contact with data:', state.data);
+          await this.hubspotService.createContact(
+            state.data.email,
+            state.data.firstname,
+            state.data.lastname,
+          );
+          return {
+            answer:
+              'Cảm ơn bạn! Thông tin đã được lưu thành công. Bộ phận tuyển sinh sẽ sớm liên hệ với bạn.',
+            sessionId,
+          };
+        } catch (error) {
+          if (error.code === 409) {
+            return {
+              answer:
+                'Thông tin của bạn đã được ghi nhận trước đó. Cảm ơn bạn đã quan tâm!',
+              sessionId,
+            };
+          }
+          this.logger.error('Failed to create HubSpot contact:', error);
+          return {
+            answer:
+              'Đã có lỗi xảy ra khi lưu thông tin của bạn. Vui lòng thử lại sau.',
+            sessionId,
+          };
+        }
     }
   }
 
