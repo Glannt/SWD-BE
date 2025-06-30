@@ -22,6 +22,10 @@ export class UserService {
     return this.userModel.findById(id).exec();
   }
 
+  async findOneById(user_id: string): Promise<User | null> {
+    return this.userModel.findOne({ user_id: user_id }).lean().exec();
+  }
+
   async createUser(userDTO: CreateUserDto | RegisterDto) {
     const existedUser = await this.findOneByEmail(userDTO.email);
     if (existedUser) {
@@ -84,6 +88,13 @@ export class UserService {
 
   async markAsVerified(userId: string): Promise<void> {
     await this.userModel.findByIdAndUpdate(userId, { isVerified: true }).exec();
+  }
+
+  async updatePassword(userId: string, newPassword: string): Promise<void> {
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    await this.userModel
+      .findByIdAndUpdate(userId, { password: hashedPassword })
+      .exec();
   }
 
   isCreateUserDto(obj: unknown): obj is CreateUserDto {

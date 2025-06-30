@@ -16,7 +16,6 @@ import { EnglishLevel, EnglishLevelSchema } from '../../entity/english-levels.en
 import { IntakeBatch, IntakeBatchSchema } from '../../entity/intake-batches.entity';
 import { MajorAdmissionQuota, MajorAdmissionQuotaSchema } from '../../entity/major-admisson-quotas.entity';
 import { User, UserSchema } from '../../entity/user.entity';
-import { CampusModule } from '../../campus/campus.module';
 
 @Module({
   imports: [
@@ -34,7 +33,6 @@ import { CampusModule } from '../../campus/campus.module';
       { name: MajorAdmissionQuota.name, schema: MajorAdmissionQuotaSchema },
       { name: User.name, schema: UserSchema },
     ]),
-    CampusModule,
   ],
   controllers: [DataSeedController],
   providers: [DataSeedService],

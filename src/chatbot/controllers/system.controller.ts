@@ -1,8 +1,10 @@
 import { Controller, Get, Param } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { MongoDbDataService } from '../services/mongodb-data.service';
-import { PineconeService } from '../services/pinecone.service';
-import { GeminiService } from '../services/gemini.service';
+
+
+import { MongoDbDataService } from '../../mongo/mongo.service';
+import { PineconeService } from '../../pinecone/pinecone.service';
+import { GeminiService } from '../../gemini/gemini.service';
 
 @Controller('chatbot/system')
 @ApiTags('chatbot-system')

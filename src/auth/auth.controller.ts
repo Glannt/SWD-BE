@@ -5,21 +5,24 @@ import {
   Post,
   Query,
   Req,
-  Request,
   Res,
   UseGuards,
   BadRequestException,
 } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 import { User } from '../common/decorators/user.decorator';
-import { Response } from 'express';
 import { IUser } from '../common/interfaces/user.interface';
 import { RegisterDto } from '../user/dtos/create-user.dto';
 import { ResponseMessage } from '../common/decorators/message.decorator';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { MESSAGES } from '../common/constants/messages.constants';
+import { ForgotPasswordRequestDto } from './dtos/forgot-password.request.dto';
+import { ResetPasswordRequestDto } from './dtos/reset-password.request.dto';
+import { VerifyResetTokenRequestDto } from './dtos/verify-reset-token.request.dto';
+import { ChangePasswordRequestDto } from './dtos/change-password.request.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -46,8 +49,8 @@ export class AuthController {
   @ApiOperation({ summary: 'Register a new user account' })
   @ApiResponse({ status: 201, description: 'User registered successfully.' })
   @ApiResponse({ status: 400, description: 'Bad request' })
-  async handleRegister(@Body() registerDTO: RegisterDto) {
-    const result = await this.authService.register(registerDTO);
+  async handleRegister(@Body() registerDTO: RegisterDto, @Req() req: any) {
+    const result = await this.authService.register(registerDTO, req);
     if (!result) {
       throw new BadRequestException(MESSAGES.AUTH.REGISTER_FAILED);
     }
@@ -64,5 +67,72 @@ export class AuthController {
     @Query('token') token: string,
   ) {
     return this.authService.verifyEmail(email, token);
+  }
+
+  @Post('forgot-password')
+  @ResponseMessage('Send reset password email')
+  @ApiOperation({ summary: 'Send reset password email' })
+  @ApiResponse({ status: 201, description: 'Reset email sent successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  async forgotPassword(
+    @Body() forgotPasswordDto: ForgotPasswordRequestDto,
+    @Req() req: any,
+  ) {
+    return this.authService.forgotPassword(forgotPasswordDto, req);
+  }
+
+  @Post('verify-reset-token')
+  @ResponseMessage('Verify reset password token')
+  @ApiOperation({ summary: 'Verify reset password token' })
+  @ApiResponse({ status: 201, description: 'Token is valid.' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired token' })
+  async verifyResetToken(
+    @Body() verifyResetTokenDto: VerifyResetTokenRequestDto,
+  ) {
+    return this.authService.verifyResetToken(verifyResetTokenDto);
+  }
+
+  @Post('reset-password')
+  @ResponseMessage('Reset password')
+  @ApiOperation({ summary: 'Reset password with token' })
+  @ApiResponse({ status: 201, description: 'Password reset successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  async resetPassword(@Body() resetPasswordDto: ResetPasswordRequestDto) {
+    return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @UseGuards(AuthGuard('jwt')) // JwtStrategy
+  @Post('change-password')
+  @ResponseMessage('Change password')
+  @ApiOperation({ summary: 'Change password for authenticated user' })
+  @ApiResponse({ status: 201, description: 'Password changed successfully.' })
+  @ApiResponse({ status: 400, description: 'Bad request' })
+  @ApiResponse({ status: 401, description: 'Unauthorized' })
+  async changePassword(
+    @Body() changePasswordDto: ChangePasswordRequestDto,
+    @User() user: IUser,
+  ) {
+    return this.authService.changePassword(changePasswordDto, user);
+  }
+
+  @Post('refresh-token')
+  @ResponseMessage('Refresh access token')
+  @ApiOperation({
+    summary: 'Refresh access token using refresh token from cookie',
+  })
+  @ApiResponse({ status: 201, description: 'Token refreshed successfully.' })
+  @ApiResponse({ status: 400, description: 'Invalid or expired refresh token' })
+  async refreshToken(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    // Get refresh token from httpOnly cookie
+    const refreshToken = req.cookies?.refresh_token;
+
+    if (!refreshToken) {
+      throw new BadRequestException('Refresh token not found in cookie');
+    }
+
+    return this.authService.refreshToken(refreshToken, res);
   }
 }
