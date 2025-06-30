@@ -7,7 +7,7 @@ services:
       - '3000:3000'
     environment:
       # Database
-      - MONGODB_URI_FILE=/run/secrets/mongodb_uri
+      - MONGODB_URI_FILE=mongodb://localhost:27017/swd_db?authSource=admin
       - REDIS_URL=redis://redis:6379
       - REDIS_HOST=redis
       - REDIS_PORT=6379
@@ -19,13 +19,13 @@ services:
       - EMAIL_FROM=tongnguyenthanhdo@gmail.com
 
       # JWT Configuration
-      - JWT_ACCESS_TOKEN_SECRET_FILE=/run/secrets/jwt_access_secret
-      - JWT_REFRESH_TOKEN_SECRET_FILE=/run/secrets/jwt_refresh_secret
+      - JWT_ACCESS_TOKEN_SECRET_FILE=d7eb4e1b01c7416d331606536a42a29d74db79d3b9b27565292d6ba6fcc366d8
+      - JWT_REFRESH_TOKEN_SECRET_FILE=54d582f4608c6d15d0528a0bc2dec565d7bc7251dd98febe487cc6ed607f9332
       - JWT_ACCESS_EXPIRE=15m
       - JWT_REFRESH_EXPIRE=7d
 
       # Gemini AI Configuration
-      - GEMINI_API_KEY_FILE=/run/secrets/gemini_api_key
+      - GEMINI_API_KEY_FILE=AIzaSyDDE3qZQpFeI60H51ivhX8Y54q1oaU3O3Q
 
       # Pinecone Configuration
       - PINECONE_API_KEY=pcsk_2F6NgS_KuhGe8eP3td4vaVQGRJqPd3HBFu98Mz4sedkNm5b6AwTPi3rt2xTpcyK33Ppnck
