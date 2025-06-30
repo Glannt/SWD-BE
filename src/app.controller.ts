@@ -7,7 +7,7 @@ import { ChatResponseDto } from './pinecone-assistant/dto/chat-response.dto';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
 
-@Controller()
+@Controller('app')
 @ApiTags('app')
 export class AppController {
   private readonly logger = new Logger(AppController.name);

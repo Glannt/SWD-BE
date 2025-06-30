@@ -114,12 +114,8 @@ export class ChatsessionService {
    * Lấy tất cả messages của một session
    */
   async getSessionMessages(sessionId: string): Promise<ChatMessage[]> {
-    const session = this.chatSessionModel.findOne({
-      chat_session_id: sessionId,
-    });
-
     return this.chatMessageModel
-      .find({ session: session })
+      .find({ session: sessionId })
       .sort({ createdAt: 1 })
       .exec();
   }
