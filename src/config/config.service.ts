@@ -17,9 +17,18 @@ export class ConfigService {
 
     // Debug logging
     console.log('🔧 ConfigService loaded:');
-    console.log('- GEMINI_API_KEY:', this.getGeminiApiKey() ? '✅ Configured' : '❌ Missing');
-    console.log('- PINECONE_API_KEY:', this.getPineconeApiKey() ? '✅ Configured' : '❌ Missing');
-    console.log('- PINECONE_INDEX_NAME:', this.getPineconeIndexName() || 'Not set');
+    console.log(
+      '- GEMINI_API_KEY:',
+      this.getGeminiApiKey() ? '✅ Configured' : '❌ Missing',
+    );
+    console.log(
+      '- PINECONE_API_KEY:',
+      this.getPineconeApiKey() ? '✅ Configured' : '❌ Missing',
+    );
+    console.log(
+      '- PINECONE_INDEX_NAME:',
+      this.getPineconeIndexName() || 'Not set',
+    );
   }
 
   get(key: string): string {
@@ -115,5 +124,9 @@ export class ConfigService {
   // Environment
   getNodeEnv(): string {
     return this.get('NODE_ENV') || 'development';
+  }
+
+  getHubspotApiKey(): string {
+    return this.get('HUBSPOT_API_KEY');
   }
 }

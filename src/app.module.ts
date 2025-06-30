@@ -10,6 +10,7 @@ import { NestRedisModule } from './redis/redis.module';
 import { DataSeedModule } from './common/services/data-seed.module';
 import { PineconeAssistantModule } from './pinecone-assistant/pinecone-assistant.module';
 import { ChatsessionModule } from './chatsession/chatsession.module';
+import { HubspotModule } from './hubspot/hubspot.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ChatsessionModule } from './chatsession/chatsession.module';
     MailModule, // Email service for verification
     NestRedisModule, // Redis caching for sessions/tokens
     DataSeedModule, // Database seeding functionality
+    HubspotModule, // HubSpot integration
   ],
   controllers: [AppController],
   providers: [AppService],

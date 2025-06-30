@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
+    "@hubspot/api-client": "^13.0.0",
     "@keyv/redis": "^4.4.1",
     "@nestjs-modules/mailer": "^2.0.2",
     "@nestjs/cache-manager": "^3.0.1",
