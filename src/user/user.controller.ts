@@ -16,7 +16,13 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import { User, UserRole } from '../entity/user.entity';
 import { UpdateUserDto } from './dtos/update-user.dto';
 // import { UserRole } from './schemas/user.schema';
-import { ApiTags, ApiOperation, ApiResponse, ApiBody, ApiParam } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBody,
+  ApiParam,
+} from '@nestjs/swagger';
 
 @ApiTags('users')
 @Controller('users')
@@ -48,6 +54,8 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'User not found' })
   // @Roles(UserRole.ADMIN, UserRole.STAFF)
   async findOne(@Param('id') id: string) {
+    console.log('Tôi đây');
+
     return this.userService.findById(id);
   }
 

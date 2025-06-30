@@ -31,4 +31,25 @@ export class MailService {
       },
     });
   }
+
+  async sendResetPasswordEmail(email: string, token: string, req?: Request) {
+    // Build reset password URL
+    const baseUrl = req
+      ? `${req.protocol}://${req.get('host')}`
+      : this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+    const resetUrl = `${baseUrl}/reset-password?token=${token}`;
+
+    console.log('Reset Password URL:', resetUrl);
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Reset Your Password - FCHAT CAREER',
+      template: './reset-password',
+      context: {
+        email,
+        resetUrl,
+        token,
+      },
+    });
+  }
 }

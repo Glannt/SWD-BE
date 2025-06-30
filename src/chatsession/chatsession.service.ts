@@ -4,7 +4,6 @@ import { Model, Types } from 'mongoose';
 import { ChatSession, ChatSessionStatus } from '../entity/chat-session.entity';
 import { ChatMessage, MessageSender } from '../entity/chat-message.entity';
 import { User } from '../entity/user.entity';
-import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ChatsessionService {
@@ -115,8 +114,12 @@ export class ChatsessionService {
    * Lấy tất cả messages của một session
    */
   async getSessionMessages(sessionId: string): Promise<ChatMessage[]> {
+    const session = this.chatSessionModel.findOne({
+      chat_session_id: sessionId,
+    });
+
     return this.chatMessageModel
-      .find({ session: sessionId })
+      .find({ session: session })
       .sort({ createdAt: 1 })
       .exec();
   }
