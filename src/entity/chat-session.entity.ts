@@ -13,9 +13,6 @@ export enum ChatSessionStatus {
   collection: 'chatSessions',
 })
 export class ChatSession extends Document {
-  @Prop({ required: true, unique: true })
-  sessionID: string;
-
   @Prop({ type: Types.ObjectId, ref: 'User' })
   user: User;
 
@@ -24,8 +21,13 @@ export class ChatSession extends Document {
 
   @Prop({ enum: ChatSessionStatus, default: ChatSessionStatus.ACTIVE })
   status: ChatSessionStatus;
+
+  @Prop({ unique: true, sparse: true })
+  chat_session_id: string;
 }
 
 export const ChatSessionSchema = SchemaFactory.createForClass(ChatSession);
 
 applySmartIdField(ChatSessionSchema, ChatSession.name, 'chat_session_id');
+
+ChatSessionSchema.index({ chat_session_id: 1 }, { unique: true, sparse: true });

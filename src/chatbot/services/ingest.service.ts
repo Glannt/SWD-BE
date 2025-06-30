@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PineconeService } from './pinecone.service';
-import { GeminiService } from './gemini.service';
-import { MongoDbDataService } from './mongodb-data.service';
 import { v4 as uuidv4 } from 'uuid';
 import * as dotenv from 'dotenv';
+import { MongoDbDataService } from '../../mongo/mongo.service';
+import { PineconeService } from '../../pinecone/pinecone.service';
+import { GeminiService } from '../../gemini/gemini.service';
 
 // Load environment variables
 dotenv.config();
@@ -23,31 +23,31 @@ export class IngestService {
   async getMongoDbChunks(): Promise<{ text: string; metadata: any }[]> {
     try {
       console.log('📂 Đang lấy dữ liệu từ MongoDB...');
-      
+
       // Lấy thống kê trước để kiểm tra
       const stats = await this.mongoDbDataService.getDataStatistics();
       console.log('📊 Thống kê dữ liệu MongoDB:', stats);
-      
+
       if (stats.campuses === 0 && stats.majors === 0 && stats.tuitionFees === 0 && stats.scholarships === 0) {
         throw new Error(`
           ❌ MongoDB không có dữ liệu!
-          
+
           🔧 Vui lòng kiểm tra:
           1. Kết nối MongoDB đúng chưa
-          2. Database name đúng chưa  
+          2. Database name đúng chưa
           3. Collections đã được tạo chưa
           4. Dữ liệu đã được import vào MongoDB chưa
-          
+
           📞 Liên hệ admin để import dữ liệu vào MongoDB.
         `);
       }
-      
+
       console.log(`✅ MongoDB có dữ liệu: ${stats.campuses} campus, ${stats.majors} major, ${stats.tuitionFees} tuition, ${stats.scholarships} scholarship`);
-      
+
       // Lấy tất cả dữ liệu và chuyển thành chunks
-      const chunks = await this.mongoDbDataService.getAllDataAsChunks();
+      const chunks = await this.mongoDbDataService.getAllDataAsChunks2();
       console.log(`📄 Đã tạo ${chunks.length} chunks từ dữ liệu MongoDB có sẵn`);
-      
+
       return chunks;
     } catch (error) {
       console.error('❌ Lỗi khi lấy dữ liệu từ MongoDB:', error);
@@ -62,10 +62,10 @@ export class IngestService {
   async ingestFromMongoDB(): Promise<number> {
     try {
       console.log('🔄 Bắt đầu ingest dữ liệu từ MongoDB có sẵn...');
-      
+
       // Lấy dữ liệu từ MongoDB
       const chunks = await this.getMongoDbChunks();
-      
+
       if (chunks.length === 0) {
         console.log('⚠️ Không có chunks để xử lý');
         return 0;
@@ -86,44 +86,44 @@ export class IngestService {
     try {
       console.log('🚀 Bắt đầu quá trình ingest dữ liệu từ MongoDB...');
       console.log('💡 Hệ thống sẽ sử dụng dữ liệu có sẵn trong MongoDB (không cần seed từ JSON)');
-      
+
       // Kiểm tra kết nối và dữ liệu MongoDB
       const stats = await this.mongoDbDataService.getDataStatistics();
       console.log('📊 Kiểm tra dữ liệu hiện có:', stats);
-      
+
       const totalRecords = stats.campuses + stats.majors + stats.tuitionFees + stats.scholarships;
-      
+
       if (totalRecords === 0) {
         throw new Error(`
           ❌ MongoDB không có dữ liệu để ingest!
-          
+
           📊 Hiện tại: 0 records trong tất cả collections
-          
+
           🔧 Cần thực hiện:
           1. Kiểm tra kết nối MongoDB
           2. Đảm bảo database name đúng (${process.env.MONGODB_URI})
           3. Import dữ liệu vào MongoDB từ nguồn khác
           4. Kiểm tra permissions đọc database
-          
+
           💡 Lưu ý: Hệ thống không còn sử dụng JSON file nữa, chỉ lấy từ MongoDB.
         `);
       }
-      
+
       console.log(`✅ Tìm thấy ${totalRecords} records trong MongoDB:`);
       console.log(`   - 🏫 ${stats.campuses} campuses`);
       console.log(`   - 🎓 ${stats.majors} majors`);
       console.log(`   - 💰 ${stats.tuitionFees} tuition fees`);
       console.log(`   - 🏆 ${stats.scholarships} scholarships`);
-      
+
       // Ingest từ MongoDB
       const processedChunks = await this.ingestFromMongoDB();
-      
+
       console.log('✅ Hoàn thành ingest dữ liệu từ MongoDB!');
       console.log(`📊 Đã xử lý ${processedChunks} chunks từ ${totalRecords} records`);
       console.log('🎯 Vector database đã được cập nhật với dữ liệu realtime từ MongoDB');
-      
+
       return processedChunks;
-      
+
     } catch (error) {
       console.error('❌ Lỗi trong quá trình ingest:', error);
       throw error;
@@ -139,21 +139,21 @@ export class IngestService {
   private async processChunksToVectors(chunks: { text: string; metadata: any }[], source: string): Promise<number> {
     try {
       console.log(`🔄 Bắt đầu tạo embeddings cho ${chunks.length} chunks từ ${source}...`);
-      
+
       let processedCount = 0;
       const batchSize = 10; // Xử lý theo batch để tránh rate limit
-      
+
       for (let i = 0; i < chunks.length; i += batchSize) {
         const batch = chunks.slice(i, i + batchSize);
         console.log(`📦 Đang xử lý batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(chunks.length / batchSize)}...`);
-        
+
         const vectors = [];
-        
+
         for (const chunk of batch) {
           try {
             // Tạo embedding
             const embedding = await this.geminiService.createEmbedding(chunk.text);
-            
+
             // Tạo vector
             const vector = {
               id: uuidv4(),
@@ -166,16 +166,16 @@ export class IngestService {
                 ingestedFrom: 'mongodb-realtime'
               },
             };
-            
+
             vectors.push(vector);
             processedCount++;
-            
+
           } catch (embeddingError) {
             console.error(`❌ Lỗi tạo embedding cho chunk:`, embeddingError);
             continue;
           }
         }
-        
+
         // Lưu batch vào Pinecone
         if (vectors.length > 0) {
           try {
@@ -185,16 +185,16 @@ export class IngestService {
             console.error('❌ Lỗi lưu vào Pinecone:', pineconeError);
           }
         }
-        
+
         // Delay giữa các batch để tránh rate limit
         if (i + batchSize < chunks.length) {
           await new Promise(resolve => setTimeout(resolve, 1000));
         }
       }
-      
+
       console.log(`✅ Hoàn thành xử lý ${processedCount}/${chunks.length} chunks từ ${source}`);
       return processedCount;
-      
+
     } catch (error) {
       console.error(`❌ Lỗi xử lý chunks từ ${source}:`, error);
       throw error;
@@ -220,7 +220,7 @@ export class IngestService {
     try {
       const stats = await this.mongoDbDataService.getDataStatistics();
       const totalRecords = stats.campuses + stats.majors + stats.tuitionFees + stats.scholarships;
-      
+
       if (totalRecords > 0) {
         result.mongodb = {
           status: 'healthy',
@@ -244,7 +244,9 @@ export class IngestService {
 
     // Kiểm tra Pinecone
     try {
-      await this.pineconeService.queryVectors([0.1, 0.2, 0.3], 1); // Test query
+      // The connection is already verified in onModuleInit, so a simple check is enough.
+      // We can describe the index again to confirm it's reachable.
+      await this.pineconeService.getIndex(); // A lightweight check
       result.pinecone = {
         status: 'healthy',
         message: '✅ Connected and operational'
@@ -269,4 +271,4 @@ export class IngestService {
 
     return result;
   }
-} 
+}

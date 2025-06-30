@@ -14,7 +14,7 @@ export class ConfigService {
     } else {
       this.envConfig = process.env as Record<string, string>;
     }
-    
+
     // Debug logging
     console.log('🔧 ConfigService loaded:');
     console.log('- GEMINI_API_KEY:', this.getGeminiApiKey() ? '✅ Configured' : '❌ Missing');
@@ -52,24 +52,68 @@ export class ConfigService {
     return this.get('GLOBAL_PREFIX') || 'api';
   }
 
-
-
   // Database Configuration
   getMongoUri(): string {
     return this.get('MONGODB_URI') || 'mongodb://localhost:27017/fpt-chatbot';
   }
 
   // JWT Configuration
+  getJwtSecret(): string {
+    return this.get('JWT_SECRET') || 'default-jwt-secret';
+  }
+
   getJwtAccessSecret(): string {
-    return this.get('JWT_ACCESS_TOKEN_SECRET') || 'default-secret';
+    return this.get('JWT_ACCESS_TOKEN_SECRET') || 'default-access-secret';
+  }
+
+  getJwtRefreshSecret(): string {
+    return this.get('JWT_REFRESH_TOKEN_SECRET') || 'default-refresh-secret';
   }
 
   getJwtAccessExpire(): string {
     return this.get('JWT_ACCESS_EXPIRE') || '900000';
   }
 
+  getJwtRefreshExpire(): string {
+    return this.get('JWT_REFRESH_EXPIRE') || '86400000';
+  }
+
   // Redis Configuration
   getRedisUrl(): string {
     return this.get('REDIS_URL') || 'redis://localhost:6379';
+  }
+
+  getRedisHost(): string {
+    return this.get('REDIS_HOST') || 'localhost';
+  }
+
+  getRedisPort(): number {
+    return parseInt(this.get('REDIS_PORT'), 10) || 6379;
+  }
+
+  // Mail Configuration
+  getMailHost(): string {
+    return this.get('MAIL_HOST') || '';
+  }
+
+  getMailPort(): number {
+    return parseInt(this.get('MAIL_PORT'), 10) || 2525;
+  }
+
+  getMailUser(): string {
+    return this.get('MAIL_USER') || '';
+  }
+
+  getMailPass(): string {
+    return this.get('MAIL_PASS') || '';
+  }
+
+  getMailFrom(): string {
+    return this.get('MAIL_FROM') || '';
+  }
+
+  // Environment
+  getNodeEnv(): string {
+    return this.get('NODE_ENV') || 'development';
   }
 }

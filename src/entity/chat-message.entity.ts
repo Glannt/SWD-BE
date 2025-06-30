@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { ChatSession } from './chat-session.entity';
-import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
+import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 
 export enum MessageSender {
   USER = 'user',
@@ -25,6 +25,9 @@ export class ChatMessage extends Document {
 
   @Prop()
   confidence: number;
+
+  @Prop()
+  chat_message_id: string;
 }
 
 export const ChatMessageSchema = SchemaFactory.createForClass(ChatMessage);

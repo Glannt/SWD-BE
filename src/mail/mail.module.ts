@@ -15,16 +15,21 @@ import { NestRedisModule } from '../redis/redis.module';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         transport: {
-          host: configService.get<string>('EMAIL_HOST'),
-          port: configService.get<number>('EMAIL_PORT'),
-          secure: configService.get('EMAIL_SECURE') === 'true',
+          // host: configService.get<string>('EMAIL_HOST'),
+          // port: configService.get<number>('EMAIL_PORT'),
+          // secure: configService.get('EMAIL_SECURE') === 'true',
+          // auth: {
+          //   user: configService.get<string>('EMAIL_USER'),
+          //   pass: configService.get<string>('EMAIL_PASSWORD'),
+          // },
+          service: configService.get<string>('MAIL_SERVICE'),
           auth: {
-            user: configService.get<string>('EMAIL_USER'),
-            pass: configService.get<string>('EMAIL_PASSWORD'),
+            user: configService.get<string>('MAIL_USER'),
+            pass: configService.get<string>('MAIL_PASS'), // cần tạo app password
           },
         },
         defaults: {
-          from: `"No Reply" <${configService.get('EMAIL_FROM')}>`,
+          from: `"No Reply" <${configService.get<string>('EMAIL_FROM')}>`,
         },
         template: {
           dir: join(__dirname, 'templates'),

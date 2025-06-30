@@ -9,6 +9,7 @@ import { GlobalExceptionFilter } from './common/filters/global-exception.filter'
 import { DataSeedService } from './common/services/data-seed.service';
 import * as path from 'path';
 import cookieParser from 'cookie-parser';
+import { PineconeAssistantService } from './pinecone-assistant/pinecone-assistant.service';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
@@ -16,8 +17,8 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
 
   // Global configuration - Keep disabled for direct /ask route compatibility
-  // app.setGlobalPrefix(configService.get<string>('GLOBAL_PREFIX') || 'api');
-  
+  app.setGlobalPrefix(configService.get<string>('GLOBAL_PREFIX') || 'api');
+
   // API Versioning
   app.enableVersioning({
     type: VersioningType.URI,
@@ -67,7 +68,8 @@ async function bootstrap() {
       'JWT-auth',
     )
     .addTag('app', 'Application endpoints')
-    .addTag('chatbot', 'AI Chatbot endpoints (Pinecone + Gemini)')
+    .addTag('assistant', 'Pinecone Assistant endpoints (Primary AI System)')
+    .addTag('chatbot', 'AI Chatbot endpoints (Legacy Pinecone + Gemini)')
     .addTag('rag', 'RAG Chat endpoints (Simplified + Gemini)')
     .addTag('auth', 'Authentication & Authorization')
     .addTag('users', 'User management')
@@ -87,20 +89,11 @@ async function bootstrap() {
   // Serve static files
   app.useStaticAssets(path.join(__dirname, '..', 'public'));
 
-  // Auto-seed database if needed
-  console.log('🌱 Checking database and auto-seeding if needed...');
-  try {
-    const dataSeedService = app.get(DataSeedService);
-    await dataSeedService.checkAndSeedData();
-    console.log('✅ Database check and seed process completed');
-  } catch (error) {
-    console.error('❌ Error during database seed check:', error);
-    console.warn('⚠️ Application will continue, but some features may not work without data');
-  }
+
 
   const port = configService.get<string>('PORT') || 3000;
   await app.listen(port);
-  
+
   console.log('🚀 FPT University Chatbot API started successfully!');
   console.log(`📍 Server: http://localhost:${port}`);
   console.log(`📚 API Documentation: http://localhost:${port}/api/docs`);

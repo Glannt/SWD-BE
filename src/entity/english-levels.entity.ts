@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { IntakeBatch } from './intake-batches.entity';
 import { Types } from 'mongoose';
-import { applySmartIdField } from '@/common/middleware/assign_custome_id.middleware';
+import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 
 @Schema({ collection: 'englishLevels' })
 export class EnglishLevel extends Document {

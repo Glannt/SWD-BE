@@ -3,7 +3,8 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, VersioningType } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
-import { buildApiUrl } from '../common/utils/url-builder';
+import { buildApiUrl, buildVerificationUrl } from '../common/utils/url-builder';
+import { Request } from 'express';
 
 @Injectable()
 export class MailService {
@@ -12,24 +13,11 @@ export class MailService {
     private readonly mailerService: MailerService,
     @Inject(CACHE_MANAGER) private readonly cacheManager: Cache,
   ) {}
-  async sendVerificationEmail(email: string, token: string) {
-    const port = this.configService.get<string>('PORT');
-    const host = this.configService.get<string>('HOST');
-    const version_type = VersioningType.URI;
-    console.log(version_type);
 
-    const verifyUrl = buildApiUrl(
-      `${host}:${port}`,
-      '1',
-      '/auth/verify-email',
-      {
-        email: email,
-        token: token,
-      },
-    );
-    console.log('baseurl builder', verifyUrl);
-
-    const url = `http://localhost:${port}/api/v1/auth/verify-email?email=${encodeURIComponent(email)}&token=${token}`;
+  async sendVerificationEmail(email: string, token: string, req?: Request) {
+    // Sử dụng utility function để lấy host động
+    const url = buildVerificationUrl(req, this.configService, email, token);
+    console.log('Verification URL:', url);
 
     await this.cacheManager.set(`verification:${email}`, token, 86400);
 
@@ -40,6 +28,27 @@ export class MailService {
       context: {
         name: email,
         url,
+      },
+    });
+  }
+
+  async sendResetPasswordEmail(email: string, token: string, req?: Request) {
+    // Build reset password URL
+    const baseUrl = req
+      ? `${req.protocol}://${req.get('host')}`
+      : this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+    const resetUrl = `${baseUrl}/reset-password?token=${token}`;
+
+    console.log('Reset Password URL:', resetUrl);
+
+    await this.mailerService.sendMail({
+      to: email,
+      subject: 'Reset Your Password - FCHAT CAREER',
+      template: './reset-password',
+      context: {
+        email,
+        resetUrl,
+        token,
       },
     });
   }
