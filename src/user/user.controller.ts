@@ -54,8 +54,6 @@ export class UserController {
   @ApiResponse({ status: 404, description: 'User not found' })
   // @Roles(UserRole.ADMIN, UserRole.STAFF)
   async findOne(@Param('id') id: string) {
-    console.log('Tôi đây');
-
     return this.userService.findById(id);
   }
 

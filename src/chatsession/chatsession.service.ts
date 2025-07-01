@@ -177,7 +177,7 @@ export class ChatsessionService {
    */
   async getUserSessions(userId: string): Promise<ChatSession[]> {
     return this.chatSessionModel
-      .find({ user: { user_id: userId } })
+      .find({ user: new Types.ObjectId(userId) })
       .sort({ lastActivity: -1 })
       .exec();
   }
