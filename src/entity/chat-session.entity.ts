@@ -24,6 +24,9 @@ export class ChatSession extends Document {
 
   @Prop({ unique: true, sparse: true })
   chat_session_id: string;
+
+  @Prop({ type: String, default: null })
+  tag?: string;
 }
 
 export const ChatSessionSchema = SchemaFactory.createForClass(ChatSession);

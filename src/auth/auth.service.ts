@@ -1,6 +1,6 @@
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+
 import { JwtService } from '@nestjs/jwt';
 import { Request, Response } from 'express';
 import { Cache } from 'cache-manager';
@@ -17,6 +17,7 @@ import { ForgotPasswordRequestDto } from './dtos/forgot-password.request.dto';
 import { ResetPasswordRequestDto } from './dtos/reset-password.request.dto';
 import { VerifyResetTokenRequestDto } from './dtos/verify-reset-token.request.dto';
 import { ChangePasswordRequestDto } from './dtos/change-password.request.dto';
+import { ConfigService } from '@/config/config.service';
 
 @Injectable()
 export class AuthService {
@@ -64,10 +65,7 @@ export class AuthService {
     const refreshToken = this.createRefreshToken(payload);
 
     await this.userService.updateUserToken(refreshToken, user_id);
-    const getTime = parseInt(
-      this.configService.get<string>('JWT_REFRESH_EXPIRE'),
-      10,
-    );
+    const getTime = parseInt(this.configService.getJwtRefreshExpire(), 10);
 
     // Set refresh token in httpOnly cookie
     response.cookie('refresh_token', refreshToken, {
@@ -91,8 +89,8 @@ export class AuthService {
 
   createRefreshToken(payload: any) {
     const refreshToken = this.jwtService.sign(payload, {
-      secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
-      expiresIn: this.configService.get<string>('JWT_REFRESH_EXPIRE'),
+      secret: this.configService.getJwtRefreshSecret(),
+      expiresIn: this.configService.getJwtRefreshExpire(),
     });
     return refreshToken;
   }
@@ -147,10 +145,7 @@ export class AuthService {
 
     // Set refresh token in httpOnly cookie if response is available
     if (req && req.res) {
-      const getTime = parseInt(
-        this.configService.get<string>('JWT_REFRESH_EXPIRE'),
-        10,
-      );
+      const getTime = parseInt(this.configService.getJwtRefreshExpire(), 10);
 
       req.res.cookie('refresh_token', refreshToken, {
         httpOnly: true,
@@ -357,7 +352,7 @@ export class AuthService {
     try {
       // Verify refresh token
       const payload = this.jwtService.verify(refreshToken, {
-        secret: this.configService.get<string>('JWT_REFRESH_TOKEN_SECRET'),
+        secret: this.configService.getJwtRefreshSecret(),
       });
 
       // Find user by user_id from token
@@ -392,10 +387,7 @@ export class AuthService {
 
       // Set new refresh token in httpOnly cookie if response is available
       if (response) {
-        const getTime = parseInt(
-          this.configService.get<string>('JWT_REFRESH_EXPIRE'),
-          10,
-        );
+        const getTime = parseInt(this.configService.getJwtRefreshExpire(), 10);
 
         response.cookie('refresh_token', newRefreshToken, {
           httpOnly: true,

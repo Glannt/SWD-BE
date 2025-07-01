@@ -23,7 +23,7 @@ import { ForgotPasswordRequestDto } from './dtos/forgot-password.request.dto';
 import { ResetPasswordRequestDto } from './dtos/reset-password.request.dto';
 import { VerifyResetTokenRequestDto } from './dtos/verify-reset-token.request.dto';
 import { ChangePasswordRequestDto } from './dtos/change-password.request.dto';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from '@/config/config.service';
 
 @Controller('auth')
 export class AuthController {
@@ -73,18 +73,14 @@ export class AuthController {
   ) {
     try {
       await this.authService.verifyEmail(email, token);
-      const feDomain = this.configService.get<string>(
-        'FE_DOMAIN',
-        'http://localhost:3000',
-      );
+      const feDomain =
+        this.configService.get('FE_DOMAIN') || 'http://localhost:3000';
       return res.redirect(
         `${feDomain}/verify-success?email=${encodeURIComponent(email)}`,
       );
     } catch (err) {
-      const feDomain = this.configService.get<string>(
-        'FE_DOMAIN',
-        'http://localhost:3000',
-      );
+      const feDomain =
+        this.configService.get('FE_DOMAIN') || 'http://localhost:3000';
       return res.redirect(
         `${feDomain}/verify-fail?email=${encodeURIComponent(email)}&error=${encodeURIComponent(err.message)}`,
       );

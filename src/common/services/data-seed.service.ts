@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import * as fs from 'fs';
 import * as path from 'path';
+import * as bcrypt from 'bcrypt';
 
 // Import entities
 import { Campus } from '../../entity/campus.entity';
@@ -13,10 +14,13 @@ import { CampusDiscount } from '../../entity/campus-discounts.entity';
 import { AdmissionPlan } from '../../entity/admission-plans.entity';
 import { AdmissionYear } from '../../entity/admission-year.entity';
 import { CampusMajor } from '../../entity/campus-major.entity';
-import { EnglishLevel, EnglishLevelSchema } from '../../entity/english-levels.entity';
+import {
+  EnglishLevel,
+  EnglishLevelSchema,
+} from '../../entity/english-levels.entity';
 import { IntakeBatch } from '../../entity/intake-batches.entity';
 import { MajorAdmissionQuota } from '../../entity/major-admisson-quotas.entity';
-import { User } from '../../entity/user.entity';
+import { User, UserRole, UserStatus } from '../../entity/user.entity';
 
 @Injectable()
 export class DataSeedService {
@@ -28,13 +32,18 @@ export class DataSeedService {
     @InjectModel(Major.name) private majorModel: Model<Major>,
     @InjectModel(TuitionFee.name) private tuitionFeeModel: Model<TuitionFee>,
     @InjectModel(Scholarship.name) private scholarshipModel: Model<Scholarship>,
-    @InjectModel(CampusDiscount.name) private campusDiscountModel: Model<CampusDiscount>,
-    @InjectModel(AdmissionPlan.name) private admissionPlanModel: Model<AdmissionPlan>,
-    @InjectModel(AdmissionYear.name) private admissionYearModel: Model<AdmissionYear>,
+    @InjectModel(CampusDiscount.name)
+    private campusDiscountModel: Model<CampusDiscount>,
+    @InjectModel(AdmissionPlan.name)
+    private admissionPlanModel: Model<AdmissionPlan>,
+    @InjectModel(AdmissionYear.name)
+    private admissionYearModel: Model<AdmissionYear>,
     @InjectModel(CampusMajor.name) private campusMajorModel: Model<CampusMajor>,
-    @InjectModel(EnglishLevel.name) private englishLevelModel: Model<EnglishLevel>,
+    @InjectModel(EnglishLevel.name)
+    private englishLevelModel: Model<EnglishLevel>,
     @InjectModel(IntakeBatch.name) private intakeBatchModel: Model<IntakeBatch>,
-    @InjectModel(MajorAdmissionQuota.name) private majorAdmissionQuotaModel: Model<MajorAdmissionQuota>,
+    @InjectModel(MajorAdmissionQuota.name)
+    private majorAdmissionQuotaModel: Model<MajorAdmissionQuota>,
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
@@ -49,12 +58,18 @@ export class DataSeedService {
       const dataStatus = await this.checkDataStatus();
 
       if (dataStatus.needsSeeding) {
-        this.logger.log('📦 Database is empty or incomplete. Starting auto-seed process...');
+        this.logger.log(
+          '📦 Database is empty or incomplete. Starting auto-seed process...',
+        );
         await this.seedAllData();
         this.logger.log('✅ Auto-seed completed successfully!');
       } else {
-        this.logger.log('✅ Database already contains data. Skipping seed process.');
-        this.logger.log(`📊 Current data counts: ${JSON.stringify(dataStatus.counts)}`);
+        this.logger.log(
+          '✅ Database already contains data. Skipping seed process.',
+        );
+        this.logger.log(
+          `📊 Current data counts: ${JSON.stringify(dataStatus.counts)}`,
+        );
       }
     } catch (error) {
       this.logger.error('❌ Error during auto-seed check:', error);
@@ -80,12 +95,15 @@ export class DataSeedService {
       campusMajors: await this.campusMajorModel.countDocuments(),
       englishLevels: await this.englishLevelModel.countDocuments(),
       intakeBatches: await this.intakeBatchModel.countDocuments(),
-      majorAdmissionQuotas: await this.majorAdmissionQuotaModel.countDocuments(),
+      majorAdmissionQuotas:
+        await this.majorAdmissionQuotaModel.countDocuments(),
     };
 
     // Kiểm tra nếu các collection chính còn trống
     const mainCollections = ['campuses', 'majors', 'scholarships'];
-    const needsSeeding = mainCollections.some(collection => counts[collection] === 0);
+    const needsSeeding = mainCollections.some(
+      (collection) => counts[collection] === 0,
+    );
 
     return { needsSeeding, counts };
   }
@@ -100,19 +118,63 @@ export class DataSeedService {
 
     const seedTasks = [
       // === BẢNG ĐỘC LẬP (SEED TRƯỚC) ===
-      { name: 'Campuses', file: 'FchatCareer.campuses.json', method: this.seedCampuses.bind(this) },
-      { name: 'Majors', file: 'FchatCareer.majors.json', method: this.seedMajors.bind(this) },
-      { name: 'Admission Years', file: 'FchatCareer.admissionYears.json', method: this.seedAdmissionYears.bind(this) },
-      { name: 'Intake Batches', file: 'FchatCareer.intakeBatches.json', method: this.seedIntakeBatches.bind(this) },
-      { name: 'Scholarships', file: 'FchatCareer.scholarships.json', method: this.seedScholarships.bind(this) },
-      { name: 'English Levels', file: 'FchatCareer.englishLevels.json', method: this.seedEnglishLevels.bind(this) },
+      {
+        name: 'Campuses',
+        file: 'FchatCareer.campuses.json',
+        method: this.seedCampuses.bind(this),
+      },
+      {
+        name: 'Majors',
+        file: 'FchatCareer.majors.json',
+        method: this.seedMajors.bind(this),
+      },
+      {
+        name: 'Admission Years',
+        file: 'FchatCareer.admissionYears.json',
+        method: this.seedAdmissionYears.bind(this),
+      },
+      {
+        name: 'Intake Batches',
+        file: 'FchatCareer.intakeBatches.json',
+        method: this.seedIntakeBatches.bind(this),
+      },
+      {
+        name: 'Scholarships',
+        file: 'FchatCareer.scholarships.json',
+        method: this.seedScholarships.bind(this),
+      },
+      {
+        name: 'English Levels',
+        file: 'FchatCareer.englishLevels.json',
+        method: this.seedEnglishLevels.bind(this),
+      },
 
       // === BẢNG CÓ FOREIGN KEY (SEED SAU) ===
-      { name: 'Campus Discounts', file: 'FchatCareer.campusDiscounts.json', method: this.seedCampusDiscounts.bind(this) },
-      { name: 'Admission Plans', file: 'FchatCareer.admissionPlans.json', method: this.seedAdmissionPlans.bind(this) },
-      { name: 'Campus Majors', file: 'FchatCareer.campusMajors.json', method: this.seedCampusMajors.bind(this) },
-      { name: 'Major Admission Quotas', file: 'FchatCareer.majorAdmissionQuotas.json', method: this.seedMajorAdmissionQuotas.bind(this) },
-      { name: 'Tuition Fees', file: 'FchatCareer.tuitionFees.json', method: this.seedTuitionFees.bind(this) },
+      {
+        name: 'Campus Discounts',
+        file: 'FchatCareer.campusDiscounts.json',
+        method: this.seedCampusDiscounts.bind(this),
+      },
+      {
+        name: 'Admission Plans',
+        file: 'FchatCareer.admissionPlans.json',
+        method: this.seedAdmissionPlans.bind(this),
+      },
+      {
+        name: 'Campus Majors',
+        file: 'FchatCareer.campusMajors.json',
+        method: this.seedCampusMajors.bind(this),
+      },
+      {
+        name: 'Major Admission Quotas',
+        file: 'FchatCareer.majorAdmissionQuotas.json',
+        method: this.seedMajorAdmissionQuotas.bind(this),
+      },
+      {
+        name: 'Tuition Fees',
+        file: 'FchatCareer.tuitionFees.json',
+        method: this.seedTuitionFees.bind(this),
+      },
     ];
 
     for (const task of seedTasks) {
@@ -123,7 +185,9 @@ export class DataSeedService {
           await task.method(filePath);
           this.logger.log(`✅ ${task.name} seeded successfully`);
         } else {
-          this.logger.warn(`⚠️ File not found: ${task.file} - Skipping ${task.name}`);
+          this.logger.warn(
+            `⚠️ File not found: ${task.file} - Skipping ${task.name}`,
+          );
         }
       } catch (error) {
         this.logger.error(`❌ Error seeding ${task.name}:`, error);
@@ -145,9 +209,9 @@ export class DataSeedService {
       descriptionHighlights: item.DescriptionHighlights,
     }));
 
-    const docs = campuses.map(item => ({
+    const docs = campuses.map((item) => ({
       ...item,
-      campus_id: new Types.ObjectId().toString()
+      campus_id: new Types.ObjectId().toString(),
     }));
 
     await this.campusModel.insertMany(docs, { ordered: false });
@@ -185,13 +249,15 @@ export class DataSeedService {
         deliveryMode: item.DeliveryMode,
       }));
 
-    const docs = majors.map(item => ({
+    const docs = majors.map((item) => ({
       ...item,
-      major_id: new Types.ObjectId().toString()
+      major_id: new Types.ObjectId().toString(),
     }));
 
     await this.majorModel.insertMany(docs, { ordered: false });
-    this.logger.log(`📊 Inserted ${majors.length} majors (removed ${jsonData.length - majors.length} duplicates)`);
+    this.logger.log(
+      `📊 Inserted ${majors.length} majors (removed ${jsonData.length - majors.length} duplicates)`,
+    );
   }
 
   /**
@@ -209,15 +275,15 @@ export class DataSeedService {
       applicationProcess: item.applicationProcess,
       deadlineInfo: item.deadlineInfo,
       isActive: item.IsActive !== false,
-      totalSlots: item.totalSlots || "",
-      maintenanceCondition: item.maintenanceCondition || "",
+      totalSlots: item.totalSlots || '',
+      maintenanceCondition: item.maintenanceCondition || '',
       startDate: item.StartDate ? new Date(item.StartDate) : undefined,
       endDate: item.EndDate ? new Date(item.EndDate) : undefined,
     }));
 
-    const docs = scholarships.map(item => ({
+    const docs = scholarships.map((item) => ({
       ...item,
-      scholarship_id: new Types.ObjectId().toString()
+      scholarship_id: new Types.ObjectId().toString(),
     }));
 
     await this.scholarshipModel.insertMany(docs, { ordered: false });
@@ -279,15 +345,19 @@ export class DataSeedService {
       }));
 
     if (discounts.length > 0) {
-      const docs = discounts.map(item => ({
+      const docs = discounts.map((item) => ({
         ...item,
-        campus_discount_id: new Types.ObjectId().toString()
+        campus_discount_id: new Types.ObjectId().toString(),
       }));
 
       await this.campusDiscountModel.insertMany(docs, { ordered: false });
-      this.logger.log(`📊 Inserted ${discounts.length} campus discounts (removed ${jsonData.length - discounts.length} duplicates)`);
+      this.logger.log(
+        `📊 Inserted ${discounts.length} campus discounts (removed ${jsonData.length - discounts.length} duplicates)`,
+      );
     } else {
-      this.logger.warn(`⚠️ No valid campus discounts found (missing campus/batch references)`);
+      this.logger.warn(
+        `⚠️ No valid campus discounts found (missing campus/batch references)`,
+      );
     }
   }
 
@@ -317,15 +387,17 @@ export class DataSeedService {
       }));
 
     if (plans.length > 0) {
-      const docs = plans.map(item => ({
+      const docs = plans.map((item) => ({
         ...item,
-        admission_plan_id: new Types.ObjectId().toString()
+        admission_plan_id: new Types.ObjectId().toString(),
       }));
 
       await this.admissionPlanModel.insertMany(docs, { ordered: false });
       this.logger.log(`📊 Inserted ${plans.length} admission plans`);
     } else {
-      this.logger.warn(`⚠️ No valid admission plans found (missing admission year references)`);
+      this.logger.warn(
+        `⚠️ No valid admission plans found (missing admission year references)`,
+      );
     }
   }
 
@@ -341,15 +413,23 @@ export class DataSeedService {
       endDate: item.EndDate ? new Date(item.EndDate) : undefined,
       totalQuota: item.TotalQuota,
       isActive: item.IsActive !== false,
-      applicationOpenDate: item.ApplicationOpenDate ? new Date(item.ApplicationOpenDate) : undefined,
-      applicationCloseDate: item.ApplicationCloseDate ? new Date(item.ApplicationCloseDate) : undefined,
-      resultReleaseDate: item.ResultReleaseDate ? new Date(item.ResultReleaseDate) : undefined,
-      enrollmentDeadline: item.EnrollmentDeadline ? new Date(item.EnrollmentDeadline) : undefined,
+      applicationOpenDate: item.ApplicationOpenDate
+        ? new Date(item.ApplicationOpenDate)
+        : undefined,
+      applicationCloseDate: item.ApplicationCloseDate
+        ? new Date(item.ApplicationCloseDate)
+        : undefined,
+      resultReleaseDate: item.ResultReleaseDate
+        ? new Date(item.ResultReleaseDate)
+        : undefined,
+      enrollmentDeadline: item.EnrollmentDeadline
+        ? new Date(item.EnrollmentDeadline)
+        : undefined,
     }));
 
-    const docs = years.map(item => ({
+    const docs = years.map((item) => ({
       ...item,
-      admission_year_id: new Types.ObjectId().toString()
+      admission_year_id: new Types.ObjectId().toString(),
     }));
 
     await this.admissionYearModel.insertMany(docs, { ordered: false });
@@ -406,15 +486,19 @@ export class DataSeedService {
       }));
 
     if (uniqueCampusMajors.length > 0) {
-      const docs = uniqueCampusMajors.map(item => ({
+      const docs = uniqueCampusMajors.map((item) => ({
         ...item,
-        campus_major_id: new Types.ObjectId().toString()
+        campus_major_id: new Types.ObjectId().toString(),
       }));
 
       await this.campusMajorModel.insertMany(docs, { ordered: false });
-      this.logger.log(`📊 Inserted ${uniqueCampusMajors.length} campus majors (removed ${jsonData.length - uniqueCampusMajors.length} duplicates)`);
+      this.logger.log(
+        `📊 Inserted ${uniqueCampusMajors.length} campus majors (removed ${jsonData.length - uniqueCampusMajors.length} duplicates)`,
+      );
     } else {
-      this.logger.warn(`⚠️ No valid campus majors found (missing campus/major references)`);
+      this.logger.warn(
+        `⚠️ No valid campus majors found (missing campus/major references)`,
+      );
     }
   }
 
@@ -433,9 +517,9 @@ export class DataSeedService {
       isActive: item.IsActive !== false,
     }));
 
-    const docs = batches.map(item => ({
+    const docs = batches.map((item) => ({
       ...item,
-      intake_batch_id: new Types.ObjectId().toString()
+      intake_batch_id: new Types.ObjectId().toString(),
     }));
 
     await this.intakeBatchModel.insertMany(docs, { ordered: false });
@@ -473,13 +557,15 @@ export class DataSeedService {
         batch: item.batchId || null, // Đảm bảo batch không undefined
       }));
 
-    const docs = levels.map(item => ({
+    const docs = levels.map((item) => ({
       ...item,
-      english_level_id: new Types.ObjectId().toString()
+      english_level_id: new Types.ObjectId().toString(),
     }));
 
     await this.englishLevelModel.insertMany(docs, { ordered: false });
-    this.logger.log(`📊 Inserted ${levels.length} english levels (removed ${jsonData.length - levels.length} duplicates)`);
+    this.logger.log(
+      `📊 Inserted ${levels.length} english levels (removed ${jsonData.length - levels.length} duplicates)`,
+    );
   }
 
   /**
@@ -503,7 +589,11 @@ export class DataSeedService {
     });
 
     const quotas = jsonData
-      .filter((item: any) => majorIdMap.has(item.majorId) && admissionYearIdMap.has(item.admissionYearId))
+      .filter(
+        (item: any) =>
+          majorIdMap.has(item.majorId) &&
+          admissionYearIdMap.has(item.admissionYearId),
+      )
       .map((item: any) => ({
         major: majorIdMap.get(item.majorId),
         admissionYear: admissionYearIdMap.get(item.admissionYearId),
@@ -514,15 +604,17 @@ export class DataSeedService {
       }));
 
     if (quotas.length > 0) {
-      const docs = quotas.map(item => ({
+      const docs = quotas.map((item) => ({
         ...item,
-        major_admission_quota_id: new Types.ObjectId().toString()
+        major_admission_quota_id: new Types.ObjectId().toString(),
       }));
 
       await this.majorAdmissionQuotaModel.insertMany(docs, { ordered: false });
       this.logger.log(`📊 Inserted ${quotas.length} major admission quotas`);
     } else {
-      this.logger.warn(`⚠️ No valid major admission quotas found (missing major/admission year references)`);
+      this.logger.warn(
+        `⚠️ No valid major admission quotas found (missing major/admission year references)`,
+      );
     }
   }
 
@@ -539,7 +631,7 @@ export class DataSeedService {
         majorId: item.majorId,
         batchId: item.batchId,
         semesterRange: item.semesterRange,
-        baseAmount: item.baseAmount
+        baseAmount: item.baseAmount,
       });
     });
 
@@ -554,8 +646,8 @@ export class DataSeedService {
     majors.forEach((major: any, index: number) => {
       this.logger.log(`📄 DB major ${index + 1}:`, {
         _id: major._id,
-        majorId: major.majorId || "",
-        name: major.name
+        majorId: major.majorId || '',
+        name: major.name,
       });
     });
 
@@ -563,8 +655,8 @@ export class DataSeedService {
     batches.forEach((batch: any, index: number) => {
       this.logger.log(`📄 DB batch ${index + 1}:`, {
         _id: batch._id,
-        batchId: batch.batchId || "",
-        name: batch.name
+        batchId: batch.batchId || '',
+        name: batch.name,
       });
     });
 
@@ -573,14 +665,18 @@ export class DataSeedService {
     majors.forEach((major: any, index: number) => {
       const majorId = index + 1; // Index từ 1
       majorIdMap.set(majorId, major._id);
-      this.logger.log(`📄 Mapping majorId ${majorId} -> ${major._id} (${major.name})`);
+      this.logger.log(
+        `📄 Mapping majorId ${majorId} -> ${major._id} (${major.name})`,
+      );
     });
 
     const batchIdMap = new Map();
     batches.forEach((batch: any, index: number) => {
       const batchId = index + 1; // Index từ 1
       batchIdMap.set(batchId, batch._id);
-      this.logger.log(`📄 Mapping batchId ${batchId} -> ${batch._id} (${batch.name})`);
+      this.logger.log(
+        `📄 Mapping batchId ${batchId} -> ${batch._id} (${batch.name})`,
+      );
     });
 
     const tuitionFees = jsonData
@@ -607,8 +703,12 @@ export class DataSeedService {
           baseAmount: item.baseAmount || 0,
           isInclusive: item.isInclusive !== false,
           currency: item.currency || 'VND',
-          effectiveFrom: item.effectiveFrom ? new Date(item.effectiveFrom) : new Date(),
-          effectiveTo: item.effectiveTo ? new Date(item.effectiveTo) : undefined,
+          effectiveFrom: item.effectiveFrom
+            ? new Date(item.effectiveFrom)
+            : new Date(),
+          effectiveTo: item.effectiveTo
+            ? new Date(item.effectiveTo)
+            : undefined,
           includesMaterials: item.includesMaterials !== false,
           notes: item.notes || '',
         };
@@ -626,32 +726,43 @@ export class DataSeedService {
         seenKeys.add(key);
         uniqueTuitionFees.push(item);
       } else {
-        this.logger.warn(`⚠️ Skipped duplicate: major=${item.major}, batch=${item.batch}, semesterRange="${item.semesterRange}", baseAmount=${item.baseAmount}`);
+        this.logger.warn(
+          `⚠️ Skipped duplicate: major=${item.major}, batch=${item.batch}, semesterRange="${item.semesterRange}", baseAmount=${item.baseAmount}`,
+        );
       }
     });
 
-    this.logger.log(`📄 Filtered to ${uniqueTuitionFees.length} unique tuition fees (removed ${tuitionFees.length - uniqueTuitionFees.length} duplicates)`);
+    this.logger.log(
+      `📄 Filtered to ${uniqueTuitionFees.length} unique tuition fees (removed ${tuitionFees.length - uniqueTuitionFees.length} duplicates)`,
+    );
 
     if (uniqueTuitionFees.length > 0) {
-      const docs = uniqueTuitionFees.map(item => ({
+      const docs = uniqueTuitionFees.map((item) => ({
         ...item,
-        tuition_fee_id: new Types.ObjectId().toString()
+        tuition_fee_id: new Types.ObjectId().toString(),
       }));
 
       this.logger.log(`📄 Final docs to insert:`, docs.length);
 
       try {
-        const result = await this.tuitionFeeModel.insertMany(docs, { ordered: false });
-        console.log("Đã insert thành công:", result.length, "documents");
+        const result = await this.tuitionFeeModel.insertMany(docs, {
+          ordered: false,
+        });
+        console.log('Đã insert thành công:', result.length, 'documents');
       } catch (err) {
-        console.error("Có lỗi xảy ra khi insert:", err);
+        console.error('Có lỗi xảy ra khi insert:', err);
         if (err.insertedDocs) {
-          console.log("Số lượng document đã insert được:", err.insertedDocs.length);
+          console.log(
+            'Số lượng document đã insert được:',
+            err.insertedDocs.length,
+          );
         }
       }
       this.logger.log(`📊 Inserted ${uniqueTuitionFees.length} tuition fees`);
     } else {
-      this.logger.warn(`⚠️ No valid tuition fees found (missing major/batch references)`);
+      this.logger.warn(
+        `⚠️ No valid tuition fees found (missing major/batch references)`,
+      );
     }
   }
 
@@ -682,7 +793,7 @@ export class DataSeedService {
         fullName: 'Super Admin 1',
         role: 'admin',
         status: 'active',
-        isVerified: true
+        isVerified: true,
       },
       {
         email: 'admin2@fpt.edu.vn',
@@ -690,8 +801,31 @@ export class DataSeedService {
         fullName: 'Super Admin 2',
         role: 'admin',
         status: 'active',
-        isVerified: true
-      }
+        isVerified: true,
+      },
     ]);
+  }
+
+  /**
+   * Tạo admin mặc định nếu chưa có
+   */
+  async ensureDefaultAdminAccount(): Promise<void> {
+    const admin = await this.userModel.findOne({ role: UserRole.ADMIN });
+    if (!admin) {
+      const hashedPassword = await bcrypt.hash('ad123456', 10);
+      await this.userModel.create({
+        email: 'admin@fpt.edu.vn',
+        password: hashedPassword,
+        fullName: 'Super Admin',
+        role: UserRole.ADMIN,
+        status: UserStatus.ACTIVE,
+        isVerified: true,
+      });
+      this.logger.log(
+        '✅ Default admin account created: admin@fpt.edu.vn / ad123456',
+      );
+    } else {
+      this.logger.log('✅ Admin account already exists.');
+    }
   }
 }

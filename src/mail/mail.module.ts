@@ -3,37 +3,32 @@ import { MailService } from './mail.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { join } from 'path';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-// import { CacheModule } from '@nestjs/cache-manager';
-import { NestRedisModule } from '../redis/redis.module';
+
+import { NestRedisModule } from '@/redis/redis.module';
+import { ConfigModule } from '@/config/config.module';
+import { ConfigService } from '@/config/config.service';
 
 @Module({
   imports: [
-    NestRedisModule,
     ConfigModule,
+    NestRedisModule,
     MailerModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         transport: {
-          // host: configService.get<string>('EMAIL_HOST'),
-          // port: configService.get<number>('EMAIL_PORT'),
-          // secure: configService.get('EMAIL_SECURE') === 'true',
-          // auth: {
-          //   user: configService.get<string>('EMAIL_USER'),
-          //   pass: configService.get<string>('EMAIL_PASSWORD'),
-          // },
-          service: configService.get<string>('MAIL_SERVICE'),
+          service:
+            configService.getMailHost() || configService.get('MAIL_SERVICE'),
           auth: {
-            user: configService.get<string>('MAIL_USER'),
-            pass: configService.get<string>('MAIL_PASS'), // cần tạo app password
+            user: configService.getMailUser(),
+            pass: configService.getMailPass(),
           },
         },
         defaults: {
-          from: `"No Reply" <${configService.get<string>('EMAIL_FROM')}>`,
+          from: `"No Reply" <${configService.getMailFrom()}>`,
         },
         template: {
           dir: join(__dirname, 'templates'),
-          adapter: new HandlebarsAdapter(), // or new PugAdapter() or new EjsAdapter()
+          adapter: new HandlebarsAdapter(),
           options: {
             strict: true,
           },

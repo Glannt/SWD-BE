@@ -8,7 +8,8 @@ import { LocalStrategy } from './strategy/local.strategy';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
 import { JwtRefreshGuard } from './guards/jwt-refresh.guard';
-import { ConfigService } from '@nestjs/config';
+import { ConfigModule } from '../config/config.module';
+import { ConfigService } from '../config/config.service';
 import { NestRedisModule } from '../redis/redis.module';
 import { MailModule } from '../mail/mail.module';
 
@@ -18,12 +19,14 @@ import { MailModule } from '../mail/mail.module';
     NestRedisModule,
     UserModule, // Import UserModule để sử dụng UserService
     PassportModule,
+    ConfigModule,
     JwtModule.registerAsync({
+      imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        secret: configService.get<string>('JWT_ACCESS_TOKEN_SECRET'),
+        secret: configService.getJwtAccessSecret(),
         signOptions: {
-          expiresIn: configService.get<string>('JWT_ACCESS_EXPIRE'),
+          expiresIn: configService.getJwtAccessExpire(),
         },
       }),
     }),

@@ -1,9 +1,9 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Pinecone } from '@pinecone-database/pinecone';
-import { ConfigService } from '@nestjs/config';
 import { ChatsessionService } from '@/chatsession/chatsession.service';
 import { HubspotService } from '../hubspot/hubspot.service';
 import { GeminiService } from '../gemini/gemini.service';
+import { ConfigService } from '@/config/config.service';
 
 @Injectable()
 export class PineconeAssistantService implements OnModuleInit {
@@ -24,7 +24,7 @@ export class PineconeAssistantService implements OnModuleInit {
     private readonly geminiService: GeminiService,
   ) {
     this.pinecone = new Pinecone({
-      apiKey: this.configService.get<string>('PINECONE_API_KEY'),
+      apiKey: this.configService.getPineconeApiKey(),
     });
   }
 
@@ -184,8 +184,7 @@ export class PineconeAssistantService implements OnModuleInit {
         state.step = 'firstname';
         this.userState.set(sessionId, state);
         return {
-          answer:
-            'Cảm ơn bạn. Tiếp theo, vui lòng cho tôi biết tên của bạn (first name).',
+          answer: 'Cảm ơn bạn. Tiếp theo, vui lòng cho tôi biết tên của bạn.',
           sessionId,
         };
 
@@ -194,7 +193,7 @@ export class PineconeAssistantService implements OnModuleInit {
         state.step = 'lastname';
         this.userState.set(sessionId, state);
         return {
-          answer: 'Rất tốt. Cuối cùng, xin cho biết họ của bạn (last name).',
+          answer: 'Rất tốt. Cuối cùng, xin cho biết họ của bạn.',
           sessionId,
         };
 
