@@ -63,41 +63,41 @@ export class AppController {
       // Transform the response to match our DTO
       return {
         answer: response.answer,
-        citations: response.citations?.map((citation: any) => ({
-          position: citation.position,
-          references: citation.references?.map((ref: any) => ({
-            pages: ref.pages,
-            file: {
-              id: ref.file.id,
-              name: ref.file.name,
-              metadata: ref.file.metadata,
-              createdOn: ref.file.createdOn
-                ? new Date(ref.file.createdOn).toISOString()
-                : undefined,
-              updatedOn: ref.file.updatedOn
-                ? new Date(ref.file.updatedOn).toISOString()
-                : undefined,
-              status: ref.file.status,
-              size: ref.file.size,
-            },
-          })),
-        })),
-        usage: response.usage
-          ? {
-              prompt_tokens:
-                (response.usage as any).promptTokens ||
-                (response.usage as any).prompt_tokens ||
-                0,
-              completion_tokens:
-                (response.usage as any).completionTokens ||
-                (response.usage as any).completion_tokens ||
-                0,
-              total_tokens:
-                (response.usage as any).totalTokens ||
-                (response.usage as any).total_tokens ||
-                0,
-            }
-          : undefined,
+        // citations: response.citations?.map((citation: any) => ({
+        //   position: citation.position,
+        //   references: citation.references?.map((ref: any) => ({
+        //     pages: ref.pages,
+        //     file: {
+        //       id: ref.file.id,
+        //       name: ref.file.name,
+        //       metadata: ref.file.metadata,
+        //       createdOn: ref.file.createdOn
+        //         ? new Date(ref.file.createdOn).toISOString()
+        //         : undefined,
+        //       updatedOn: ref.file.updatedOn
+        //         ? new Date(ref.file.updatedOn).toISOString()
+        //         : undefined,
+        //       status: ref.file.status,
+        //       size: ref.file.size,
+        //     },
+        //   })),
+        // })),
+        // usage: response.usage
+        //   ? {
+        //       prompt_tokens:
+        //         (response.usage as any).promptTokens ||
+        //         (response.usage as any).prompt_tokens ||
+        //         0,
+        //       completion_tokens:
+        //         (response.usage as any).completionTokens ||
+        //         (response.usage as any).completion_tokens ||
+        //         0,
+        //       total_tokens:
+        //         (response.usage as any).totalTokens ||
+        //         (response.usage as any).total_tokens ||
+        //         0,
+        //     }
+        //   : undefined,
       };
     } catch (error) {
       this.logger.error(

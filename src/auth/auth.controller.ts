@@ -23,10 +23,14 @@ import { ForgotPasswordRequestDto } from './dtos/forgot-password.request.dto';
 import { ResetPasswordRequestDto } from './dtos/reset-password.request.dto';
 import { VerifyResetTokenRequestDto } from './dtos/verify-reset-token.request.dto';
 import { ChangePasswordRequestDto } from './dtos/change-password.request.dto';
+import { ConfigService } from '@/config/config.service';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private configService: ConfigService,
+  ) {}
 
   @UseGuards(AuthGuard('local')) // LocalStrategy
   @Post('login')
@@ -65,8 +69,22 @@ export class AuthController {
   async verifyEmail(
     @Query('email') email: string,
     @Query('token') token: string,
+    @Res() res: Response,
   ) {
-    return this.authService.verifyEmail(email, token);
+    try {
+      await this.authService.verifyEmail(email, token);
+      const feDomain =
+        this.configService.get('FE_DOMAIN') || 'http://localhost:3000';
+      return res.redirect(
+        `${feDomain}/verify-success?email=${encodeURIComponent(email)}`,
+      );
+    } catch (err) {
+      const feDomain =
+        this.configService.get('FE_DOMAIN') || 'http://localhost:3000';
+      return res.redirect(
+        `${feDomain}/verify-fail?email=${encodeURIComponent(email)}&error=${encodeURIComponent(err.message)}`,
+      );
+    }
   }
 
   @Post('forgot-password')

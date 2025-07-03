@@ -1,10 +1,10 @@
 import { MailerService } from '@nestjs-modules/mailer';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Inject, Injectable, VersioningType } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Cache } from 'cache-manager';
 import { buildApiUrl, buildVerificationUrl } from '../common/utils/url-builder';
 import { Request } from 'express';
+import { ConfigService } from '../config/config.service';
 
 @Injectable()
 export class MailService {
@@ -36,7 +36,7 @@ export class MailService {
     // Build reset password URL
     const baseUrl = req
       ? `${req.protocol}://${req.get('host')}`
-      : this.configService.get<string>('FRONTEND_URL', 'http://localhost:3000');
+      : this.configService.get('FRONTEND_URL') || 'http://localhost:3000';
     const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
     console.log('Reset Password URL:', resetUrl);

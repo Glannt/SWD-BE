@@ -1,5 +1,4 @@
 import { Request } from 'express';
-import { ConfigService } from '@nestjs/config';
 
 export function buildApiUrl(
   baseUrl: string,
@@ -18,13 +17,10 @@ export function buildApiUrl(
 /**
  * Lấy host động từ request hoặc fallback về config
  * @param req - Request object (optional)
- * @param configService - ConfigService instance
+ * @param configService - ConfigService instance (any type)
  * @returns host string
  */
-export function getDynamicHost(
-  req?: Request,
-  configService?: ConfigService,
-): string {
+export function getDynamicHost(req?: Request, configService?: any): string {
   if (req) {
     const protocol = req.protocol; // 'http' hoặc 'https'
     const hostname = req.get('host'); // 'localhost:3000' hoặc 'yourdomain.com'
@@ -33,8 +29,8 @@ export function getDynamicHost(
 
   // Fallback về config nếu không có request
   if (configService) {
-    const host = configService.get<string>('HOST');
-    const port = configService.get<string>('PORT');
+    const host = configService.get('HOST');
+    const port = configService.get('PORT');
     return port ? `${host}:${port}` : host;
   }
 
@@ -45,14 +41,14 @@ export function getDynamicHost(
 /**
  * Tạo URL xác thực email với host động
  * @param req - Request object (optional)
- * @param configService - ConfigService instance
+ * @param configService - ConfigService instance (any type)
  * @param email - Email address
  * @param token - Verification token
  * @returns verification URL
  */
 export function buildVerificationUrl(
   req?: Request,
-  configService?: ConfigService,
+  configService?: any,
   email?: string,
   token?: string,
 ): string {

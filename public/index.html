@@ -353,68 +353,45 @@
       }
 
       async function sendMessage() {
-        const message = messageInput.value.trim();
+        const userInput = messageInput.value.trim();
+        if (userInput === '') return;
 
-        if (!message) return;
-
-        // Clear input and disable button
+        displayMessage(userInput, 'user');
         messageInput.value = '';
         sendButton.disabled = true;
-        sendButton.textContent = 'Đang gửi...';
 
-        // Remove welcome message if exists
-        const welcomeMessage =
-          messagesContainer.querySelector('.welcome-message');
-        if (welcomeMessage) {
-          welcomeMessage.remove();
-        }
-
-        // Add user message
-        addMessage(message, 'user');
-
-        // Add loading message
-        const loadingId = addLoadingMessage();
+        displayLoading(true);
 
         try {
-          const response = await fetch('/v1/ask', {
+          const response = await fetch('/app/ask', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ question: message }),
+            body: JSON.stringify({
+              question: userInput,
+              sessionId: currentSessionId,
+            }),
           });
 
-          const data = await response.json();
-
-          // Remove loading message
-          removeMessage(loadingId);
-
-          if (response.ok) {
-            // Handle wrapped response format from TransformInterceptor
-            const answer = data.data ? data.data.answer : data.answer;
-            addMessage(formatResponse(answer), 'bot');
-          } else {
-            addMessage(
-              '❌ ' +
-                (data.message ||
-                  data.error ||
-                  'Đã xảy ra lỗi khi xử lý câu hỏi'),
-              'bot',
-            );
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
           }
+
+          const data = await response.json();
+          currentSessionId = data.sessionId || currentSessionId;
+          localStorage.setItem('fptChatSessionId', currentSessionId);
+          displayMessage(data.answer, 'bot');
         } catch (error) {
           console.error('Error:', error);
-          removeMessage(loadingId);
-          addMessage(
-            '❌ Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng và thử lại.',
+          displayMessage(
+            'Xin lỗi, đã có lỗi xảy ra. Vui lòng thử lại sau.',
             'bot',
           );
+        } finally {
+          displayLoading(false);
+          sendButton.disabled = false;
         }
-
-        // Re-enable button
-        sendButton.disabled = false;
-        sendButton.textContent = 'Gửi 📤';
-        messageInput.focus();
       }
 
       function addMessage(content, sender) {

@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -10,36 +9,31 @@ import { NestRedisModule } from './redis/redis.module';
 import { DataSeedModule } from './common/services/data-seed.module';
 import { PineconeAssistantModule } from './pinecone-assistant/pinecone-assistant.module';
 import { ChatsessionModule } from './chatsession/chatsession.module';
+import { HubspotModule } from './hubspot/hubspot.module';
+import { AdminModule } from './admin/admin.module';
+import { ConfigModule } from './config/config.module';
+import { ConfigService } from './config/config.service';
 
 @Module({
   imports: [
-    // Global configuration
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: '.env',
-    }),
-
-    // Database connection
+    ConfigModule,
     MongooseModule.forRootAsync({
+      imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
-        const uri =
-          configService.get<string>('MONGODB_URI') ||
-          'mongodb://localhost:27017/FchatCareer';
+        const uri = configService.getMongoUri();
         return { uri };
       },
       inject: [ConfigService],
     }),
-
-    // Core modules
-    AuthModule, // Authentication & Authorization with email verification
-    UserModule, // User management
-    PineconeAssistantModule, // AI Assistant integration
-    ChatsessionModule, // Chat session management
-
-    // Supporting modules
-    MailModule, // Email service for verification
-    NestRedisModule, // Redis caching for sessions/tokens
-    DataSeedModule, // Database seeding functionality
+    AuthModule,
+    UserModule,
+    PineconeAssistantModule,
+    ChatsessionModule,
+    MailModule,
+    NestRedisModule,
+    DataSeedModule,
+    HubspotModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
