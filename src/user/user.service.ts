@@ -10,6 +10,10 @@ import { MESSAGES } from '../common/constants/messages.constants';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
+  async findAllUser(): Promise<User[] | null> {
+    return this.userModel.find().select('+password').lean().exec();
+  }
+
   async findByUsername(username: string): Promise<User | null> {
     return this.userModel
       .findOne({ username })

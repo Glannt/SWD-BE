@@ -6,8 +6,9 @@ import * as fs from 'fs';
 export class ConfigService {
   private readonly envConfig: Record<string, string>;
 
-  constructor(filePath: string = '.env') {
-    // Load from file first, then fallback to process.env
+  constructor() {
+    // Luôn lấy filePath mặc định là .env
+    const filePath = '.env';
     if (fs.existsSync(filePath)) {
       const fileConfig = dotenv.parse(fs.readFileSync(filePath));
       this.envConfig = { ...process.env, ...fileConfig };
@@ -17,9 +18,18 @@ export class ConfigService {
 
     // Debug logging
     console.log('🔧 ConfigService loaded:');
-    console.log('- GEMINI_API_KEY:', this.getGeminiApiKey() ? '✅ Configured' : '❌ Missing');
-    console.log('- PINECONE_API_KEY:', this.getPineconeApiKey() ? '✅ Configured' : '❌ Missing');
-    console.log('- PINECONE_INDEX_NAME:', this.getPineconeIndexName() || 'Not set');
+    console.log(
+      '- GEMINI_API_KEY:',
+      this.getGeminiApiKey() ? '✅ Configured' : '❌ Missing',
+    );
+    console.log(
+      '- PINECONE_API_KEY:',
+      this.getPineconeApiKey() ? '✅ Configured' : '❌ Missing',
+    );
+    console.log(
+      '- PINECONE_INDEX_NAME:',
+      this.getPineconeIndexName() || 'Not set',
+    );
   }
 
   get(key: string): string {
@@ -115,5 +125,18 @@ export class ConfigService {
   // Environment
   getNodeEnv(): string {
     return this.get('NODE_ENV') || 'development';
+  }
+
+  getHubspotApiKey(): string {
+    return this.get('HUBSPOT_API_KEY');
+  }
+
+  // Redis/Cache config
+  getCacheTtl(): number {
+    return parseInt(this.get('CACHE_TTL'), 10) || 60000;
+  }
+
+  getCacheLruSize(): number {
+    return parseInt(this.get('CACHE_LRU_SIZE'), 10) || 5000;
   }
 }

@@ -22,17 +22,25 @@ export class AppService implements OnModuleInit {
     //   this.logger.warn('⚠️ Application will continue, but some features may not work without data');
     // }
 
+    // Đảm bảo luôn có admin mặc định
+    await this.dataSeedService.ensureDefaultAdminAccount();
+
     // Initialize Pinecone Assistant and auto-upload documents
     try {
       // Check Pinecone Assistant status
       this.logger.log('\n🤖 Checking Pinecone Assistant Status...');
-      const assistantStatus = await this.pineconeAssistantService.getAssistantStatus();
+      const assistantStatus =
+        await this.pineconeAssistantService.getAssistantStatus();
 
       this.logger.log('🎯 Pinecone Assistant Analysis:');
       this.logger.log(`   🤖 Assistant Status: ${assistantStatus.status}`);
-      this.logger.log(`   ❤️ Health: ${assistantStatus.healthy ? 'Healthy' : 'Unhealthy'}`);
+      this.logger.log(
+        `   ❤️ Health: ${assistantStatus.healthy ? 'Healthy' : 'Unhealthy'}`,
+      );
       this.logger.log(`   📄 Documents: ${assistantStatus.fileCount} files`);
-      this.logger.log(`   ⏰ Created: ${assistantStatus.createdAt ? new Date(assistantStatus.createdAt).toLocaleDateString() : 'Unknown'}`);
+      this.logger.log(
+        `   ⏰ Created: ${assistantStatus.createdAt ? new Date(assistantStatus.createdAt).toLocaleDateString() : 'Unknown'}`,
+      );
       this.logger.log(`   ═══════════════════════════════`);
 
       if (!assistantStatus.healthy) {
@@ -42,17 +50,22 @@ export class AppService implements OnModuleInit {
         this.logger.warn('2. Check Pinecone service status');
         this.logger.warn('3. Ensure sufficient quota in your Pinecone account');
         this.logger.warn('4. Verify network connectivity to Pinecone');
-        this.logger.warn('\n📞 Visit https://app.pinecone.io for account management.');
+        this.logger.warn(
+          '\n📞 Visit https://app.pinecone.io for account management.',
+        );
         // Don't exit - let the app start but with warnings
       } else {
         // Auto-upload FPT documents if healthy
         this.logger.log('\n📚 Auto-uploading FPT University documents...');
-        const uploadSuccess = await this.pineconeAssistantService.autoUploadFPTDocuments();
+        const uploadSuccess =
+          await this.pineconeAssistantService.autoUploadFPTDocuments();
 
         if (uploadSuccess) {
           this.logger.log('✅ Documents are ready!');
         } else {
-          this.logger.warn('⚠️ Documents upload failed, but application will continue');
+          this.logger.warn(
+            '⚠️ Documents upload failed, but application will continue',
+          );
         }
       }
 
@@ -61,7 +74,9 @@ export class AppService implements OnModuleInit {
       this.logger.log('🎯 System Overview:');
       this.logger.log('   📚 Knowledge Source: Pinecone Assistant');
       this.logger.log('   🤖 AI Model: GPT-4o via Pinecone');
-      this.logger.log('   📄 Document Processing: Automatic chunking & vectorization');
+      this.logger.log(
+        '   📄 Document Processing: Automatic chunking & vectorization',
+      );
       this.logger.log('   🔍 Search: Semantic similarity with citations');
       this.logger.log('   ✅ Status: Ready for Production');
 
@@ -78,18 +93,26 @@ export class AppService implements OnModuleInit {
       this.logger.log('4. 📋 View files: GET /assistant/files');
 
       this.logger.log('\n🔗 Useful Commands:');
-      this.logger.log('   npm run assistant:upload  # Upload FPT University documents');
-      this.logger.log('   npm run start:dev         # Start development server');
+      this.logger.log(
+        '   npm run assistant:upload  # Upload FPT University documents',
+      );
+      this.logger.log(
+        '   npm run start:dev         # Start development server',
+      );
       this.logger.log('   npm run assistant:status  # Check assistant status');
-
     } catch (error) {
-      this.logger.error('\n💥 Pinecone Assistant Initialization Failed:', error);
+      this.logger.error(
+        '\n💥 Pinecone Assistant Initialization Failed:',
+        error,
+      );
 
       this.logger.warn('\n🔧 Troubleshooting Guide:');
       this.logger.warn('\n1. 🎯 Pinecone Issues:');
       this.logger.warn('   • Validate API key: check PINECONE_API_KEY in .env');
       this.logger.warn('   • Check account: visit https://app.pinecone.io');
-      this.logger.warn('   • Verify quotas: ensure sufficient Pinecone usage limits');
+      this.logger.warn(
+        '   • Verify quotas: ensure sufficient Pinecone usage limits',
+      );
 
       this.logger.warn('\n2. 🔧 Environment Issues:');
       this.logger.warn('   • Review .env file: ensure PINECONE_API_KEY is set');
@@ -97,11 +120,15 @@ export class AppService implements OnModuleInit {
       this.logger.warn('   • Validate dependencies: npm install');
 
       this.logger.warn('\n3. 📞 Support Resources:');
-      this.logger.warn('   • Check Pinecone status: https://status.pinecone.io');
+      this.logger.warn(
+        '   • Check Pinecone status: https://status.pinecone.io',
+      );
       this.logger.warn('   • Review logs for detailed error messages');
       this.logger.warn('   • Contact Pinecone support if issues persist');
 
-      this.logger.warn('\n⚠️ Application will continue with limited functionality');
+      this.logger.warn(
+        '\n⚠️ Application will continue with limited functionality',
+      );
     }
   }
 

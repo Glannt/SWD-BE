@@ -19,4 +19,14 @@ export class CreateSessionDto {
   @IsOptional()
   @IsString({ message: 'Anonymous ID phải là chuỗi ký tự' })
   anonymousId?: string;
+
+  @ApiProperty({
+    description:
+      'Tag phân loại session (tiềm năng, không tiềm năng, giỡn, ...)',
+    example: 'potential',
+    required: false,
+  })
+  @IsOptional()
+  @IsString({ message: 'Tag phải là chuỗi ký tự' })
+  tag?: string;
 }

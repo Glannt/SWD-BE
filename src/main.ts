@@ -2,7 +2,7 @@ import { NestFactory, Reflector } from '@nestjs/core';
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
-import { ConfigService } from '@nestjs/config';
+import { ConfigService } from './config/config.service';
 import { AppModule } from './app.module';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
 import { GlobalExceptionFilter } from './common/filters/global-exception.filter';
@@ -17,7 +17,7 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
 
   // Global configuration - Keep disabled for direct /ask route compatibility
-  app.setGlobalPrefix(configService.get<string>('GLOBAL_PREFIX') || 'api');
+  app.setGlobalPrefix(configService.get('GLOBAL_PREFIX') || 'api');
 
   // API Versioning
   app.enableVersioning({
@@ -46,7 +46,13 @@ async function bootstrap() {
   app.enableCors({
     origin: true,
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Origin', 'X-Requested-With', 'Content-Type', 'Accept', 'Authorization'],
+    allowedHeaders: [
+      'Origin',
+      'X-Requested-With',
+      'Content-Type',
+      'Accept',
+      'Authorization',
+    ],
     credentials: true,
     preflightContinue: false,
   });
@@ -54,7 +60,9 @@ async function bootstrap() {
   // Enhanced Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('🎓 FPT University Chatbot API')
-    .setDescription('Advanced RAG-based career counseling chatbot with AI and enterprise features')
+    .setDescription(
+      'Advanced RAG-based career counseling chatbot with AI and enterprise features',
+    )
     .setVersion('2.0')
     .addBearerAuth(
       {
@@ -89,9 +97,7 @@ async function bootstrap() {
   // Serve static files
   app.useStaticAssets(path.join(__dirname, '..', 'public'));
 
-
-
-  const port = configService.get<string>('PORT') || 3000;
+  const port = configService.get('PORT') || 3000;
   await app.listen(port);
 
   console.log('🚀 FPT University Chatbot API started successfully!');
