@@ -47,6 +47,13 @@ export class UserController {
   //   return this.userService.findAll();
   // }
 
+  @Get()
+  @ApiOperation({ summary: 'Lấy thông tin users' })
+  @ApiResponse({ status: 200, description: 'User detail', type: User })
+  @ApiResponse({ status: 404, description: 'User not found' })
+  async findAll() {
+    return this.userService.findAllUser();
+  }
   @Get(':id')
   @ApiOperation({ summary: 'Lấy thông tin user theo id' })
   @ApiParam({ name: 'id', required: true })
