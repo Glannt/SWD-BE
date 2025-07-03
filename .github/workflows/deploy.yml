@@ -28,7 +28,7 @@ jobs:
           context: ./SWD-BE
           file: ./SWD-BE/Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/ai-chatbot-backend:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/swd-be:latest
 
       - name: Trigger Render Deploy Hook
         run: |
