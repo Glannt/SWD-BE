@@ -15,8 +15,10 @@ import requests
 import google.generativeai as genai
 import time
 import os
+from dotenv import load_dotenv
 
 # ==== CONFIG ====
+load_dotenv(dotenv_path=".env")
 BACKEND_API = os.getenv("BACKEND_API", "http://localhost:3000/api/v1/admin/dashboard/sessions-messages")  # Sửa lại nếu backend chạy port khác
 UPDATE_TAG_API = os.getenv("UPDATE_TAG_API", "http://localhost:3000/api/v1/admin/dashboard/update-session-tag")  # API cập nhật tag
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyDDE3qZQpFeI60H51ivhX8Y54q1oaU3O3Q")  # <-- Đặt API key Gemini tại đây

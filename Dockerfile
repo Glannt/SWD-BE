@@ -32,6 +32,11 @@ RUN pnpm install --prod --frozen-lockfile
 
 # Copy built files from builder
 COPY --from=builder /app/dist ./dist
+COPY ai_tag_sessions.py .
+
+RUN apk add --no-cache python3 py3-pip
+RUN ln -sf python3 /usr/bin/python
+RUN pip install --break-system-packages requests python-dotenv google-generativeai
 
 EXPOSE 3000
 CMD ["node", "dist/main"]

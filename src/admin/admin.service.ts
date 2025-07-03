@@ -6,10 +6,10 @@ import { exec } from 'child_process';
 export class AdminService {
   private readonly logger = new Logger(AdminService.name);
 
-  @Cron('*/30 * * * *') // Mỗi 30 phút
+  @Cron('*/2 * * * *') // Mỗi 30 phút
   handleCron() {
     this.logger.log('⏰ Đang chạy AI tagging pipeline (ai_tag_sessions.py)...');
-    exec('python SWD-BE/ai_tag_sessions.py', (err, stdout, stderr) => {
+    exec('python3 ai_tag_sessions.py', (err, stdout, stderr) => {
       if (err) {
         this.logger.error('Cronjob error:', err);
       } else {
