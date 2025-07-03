@@ -1,5 +1,5 @@
 import { NestFactory, Reflector } from '@nestjs/core';
-import { ValidationPipe, VersioningType } from '@nestjs/common';
+import { RequestMethod, ValidationPipe, VersioningType } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { ConfigService } from './config/config.service';
@@ -17,7 +17,9 @@ async function bootstrap() {
   const reflector = app.get(Reflector);
 
   // Global configuration - Keep disabled for direct /ask route compatibility
-  app.setGlobalPrefix(configService.get('GLOBAL_PREFIX') || 'api');
+  app.setGlobalPrefix(configService.get('GLOBAL_PREFIX') || 'api', {
+    exclude: [{ path: '/', method: RequestMethod.GET }],
+  });
 
   // API Versioning
   app.enableVersioning({
@@ -95,7 +97,7 @@ async function bootstrap() {
   });
 
   // Serve static files
-  app.useStaticAssets(path.join(__dirname, '..', 'public'));
+  // app.useStaticAssets(path.join(__dirname, '..', 'public'));
 
   const port = configService.get('PORT') || 3000;
   await app.listen(port);

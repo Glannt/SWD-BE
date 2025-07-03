@@ -13,6 +13,7 @@ import { HubspotModule } from './hubspot/hubspot.module';
 import { AdminModule } from './admin/admin.module';
 import { ConfigModule } from './config/config.module';
 import { ConfigService } from './config/config.service';
+import { RootController } from './common/controllers/root.controller';
 
 @Module({
   imports: [
@@ -35,7 +36,7 @@ import { ConfigService } from './config/config.service';
     HubspotModule,
     AdminModule,
   ],
-  controllers: [AppController],
+  controllers: [AppController, RootController],
   providers: [AppService],
 })
 export class AppModule {}
