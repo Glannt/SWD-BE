@@ -6,6 +6,7 @@ import { ChatSession, ChatSessionSchema } from '../entity/chat-session.entity';
 import { ChatMessage, ChatMessageSchema } from '../entity/chat-message.entity';
 import { ScheduleModule } from '@nestjs/schedule';
 import { AdminService } from './admin.service';
+import { NotificationModule } from '../notification/notification.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AdminService } from './admin.service';
       { name: ChatMessage.name, schema: ChatMessageSchema },
     ]),
     ScheduleModule.forRoot(),
+    NotificationModule,
   ],
   controllers: [AdminController],
   providers: [AdminService],

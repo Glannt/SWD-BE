@@ -6,16 +6,15 @@ import {
   Param,
   Patch,
   Delete,
-  // UseGuards,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-// import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-// import { RolesGuard } from '../auth/guards/roles.guard';
+import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { Roles } from '../auth/decorators/roles.decorator';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { User, UserRole } from '../entity/user.entity';
 import { UpdateUserDto } from './dtos/update-user.dto';
-// import { UserRole } from './schemas/user.schema';
 import {
   ApiTags,
   ApiOperation,
@@ -26,7 +25,7 @@ import {
 
 @ApiTags('users')
 @Controller('users')
-// @UseGuards(JwtAuthGuard, RolesGuard)
+@UseGuards(JwtAuthGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -62,6 +61,14 @@ export class UserController {
   // @Roles(UserRole.ADMIN, UserRole.STAFF)
   async findOne(@Param('id') id: string) {
     return this.userService.findById(id);
+  }
+
+  @Patch('fcm-token')
+  @ApiOperation({ summary: 'Cập nhật FCM token cho user hiện tại' })
+  @ApiBody({ schema: { properties: { fcmToken: { type: 'string' } } } })
+  async updateFcmToken(@Req() req, @Body('fcmToken') fcmToken: string) {
+    const userId = req.user.user_id;
+    return this.userService.updateFcmToken(userId, fcmToken);
   }
 
   @Patch(':id')

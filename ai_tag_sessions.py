@@ -16,6 +16,7 @@ import google.generativeai as genai
 import time
 import os
 from dotenv import load_dotenv
+import sys
 
 # ==== CONFIG ====
 load_dotenv(dotenv_path=".env")
@@ -37,6 +38,9 @@ FEW_SHOT_EXAMPLES = [
 # ==== INIT GEMINI ====
 genai.configure(api_key=GEMINI_API_KEY)
 model = genai.GenerativeModel('gemini-1.5-flash')
+
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
 
 def build_prompt(messages, examples=None):
     prompt = "Dưới đây là nội dung một phiên chat giữa user và chatbot. Hãy phân loại phiên chat này vào một trong các nhóm: 'tiềm năng', 'không tiềm năng', 'giỡn', 'khác'.\n"

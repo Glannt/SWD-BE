@@ -48,6 +48,9 @@ export class User {
 
   @Prop({ default: false })
   isVerified: boolean;
+
+  @Prop({ nullable: true })
+  fcmToken?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

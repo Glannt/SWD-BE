@@ -36,7 +36,10 @@ export class MailService {
     // Build reset password URL
     const baseUrl = req
       ? `${req.protocol}://${req.get('host')}`
-      : this.configService.get('FRONTEND_URL') || 'http://localhost:3000';
+      : (this.configService.get('FRONTEND_URL')
+          ? this.configService.get('FRONTEND_URL')
+          : '5173') || 'http://localhost:5173';
+    // const baseUrl = 'http://localhost:5173';
     const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 
     console.log('Reset Password URL:', resetUrl);

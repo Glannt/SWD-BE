@@ -116,4 +116,12 @@ export class UserService {
   isRegisterDTO(obj: any): obj is RegisterDto {
     return !('role' in obj);
   }
+
+  async updateFcmToken(userId: string, fcmToken: string): Promise<User | null> {
+    console.log('UPDATEFCMTOKEN');
+
+    return this.userModel
+      .findOneAndUpdate({ user_id: userId }, { fcmToken }, { new: true })
+      .exec();
+  }
 }

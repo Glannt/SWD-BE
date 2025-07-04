@@ -118,3 +118,10 @@ tests/
 
 # Uploads
 uploads/
+
+dist
+.git
+test
+*.log
+*.env*
+*.md

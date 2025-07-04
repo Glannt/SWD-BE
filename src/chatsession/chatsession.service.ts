@@ -176,8 +176,9 @@ export class ChatsessionService {
    * Lấy sessions của user
    */
   async getUserSessions(userId: string): Promise<ChatSession[]> {
+    const existingUser = this.userModel.findOne({ user_id: userId });
     return this.chatSessionModel
-      .find({ user: new Types.ObjectId(userId) })
+      .find({ user: (await existingUser)._id })
       .sort({ lastActivity: -1 })
       .exec();
   }
