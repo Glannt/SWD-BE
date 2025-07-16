@@ -12,6 +12,8 @@ import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { NestRedisModule } from '../redis/redis.module';
 import { MailModule } from '../mail/mail.module';
+import { GoogleStrategy } from './strategy/google.strategy';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 
 @Module({
   imports: [
@@ -31,7 +33,14 @@ import { MailModule } from '../mail/mail.module';
       }),
     }),
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshGuard],
+  providers: [
+    AuthService,
+    LocalStrategy,
+    JwtStrategy,
+    JwtRefreshGuard,
+    GoogleAuthGuard,
+    GoogleStrategy,
+  ],
   controllers: [AuthController],
   exports: [AuthService, JwtRefreshGuard],
 })
