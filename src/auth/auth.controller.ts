@@ -12,7 +12,6 @@ import {
 import { Request, Response } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { applySmartIdField } from '../common/middleware/assign_custome_id.middleware';
 import { User } from '../common/decorators/user.decorator';
 import { IUser } from '../common/interfaces/user.interface';
 import { RegisterDto } from '../user/dtos/create-user.dto';
@@ -24,6 +23,7 @@ import { ResetPasswordRequestDto } from './dtos/reset-password.request.dto';
 import { VerifyResetTokenRequestDto } from './dtos/verify-reset-token.request.dto';
 import { ChangePasswordRequestDto } from './dtos/change-password.request.dto';
 import { ConfigService } from '@/config/config.service';
+import { GoogleAuthGuard } from './guards/google-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -59,6 +59,31 @@ export class AuthController {
       throw new BadRequestException(MESSAGES.AUTH.REGISTER_FAILED);
     }
     return result;
+  }
+
+  @Get('google')
+  @UseGuards(GoogleAuthGuard)
+  async googleAuth(@Req() req) {}
+
+  @Get('google/redirect')
+  @UseGuards(GoogleAuthGuard)
+  googleAuthRedirect(@Req() req, @Res() res: Response) {
+    // Xử lý login thành công, trả về JWT hoặc redirect về FE
+    const { accessToken, refreshToken, user } = req.user;
+    const getTime = parseInt(this.configService.getJwtRefreshExpire(), 10);
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: this.configService.getNodeEnv() === 'production', // Only send over HTTPS in production
+      sameSite:
+        this.configService.getNodeEnv() === 'production' ? 'none' : 'lax',
+      maxAge: getTime,
+      path: '/',
+    });
+    const { user_id, fullName, email, role } = user;
+    const returnUser = { user_id, fullName, email, role };
+    const redirectUrl = `http://localhost:5173/oauth-callback?accessToken=${accessToken}&user=${encodeURIComponent(JSON.stringify(returnUser))}`;
+    return res.redirect(redirectUrl);
+    // return req.user;
   }
 
   @ResponseMessage('Verify email')
