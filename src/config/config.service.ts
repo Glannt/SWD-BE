@@ -139,4 +139,16 @@ export class ConfigService {
   getCacheLruSize(): number {
     return parseInt(this.get('CACHE_LRU_SIZE'), 10) || 5000;
   }
+
+  getGoogleClientId(): string {
+    return this.get('GOOGLE_CLIENT_ID');
+  }
+
+  getGoogleClientSecret(): string {
+    return this.get('GOOGLE_CLIENT_SECRET');
+  }
+
+  getGoogleCallBackUrl(): string {
+    return this.get('GOOGLE_CALLBACK_URL');
+  }
 }

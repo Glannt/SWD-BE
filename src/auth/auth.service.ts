@@ -2,7 +2,7 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 
 import { JwtService } from '@nestjs/jwt';
-import { Request, Response } from 'express';
+import { Request, response, Response } from 'express';
 import { Cache } from 'cache-manager';
 // import { Schema, Types } from 'mongoose';
 import { MESSAGES } from '../common/constants/messages.constants';
@@ -93,6 +93,24 @@ export class AuthService {
       expiresIn: this.configService.getJwtRefreshExpire(),
     });
     return refreshToken;
+  }
+
+  async generateTokens(user: User) {
+    const payload = {
+      sub: 'token login',
+      iss: 'from server',
+      user_id: user.user_id,
+      fullName: user.fullName,
+      email: user.email,
+      role: user.role,
+    };
+    const accessToken = this.jwtService.sign(payload);
+    const refreshToken = this.createRefreshToken(payload);
+
+    await this.userService.updateUserToken(refreshToken, user.user_id);
+    const getTime = parseInt(this.configService.getJwtRefreshExpire(), 10);
+
+    return { accessToken, refreshToken };
   }
 
   async logout(user: IUser, response: Response) {

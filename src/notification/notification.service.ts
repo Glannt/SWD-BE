@@ -6,7 +6,7 @@ import { Model } from 'mongoose';
 import { User } from '../entity/user.entity';
 // Import the service account JSON as an object
 
-const serviceAccount = require('../../db-wsb-project-firebase-adminsdk-go6gm-76e18e58a3.json');
+const serviceAccount = require('../../db-wsb-project-firebase-adminsdk-go6gm-2ffa83b8b0.json');
 
 @Injectable()
 export class NotificationService {

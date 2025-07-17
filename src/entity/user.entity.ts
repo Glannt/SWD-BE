@@ -25,8 +25,12 @@ export class User {
   @Prop({ required: true, unique: true })
   email: string;
 
-  @Prop({ required: true })
-  password: string;
+  @Prop({
+    required: function () {
+      return !this.googleId;
+    },
+  })
+  password?: string;
 
   @Prop()
   fullName: string;
@@ -51,6 +55,12 @@ export class User {
 
   @Prop({ nullable: true })
   fcmToken?: string;
+
+  @Prop()
+  googleId?: string;
+
+  @Prop()
+  googleRefreshToken?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

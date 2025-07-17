@@ -10,6 +10,28 @@ import { MESSAGES } from '../common/constants/messages.constants';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
+  async findOrCreateByGoogle(profile: any): Promise<User> {
+    const email = profile.emails[0].value;
+    let user = await this.userModel.findOne({ email });
+
+    if (!user) {
+      user = new this.userModel({
+        email,
+        googleId: profile.id,
+        fullName: profile.name.givenName,
+      });
+      await user.save();
+    } else {
+      const updateUser: Partial<User> = {
+        googleId: profile.id,
+        fullName: profile.name.givenName,
+      };
+      await this.updateUser(user._id, updateUser);
+    }
+
+    return user;
+  }
+
   async findAllUser(): Promise<User[] | null> {
     return this.userModel.find().select('+password').lean().exec();
   }
