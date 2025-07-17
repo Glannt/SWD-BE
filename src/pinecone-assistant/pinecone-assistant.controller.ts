@@ -305,12 +305,27 @@ export class PineconeAssistantController {
   })
   @ApiResponse({
     status: 200,
-    description: 'File đã được xóa thành công',
+    description: 'File đã được xóa thành công và danh sách files còn lại',
     schema: {
       type: 'object',
       properties: {
         success: { type: 'boolean' },
         message: { type: 'string' },
+        files: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              name: { type: 'string' },
+              originalName: { type: 'string' },
+              status: { type: 'string' },
+              createdOn: { type: 'string' },
+              updatedOn: { type: 'string' },
+              size: { type: 'number' },
+            },
+          },
+        },
       },
     },
   })
@@ -325,9 +340,18 @@ export class PineconeAssistantController {
       this.logger.log(`Deleting file with ID: ${fileId}`);
       await this.assistantService.deleteFile(fileId);
       
+      // Thêm độ trễ nhỏ để đảm bảo Pinecone đã xử lý xong yêu cầu xóa
+      this.logger.log('Waiting for Pinecone to process deletion...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Lấy danh sách files mới sau khi xóa
+      this.logger.log('Fetching updated file list after deletion');
+      const updatedFileList = await this.listFiles();
+      
       return {
         success: true,
         message: 'File đã được xóa thành công',
+        files: updatedFileList.files, // Trả về danh sách files đã cập nhật
       };
     } catch (error) {
       this.logger.error(`Error deleting file: ${error.message}`);
