@@ -48,7 +48,6 @@ export class AuthService {
 
   async login(request: Request, response: Response) {
     const user = request.user as UserDocument;
-    console.log(user);
 
     const { user_id, fullName, email, role } = user;
 
