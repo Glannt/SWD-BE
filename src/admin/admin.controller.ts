@@ -1,13 +1,23 @@
-import { Controller, Get, Post, Body } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { Controller, Get, Post, Body, UseGuards } from '@nestjs/common';
+import {
+  ApiTags,
+  ApiOperation,
+  ApiResponse,
+  ApiBearerAuth,
+} from '@nestjs/swagger';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { User } from '../entity/user.entity';
+import { User, UserRole } from '../entity/user.entity';
 import { ChatSession } from '../entity/chat-session.entity';
 import { ChatMessage } from '../entity/chat-message.entity';
+import { Roles } from '@/auth/decorators/roles.decorator';
+import { JwtAuthGuard } from '@/auth/guards/jwt-auth.guard';
 
 @ApiTags('admin-dashboard')
 @Controller('admin/dashboard')
+@Roles(UserRole.ADMIN)
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth('JWT-auth')
 export class AdminController {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,

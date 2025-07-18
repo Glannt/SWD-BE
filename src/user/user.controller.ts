@@ -21,11 +21,13 @@ import {
   ApiResponse,
   ApiBody,
   ApiParam,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 
 @ApiTags('users')
 @Controller('users')
 @UseGuards(JwtAuthGuard)
+@ApiBearerAuth('JWT-auth')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -50,6 +52,7 @@ export class UserController {
   @ApiOperation({ summary: 'Lấy thông tin users' })
   @ApiResponse({ status: 200, description: 'User detail', type: User })
   @ApiResponse({ status: 404, description: 'User not found' })
+  @Roles(UserRole.ADMIN)
   async findAll() {
     return this.userService.findAllUser();
   }
@@ -58,7 +61,7 @@ export class UserController {
   @ApiParam({ name: 'id', required: true })
   @ApiResponse({ status: 200, description: 'User detail', type: User })
   @ApiResponse({ status: 404, description: 'User not found' })
-  // @Roles(UserRole.ADMIN, UserRole.STAFF)
+  @Roles(UserRole.ADMIN)
   async findOne(@Param('id') id: string) {
     return this.userService.findById(id);
   }
@@ -77,7 +80,7 @@ export class UserController {
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({ status: 200, description: 'User updated', type: User })
   @ApiResponse({ status: 404, description: 'User not found' })
-  // @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN)
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.updateUser(id, updateUserDto);
   }
@@ -87,7 +90,7 @@ export class UserController {
   @ApiParam({ name: 'id', required: true })
   @ApiResponse({ status: 200, description: 'User deleted' })
   @ApiResponse({ status: 404, description: 'User not found' })
-  // @Roles(UserRole.ADMIN)
+  @Roles(UserRole.ADMIN)
   async remove(@Param('id') id: string) {
     return this.userService.deleteUser(id);
   }

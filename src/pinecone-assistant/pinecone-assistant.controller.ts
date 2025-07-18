@@ -7,6 +7,8 @@ import {
   UseInterceptors,
   BadRequestException,
   Logger,
+  Param,
+  Delete,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import {
@@ -251,6 +253,7 @@ export class PineconeAssistantController {
             properties: {
               id: { type: 'string' },
               name: { type: 'string' },
+              originalName: { type: 'string' },
               status: { type: 'string' },
               createdOn: { type: 'string' },
               updatedOn: { type: 'string' },
@@ -262,6 +265,97 @@ export class PineconeAssistantController {
     },
   })
   async listFiles() {
-    return this.assistantService.listFiles();
+    const result = await this.assistantService.listFiles();
+    
+    // Biến đổi kết quả để hiển thị tên gốc từ metadata
+    if (result.files && result.files.length > 0) {
+      result.files = result.files.map(file => {
+        // Xác định metadata với tất cả các thuộc tính có thể có
+        const metadata = file.metadata as { 
+          originalName?: string; 
+          uploadedAt?: string;
+          mimeType?: string;
+          size?: number;
+        } || {};
+        
+        const originalName = metadata.originalName || file.name;
+        
+        return {
+          ...file,
+          // Lưu tên gốc trong metadata vào originalName
+          originalName: originalName,
+          // Thay thế tên hiển thị mặc định bằng tên gốc
+          name: originalName,
+          // Thêm thông tin metadata khác nếu cần
+          uploadedAt: metadata.uploadedAt || file.createdOn,
+          fileType: metadata.mimeType || 'unknown',
+        };
+      });
+    }
+    
+    return result;
+  }
+
+  /**
+   * Delete uploaded file using DELETE method
+   */
+  @ApiOperation({
+    summary: 'Xóa file đã upload',
+    description: 'Xóa một file đã upload vào Assistant theo ID',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'File đã được xóa thành công và danh sách files còn lại',
+    schema: {
+      type: 'object',
+      properties: {
+        success: { type: 'boolean' },
+        message: { type: 'string' },
+        files: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+              name: { type: 'string' },
+              originalName: { type: 'string' },
+              status: { type: 'string' },
+              createdOn: { type: 'string' },
+              updatedOn: { type: 'string' },
+              size: { type: 'number' },
+            },
+          },
+        },
+      },
+    },
+  })
+  @ApiResponse({ status: 400, description: 'File không tồn tại hoặc không thể xóa' })
+  @Delete('files/:fileId')
+  async deleteFileByParam(@Param('fileId') fileId: string) {
+    try {
+      if (!fileId) {
+        throw new BadRequestException('ID file không được cung cấp');
+      }
+      
+      this.logger.log(`Deleting file with ID: ${fileId}`);
+      await this.assistantService.deleteFile(fileId);
+      
+      // Thêm độ trễ nhỏ để đảm bảo Pinecone đã xử lý xong yêu cầu xóa
+      this.logger.log('Waiting for Pinecone to process deletion...');
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Lấy danh sách files mới sau khi xóa
+      this.logger.log('Fetching updated file list after deletion');
+      const updatedFileList = await this.listFiles();
+      
+      return {
+        success: true,
+        message: 'File đã được xóa thành công',
+        files: updatedFileList.files, // Trả về danh sách files đã cập nhật
+      };
+    } catch (error) {
+      this.logger.error(`Error deleting file: ${error.message}`);
+      throw new BadRequestException(`Không thể xóa file: ${error.message}`);
+    }
   }
 }

@@ -24,6 +24,8 @@ import { VerifyResetTokenRequestDto } from './dtos/verify-reset-token.request.dt
 import { ChangePasswordRequestDto } from './dtos/change-password.request.dto';
 import { ConfigService } from '@/config/config.service';
 import { GoogleAuthGuard } from './guards/google-auth.guard';
+import { Public } from '@/common/decorators/public.decorator';
+import { JwtAuthGuard } from './guards/jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -32,13 +34,14 @@ export class AuthController {
     private configService: ConfigService,
   ) {}
 
+  @Public()
   @UseGuards(AuthGuard('local')) // LocalStrategy
   @Post('login')
   async handleLogin(@Req() req, @Res({ passthrough: true }) res: Response) {
     return this.authService.login(req, res);
   }
 
-  @UseGuards(AuthGuard('jwt')) // JwtStrategy
+  @UseGuards(JwtAuthGuard) // JwtStrategy
   @ResponseMessage('Logout account')
   @ApiOperation({ summary: 'Logout account' })
   @ApiResponse({ status: 201, description: 'Logout account successfully.' })
@@ -48,6 +51,7 @@ export class AuthController {
     return this.authService.logout(user, res);
   }
 
+  @Public()
   @Post('/register')
   @ResponseMessage('Register a new user')
   @ApiOperation({ summary: 'Register a new user account' })
@@ -61,15 +65,33 @@ export class AuthController {
     return result;
   }
 
+  @Public()
   @Get('google')
   @UseGuards(GoogleAuthGuard)
   async googleAuth(@Req() req) {}
 
+  @Public()
   @Get('google/redirect')
   @UseGuards(GoogleAuthGuard)
   googleAuthRedirect(@Req() req, @Res() res: Response) {
     // Xử lý login thành công, trả về JWT hoặc redirect về FE
     const { accessToken, refreshToken, user } = req.user;
+    const rawState = req.query.state as string;
+
+    let redirect = this.configService.get('FE_DOMAIN') + '/oauth-callback';
+    if (req.query.state) {
+      try {
+        const decoded = Buffer.from(rawState, 'base64url').toString('utf-8');
+        const stateObj = JSON.parse(decoded);
+        if (stateObj?.redirect) redirect = stateObj.redirect;
+      } catch (e) {
+        console.error('Invalid state', e);
+      }
+    }
+
+    const { user_id, fullName, email, role } = user;
+    const returnUser = { user_id, fullName, email, role };
+
     const getTime = parseInt(this.configService.getJwtRefreshExpire(), 10);
     res.cookie('refresh_token', refreshToken, {
       httpOnly: true,
@@ -79,17 +101,29 @@ export class AuthController {
       maxAge: getTime,
       path: '/',
     });
-    const { user_id, fullName, email, role } = user;
-    const returnUser = { user_id, fullName, email, role };
-    const redirectUrl = `http://localhost:5173/oauth-callback?accessToken=${accessToken}&user=${encodeURIComponent(JSON.stringify(returnUser))}`;
-    return res.redirect(redirectUrl);
-    // return req.user;
+    const expires = parseInt(this.configService.getJwtRefreshExpire(), 10);
+    res.cookie('refresh_token', refreshToken, {
+      httpOnly: true,
+      secure: this.configService.getNodeEnv() === 'production',
+      sameSite:
+        this.configService.getNodeEnv() === 'production' ? 'none' : 'lax',
+      maxAge: expires,
+      path: '/',
+    });
+
+    // Redirect về FE
+    const finalUrl = new URL(redirect);
+    finalUrl.searchParams.set('accessToken', accessToken);
+    finalUrl.searchParams.set('user', JSON.stringify(returnUser));
+
+    return res.redirect(finalUrl.toString());
   }
 
   @ResponseMessage('Verify email')
   @ApiOperation({ summary: 'Verify a new user account' })
   @ApiResponse({ status: 201, description: 'User verified.' })
   @ApiResponse({ status: 400, description: 'Bad request' })
+  @Public()
   @Get('verify-email')
   async verifyEmail(
     @Query('email') email: string,
@@ -99,19 +133,20 @@ export class AuthController {
     try {
       await this.authService.verifyEmail(email, token);
       const feDomain =
-        this.configService.get('FE_DOMAIN') || 'http://localhost:3000';
+        this.configService.get('FE_DOMAIN') || 'http://localhost:5173';
       return res.redirect(
         `${feDomain}/verify-success?email=${encodeURIComponent(email)}`,
       );
     } catch (err) {
       const feDomain =
-        this.configService.get('FE_DOMAIN') || 'http://localhost:3000';
+        this.configService.get('FE_DOMAIN') || 'http://localhost:5173';
       return res.redirect(
         `${feDomain}/verify-fail?email=${encodeURIComponent(email)}&error=${encodeURIComponent(err.message)}`,
       );
     }
   }
 
+  @Public()
   @Post('forgot-password')
   @ResponseMessage('Send reset password email')
   @ApiOperation({ summary: 'Send reset password email' })
@@ -135,6 +170,7 @@ export class AuthController {
     return this.authService.verifyResetToken(verifyResetTokenDto);
   }
 
+  @Public()
   @Post('reset-password')
   @ResponseMessage('Reset password')
   @ApiOperation({ summary: 'Reset password with token' })
@@ -144,7 +180,7 @@ export class AuthController {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
-  @UseGuards(AuthGuard('jwt')) // JwtStrategy
+  @UseGuards(JwtAuthGuard) // JwtStrategy
   @Post('change-password')
   @ResponseMessage('Change password')
   @ApiOperation({ summary: 'Change password for authenticated user' })

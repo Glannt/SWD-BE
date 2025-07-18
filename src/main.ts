@@ -66,24 +66,23 @@ async function bootstrap() {
       'Advanced RAG-based career counseling chatbot with AI and enterprise features',
     )
     .setVersion('2.0')
+    .setContact('FPTU AI Team', 'https://fpt.edu.vn', 'support@fpt.edu.vn')
+    .setLicense('MIT', 'https://opensource.org/licenses/MIT')
+    .addServer('http://localhost:3000', 'Local server')
     .addBearerAuth(
       {
         type: 'http',
         scheme: 'bearer',
         bearerFormat: 'JWT',
-        name: 'JWT',
-        description: 'Enter JWT token',
+        name: 'Authorization',
+        description:
+          'Enter JWT token (access token, not refresh token). Format: Bearer <token>',
         in: 'header',
       },
       'JWT-auth',
     )
     .addTag('app', 'Application endpoints')
     .addTag('assistant', 'Pinecone Assistant endpoints (Primary AI System)')
-    .addTag('chatbot', 'AI Chatbot endpoints (Legacy Pinecone + Gemini)')
-    .addTag('rag', 'RAG Chat endpoints (Simplified + Gemini)')
-    .addTag('auth', 'Authentication & Authorization')
-    .addTag('users', 'User management')
-    .addTag('chat', 'Chat functionality')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -92,6 +91,9 @@ async function bootstrap() {
       persistAuthorization: true,
       tagsSorter: 'alpha',
       operationsSorter: 'alpha',
+      docExpansion: 'none',
+      displayRequestDuration: true,
+      filter: true,
     },
     customSiteTitle: '🎓 FPT University Chatbot API Documentation',
   });
