@@ -18,6 +18,8 @@ import { ConfigService } from '@/config/config.service';
         transport: {
           service:
             configService.getMailHost() || configService.get('MAIL_SERVICE'),
+          // port: configService.getMailPort(),
+          // host: configService.getMailHost(),
           auth: {
             user: configService.getMailUser(),
             pass: configService.getMailPass(),

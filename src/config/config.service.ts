@@ -15,21 +15,6 @@ export class ConfigService {
     } else {
       this.envConfig = process.env as Record<string, string>;
     }
-
-    // Debug logging
-    console.log('🔧 ConfigService loaded:');
-    console.log(
-      '- GEMINI_API_KEY:',
-      this.getGeminiApiKey() ? '✅ Configured' : '❌ Missing',
-    );
-    console.log(
-      '- PINECONE_API_KEY:',
-      this.getPineconeApiKey() ? '✅ Configured' : '❌ Missing',
-    );
-    console.log(
-      '- PINECONE_INDEX_NAME:',
-      this.getPineconeIndexName() || 'Not set',
-    );
   }
 
   get(key: string): string {
@@ -99,6 +84,14 @@ export class ConfigService {
 
   getRedisPort(): number {
     return parseInt(this.get('REDIS_PORT'), 10) || 6379;
+  }
+
+  getRedisUserName(): string {
+    return this.get('REDIS_USERNAME');
+  }
+
+  getRedisPassword(): string {
+    return this.get('REDIS_PASSWORD');
   }
 
   // Mail Configuration
