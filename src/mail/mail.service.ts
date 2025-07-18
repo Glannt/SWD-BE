@@ -34,11 +34,7 @@ export class MailService {
 
   async sendResetPasswordEmail(email: string, token: string, req?: Request) {
     // Build reset password URL
-    const baseUrl = req
-      ? `${req.protocol}://${req.get('host')}`
-      : (this.configService.get('FRONTEND_URL')
-          ? this.configService.get('FRONTEND_URL')
-          : '5173') || 'http://localhost:5173';
+    const baseUrl = this.configService.get('FE_DOMAIN');
     // const baseUrl = 'http://localhost:5173';
     const resetUrl = `${baseUrl}/reset-password?token=${token}`;
 

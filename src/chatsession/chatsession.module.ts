@@ -5,6 +5,7 @@ import { ChatMessage, ChatMessageSchema } from '../entity/chat-message.entity';
 import { User, UserSchema } from '../entity/user.entity';
 import { ChatsessionController } from './chatsession.controller';
 import { ChatsessionService } from './chatsession.service';
+import { NestRedisModule } from '@/redis/redis.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { ChatsessionService } from './chatsession.service';
       { name: ChatMessage.name, schema: ChatMessageSchema },
       { name: User.name, schema: UserSchema },
     ]),
+    NestRedisModule,
   ],
   controllers: [ChatsessionController],
   providers: [ChatsessionService],

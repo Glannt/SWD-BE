@@ -5,10 +5,14 @@ import * as bcrypt from 'bcrypt';
 import { User, UserRole, UserStatus } from '../entity/user.entity';
 import { CreateUserDto, RegisterDto } from './dtos/create-user.dto';
 import { MESSAGES } from '../common/constants/messages.constants';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel(User.name) private userModel: Model<User>) {}
+  constructor(
+    @InjectModel(User.name) private userModel: Model<User>,
+    private readonly redisService: RedisService,
+  ) {}
 
   async findOrCreateByGoogle(profile: any): Promise<User> {
     const email = profile.emails[0].value;
@@ -33,7 +37,13 @@ export class UserService {
   }
 
   async findAllUser(): Promise<User[] | null> {
-    return this.userModel.find().select('+password').lean().exec();
+    return this.redisService.getOrSetCache<User[]>(
+      'users:all',
+      89400, // TTL 60 giây
+      async () => {
+        return this.userModel.find().select('+password').lean().exec();
+      },
+    );
   }
 
   async findByUsername(username: string): Promise<User | null> {
@@ -113,7 +123,9 @@ export class UserService {
   }
 
   async markAsVerified(userId: string): Promise<void> {
-    await this.userModel.findByIdAndUpdate(userId, { isVerified: true }).exec();
+    await this.userModel
+      .findOneAndUpdate({ user_id: userId }, { isVerified: true })
+      .exec();
   }
 
   async updatePassword(userId: string, newPassword: string): Promise<void> {

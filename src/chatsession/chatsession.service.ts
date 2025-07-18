@@ -4,6 +4,7 @@ import { Model, Types } from 'mongoose';
 import { ChatSession, ChatSessionStatus } from '../entity/chat-session.entity';
 import { ChatMessage, MessageSender } from '../entity/chat-message.entity';
 import { User } from '../entity/user.entity';
+import { RedisService } from '../redis/redis.service';
 
 @Injectable()
 export class ChatsessionService {
@@ -13,6 +14,7 @@ export class ChatsessionService {
     @InjectModel(ChatSession.name) private chatSessionModel: Model<ChatSession>,
     @InjectModel(ChatMessage.name) private chatMessageModel: Model<ChatMessage>,
     @InjectModel(User.name) private userModel: Model<User>,
+    private readonly redisService: RedisService,
   ) {}
 
   /**
@@ -176,11 +178,18 @@ export class ChatsessionService {
    * Lấy sessions của user
    */
   async getUserSessions(userId: string): Promise<ChatSession[]> {
-    const existingUser = this.userModel.findOne({ user_id: userId });
-    return this.chatSessionModel
-      .find({ user: (await existingUser)._id })
-      .sort({ lastActivity: -1 })
-      .exec();
+    return this.redisService.getOrSetCache<ChatSession[]>(
+      `user:sessions:${userId}`,
+      89400, // TTL 10 phút
+      async () => {
+        const existingUser = await this.userModel.findOne({ user_id: userId });
+        if (!existingUser) return [];
+        return this.chatSessionModel
+          .find({ user: existingUser._id })
+          .sort({ lastActivity: -1 })
+          .exec();
+      },
+    );
   }
 
   /**
