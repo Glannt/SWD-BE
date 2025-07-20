@@ -16,8 +16,6 @@ import { AdminService } from './admin.service';
 
 @ApiTags('admin-dashboard')
 @Controller('admin/dashboard')
-@Roles(UserRole.ADMIN)
-@UseGuards(JwtAuthGuard)
 @ApiBearerAuth('JWT-auth')
 export class AdminController {
   constructor(
@@ -29,6 +27,8 @@ export class AdminController {
 
   @Get('summary')
   @ApiOperation({ summary: 'Thống kê tổng quan dashboard' })
+  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard)
   @ApiResponse({
     status: 200,
     description: 'Tổng quan: số truy cập, user đã chat, session chat',
@@ -40,6 +40,8 @@ export class AdminController {
   @Get('users')
   @ApiOperation({ summary: 'Danh sách user đã từng chat' })
   @ApiResponse({ status: 200, description: 'Danh sách user đã chat' })
+  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard)
   async getUsersChatted() {
     return this.adminService.getUsersChatted();
   }
@@ -47,6 +49,8 @@ export class AdminController {
   @Get('sessions')
   @ApiOperation({ summary: 'Table user đã chat và các session, tag' })
   @ApiResponse({ status: 200, description: 'Table user, session, tag' })
+  @Roles(UserRole.ADMIN)
+  @UseGuards(JwtAuthGuard)
   async getSessionsTable() {
     return this.adminService.getSessionsTable();
   }

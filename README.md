@@ -1,3 +1,5 @@
+[![Build & Deploy Backend to Render](https://github.com/Glannt/SWD-BE/actions/workflows/deploy.yml/badge.svg)](https://github.com/Glannt/SWD-BE/actions/workflows/deploy.yml)
+
 # 🎓 FPT University Chatbot - AI Assistant with Authentication
 
 <p align="center">
